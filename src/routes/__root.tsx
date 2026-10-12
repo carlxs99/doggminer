@@ -81,9 +81,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "DOGG HOUSE · West Coast Mining Club" },
+      { title: "$DOGG MINER · West Coast Mining Club" },
       { name: "description", content: "El club de minado DOGG en TON." },
-      { property: "og:title", content: "DOGG HOUSE" },
+      { property: "og:title", content: "$DOGG MINER" },
       { property: "og:description", content: "West Coast Mining Club. Stay high. Stack DOGG." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },

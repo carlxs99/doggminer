@@ -36,6 +36,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const app = window.Telegram?.WebApp;
     app?.ready(); app?.expand();
+    (app as unknown as { setHeaderTitle?: (title: string) => void } | undefined)?.setHeaderTitle?.('$DOGG MINER');
     setNow(Date.now());
     if (app?.initData) {
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name ?? 'Homie');
