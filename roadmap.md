@@ -10,3 +10,5 @@
 - [x] Verify navigation, accumulating demo counter, daily bonus, arcade scoring and wallet modal. Desktop/mobile render without overflow; build OK.
 - [ ] Activate Telegram durable sessions and referral links: requires the owner's bot token and bot username.
 - [x] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.
+- [x] Fix 429 balance error on app open (cache + retry)
+- [ ] Automatic withdrawals from a payout wallet (needs owner decisions + payout wallet secret)

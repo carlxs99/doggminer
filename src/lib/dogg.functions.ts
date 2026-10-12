@@ -23,7 +23,8 @@ async function verifyTelegram(initData: string) {
 
 /** Real on-chain $DOGG balance (whole tokens) of a raw/friendly address, read server-side from TONAPI. */
 async function jettonHold(address: string) {
-  const res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}`);
+  let res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}`);
+  if (res.status === 429) { await new Promise(r => setTimeout(r, 1200)); res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}`); }
   if (res.status === 404) return 0;
   if (!res.ok) throw new Error(`No se pudo leer tu saldo de $DOGG (${res.status}). Inténtalo de nuevo.`);
   const j = await res.json() as { balance?: string; jetton?: { decimals?: number } };
@@ -35,9 +36,24 @@ export const playerAction = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const row = await supabaseAdmin.from('dogg_players').select('wallet_address').eq('telegram_id', telegramId).maybeSingle();
+    const row = await supabaseAdmin.from('dogg_players').select('wallet_address, last_hold, last_hold_at').eq('telegram_id', telegramId).maybeSingle();
     const wallet = row.data?.wallet_address ?? null;
-    const hold = wallet ? await jettonHold(wallet) : 0;
+    const cached = row.data?.last_hold == null ? null : Number(row.data.last_hold);
+    const fresh = row.data?.last_hold_at && Date.now() - Date.parse(row.data.last_hold_at) < 45_000;
+    let hold = 0;
+    if (wallet) {
+      if (fresh && cached !== null) hold = cached;
+      else {
+        try {
+          hold = await jettonHold(wallet);
+          await supabaseAdmin.from('dogg_players').update({ last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
+        } catch (e) {
+          // Balance service busy: fall back to the last known balance instead of failing or downgrading.
+          if (cached === null) throw e;
+          hold = cached;
+        }
+      }
+    }
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     return PlayerSchema.parse(result.data);

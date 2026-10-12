@@ -1,0 +1,1 @@
+ALTER TABLE public.dogg_players ADD COLUMN IF NOT EXISTS last_hold numeric, ADD COLUMN IF NOT EXISTS last_hold_at timestamptz;
