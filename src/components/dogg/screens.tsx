@@ -8,7 +8,7 @@ import { useDogg } from './state';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
-import { MINERS, getMiner, shiftTotal } from '@/lib/mining';
+import { MINERS, MINER_TIERS, getMiner, shiftTotal } from '@/lib/mining';
 function Title({ label, title, accent, description }: { label: string; title: string; accent: string; description: string }) { return <div className="page-heading"><span className="eyebrow"><span />{label}</span><h1>{title} <em>{accent}</em><span className="heading-period">.</span></h1><p>{description}</p></div>; }
 function Countdown({ elapsed }: { elapsed: number }) { const s = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 1000)); return <>{String(Math.floor(s / 3600)).padStart(2, '0')}<span>:</span>{String(Math.floor(s % 3600 / 60)).padStart(2, '0')}<span>:</span>{String(s % 60).padStart(2, '0')}</>; }
 export function Humero() {
@@ -52,9 +52,12 @@ function Arcade() {
 }
 export function GrowOps() {
   const { player, demo, busy, activateMiner } = useDogg();
+  const current = getMiner(player.minerId).category;
+  const [tier, setTier] = useState<string>(MINER_TIERS.includes(current as never) ? current : MINER_TIERS[0]);
   return <><Title label="MINEROS / EQUIPOS" title="Elige tu equipo." accent="Sube el grow" description="La potencia de tu minero marca el ritmo de cada turno." />
     <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : 'Los mineros con hold están pendientes de verificación de propiedad de la wallet.'}</span></div>
-    {[...new Set(MINERS.map(m => m.category))].map(category => <section key={category} className="miner-category"><div className="section-heading"><h2>{category}</h2><span className="text-gold">WEST COAST 420</span></div><div className="grow-grid">{MINERS.filter(m => m.category === category).map(miner => {
+    <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={tier === t ? 'active' : ''} onClick={() => { haptic(); setTier(t); }}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div><p className="tier-count">{MINERS.length} mineros · 10 rangos</p>
+    {[tier].map(category => <section key={category} className="miner-category"><div className="section-heading"><h2>{category}</h2><span className="text-gold">WEST COAST 420</span></div><div className="grow-grid">{MINERS.filter(m => m.category === category).map(miner => {
       const active = player.minerId === miner.id;
       const eligible = miner.hold === 0 || (demo && player.balance >= miner.hold);
       return <article key={miner.id} className={`grow-card ${active ? 'owned' : ''}`} aria-label={miner.name}>
