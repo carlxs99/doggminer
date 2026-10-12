@@ -10,11 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BilleteraRouteImport } from './routes/billetera'
+import { Route as GrowOpsRouteImport } from './routes/grow-ops'
+import { Route as PerfilRouteImport } from './routes/perfil'
+import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BilleteraRoute = BilleteraRouteImport.update({
+  id: '/billetera',
+  path: '/billetera',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GrowOpsRoute = GrowOpsRouteImport.update({
+  id: '/grow-ops',
+  path: '/grow-ops',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PerfilRoute = PerfilRouteImport.update({
+  id: '/perfil',
+  path: '/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const TrabajosRoute = TrabajosRouteImport.update({
+  id: '/trabajos',
+  path: '/trabajos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
@@ -25,27 +49,62 @@ const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/billetera': typeof BilleteraRoute
+  '/grow-ops': typeof GrowOpsRoute
+  '/perfil': typeof PerfilRoute
+  '/trabajos': typeof TrabajosRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/billetera': typeof BilleteraRoute
+  '/grow-ops': typeof GrowOpsRoute
+  '/perfil': typeof PerfilRoute
+  '/trabajos': typeof TrabajosRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/billetera': typeof BilleteraRoute
+  '/grow-ops': typeof GrowOpsRoute
+  '/perfil': typeof PerfilRoute
+  '/trabajos': typeof TrabajosRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/public/ton-manifest'
+  fullPaths:
+    | '/'
+    | '/billetera'
+    | '/grow-ops'
+    | '/perfil'
+    | '/trabajos'
+    | '/api/public/ton-manifest'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/public/ton-manifest'
-  id: '__root__' | '/' | '/api/public/ton-manifest'
+  to:
+    | '/'
+    | '/billetera'
+    | '/grow-ops'
+    | '/perfil'
+    | '/trabajos'
+    | '/api/public/ton-manifest'
+  id:
+    | '__root__'
+    | '/'
+    | '/billetera'
+    | '/grow-ops'
+    | '/perfil'
+    | '/trabajos'
+    | '/api/public/ton-manifest'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BilleteraRoute: typeof BilleteraRoute
+  GrowOpsRoute: typeof GrowOpsRoute
+  PerfilRoute: typeof PerfilRoute
+  TrabajosRoute: typeof TrabajosRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
 }
 
@@ -56,6 +115,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/billetera': {
+      id: '/billetera'
+      path: '/billetera'
+      fullPath: '/billetera'
+      preLoaderRoute: typeof BilleteraRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/grow-ops': {
+      id: '/grow-ops'
+      path: '/grow-ops'
+      fullPath: '/grow-ops'
+      preLoaderRoute: typeof GrowOpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/perfil': {
+      id: '/perfil'
+      path: '/perfil'
+      fullPath: '/perfil'
+      preLoaderRoute: typeof PerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/trabajos': {
+      id: '/trabajos'
+      path: '/trabajos'
+      fullPath: '/trabajos'
+      preLoaderRoute: typeof TrabajosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/ton-manifest': {
@@ -70,6 +157,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BilleteraRoute: BilleteraRoute,
+  GrowOpsRoute: GrowOpsRoute,
+  PerfilRoute: PerfilRoute,
+  TrabajosRoute: TrabajosRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
 }
 export const routeTree = rootRouteImport
