@@ -1,4 +1,5 @@
 # DOGG mini app
+- [x] Diagnose blank-screen hook error: mixed React optimizer generations; pre-optimize UI/wallet dependencies and reject outdated requests. Fresh current-code navigation, arcade and wallet modal ran without errors before the mitigation.
 - [x] Build five app screens with Spanish navigation and West Coast artwork.
 - [x] Add 24-hour demo mining, daily check-in, social timer preview, grow level preview and playable arcade.
 - [x] Add TON Connect modal and chain balance reader; preserve confirmed DeDust contract and links. Wallet pairing and actual balances remain unverified without a wallet session.

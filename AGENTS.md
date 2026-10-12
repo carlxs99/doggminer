@@ -13,3 +13,4 @@
 - Isolate TON Connect in a dynamically imported component behind ClientOnly because wallet SDKs require browser APIs.
 - All durable mining mutations must verify Telegram initData server-side and use the row-locking database function; never trust client elapsed time or client reward amounts.
 - Preview credits are ephemeral React state and never represent on-chain balances; read jetton balances independently through TONAPI.
+- Pre-optimize shared UI and lazy wallet dependencies and reject outdated optimizer requests so preview updates cannot mix separate React module generations.
