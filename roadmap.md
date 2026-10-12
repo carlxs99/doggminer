@@ -1,4 +1,7 @@
 # DOGG mini app
+- [ ] Replace fixed mining with selectable miners, four-decimal live total and 24-hour badges.
+- [ ] Accrue each part of a shift at its active miner rate without retroactive recalculation.
+- [ ] Verify available/locked/active states and mid-shift miner switching.
 - [x] Diagnose blank-screen hook error: mixed React optimizer generations; pre-optimize UI/wallet dependencies and reject outdated requests. Fresh current-code navigation, arcade and wallet modal ran without errors before the mitigation.
 - [x] Build five app screens with Spanish navigation and West Coast artwork.
 - [x] Add 24-hour demo mining, daily check-in, social timer preview, grow level preview and playable arcade.
