@@ -8,6 +8,13 @@
       "when": 1791841746438,
       "tag": "0000_dogg_mining_sessions",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791842298147,
+      "tag": "0001_selectable_miner_segments",
+      "breakpoints": true
     }
   ]
 }
