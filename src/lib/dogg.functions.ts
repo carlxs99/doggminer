@@ -37,7 +37,7 @@ export const playerAction = createServerFn({ method: 'POST' })
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const row = await supabaseAdmin.from('dogg_players').select('wallet_address').eq('telegram_id', telegramId).maybeSingle();
     const wallet = row.data?.wallet_address ?? null;
-    const hold = wallet && (data.action === 'select' || data.action === 'claim' || data.action === 'read') ? await jettonHold(wallet) : 0;
+    const hold = wallet ? await jettonHold(wallet) : 0;
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     return PlayerSchema.parse(result.data);
