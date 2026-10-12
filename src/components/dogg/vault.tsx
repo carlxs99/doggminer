@@ -45,7 +45,7 @@ export function Billetera() {
   const level = levelFor(total);
   const week = useMemo(() => {
     const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(now || 0); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (6 - i)); return { start: d.getTime(), mining: 0, team: 0, bonus: 0 }; });
-    for (const e of history) { if (e.amount <= 0) continue; const d = days.findLast(x => e.at >= x.start); if (!d) continue; if (e.kind === 'mining') d.mining += e.amount; else if (e.kind === 'team') d.team += e.amount; else d.bonus += e.amount; }
+    for (const e of history) { if (e.amount <= 0) continue; const d = [...days].reverse().find(x => e.at >= x.start); if (!d) continue; if (e.kind === 'mining') d.mining += e.amount; else if (e.kind === 'team') d.team += e.amount; else d.bonus += e.amount; }
     return days;
   }, [history, now]);
   const sum = (k: 'mining' | 'team' | 'bonus') => week.reduce((a, d) => a + d[k], 0);
