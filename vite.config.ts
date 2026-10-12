@@ -7,6 +7,20 @@
 import { defineConfig } from "@lovable.dev/vite-tanstack-config";
 
 export default defineConfig({
+  vite: {
+    optimizeDeps: {
+      // Do not let a mounted preview mix React modules from different
+      // optimization generations when lazy wallet/UI dependencies arrive.
+      ignoreOutdatedRequests: false,
+      include: [
+        '@radix-ui/react-slot',
+        '@radix-ui/react-dialog',
+        '@tonconnect/ui-react',
+        'sonner',
+        'lucide-react',
+      ],
+    },
+  },
   tanstackStart: {
     // Redirect TanStack Start's bundled server entry to src/server.ts (our SSR error wrapper).
     // nitro/vite builds from this

@@ -1,0 +1,3 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { Perfil } from '@/components/dogg/screens';
+export const Route = createFileRoute('/perfil')({ head: () => ({ meta: [{ title: 'Mi hood · DOGG HOUSE' }, { name: 'description', content: 'Tu reputación, estadísticas y crew en DOGG HOUSE.' }, { property: 'og:title', content: 'Mi hood · DOGG HOUSE' }, { property: 'og:description', content: 'Real ones. Real respect. Construye tu crew DOGG.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }), component: Perfil });

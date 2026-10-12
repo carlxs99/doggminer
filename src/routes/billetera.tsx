@@ -1,0 +1,3 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { Billetera } from '@/components/dogg/screens';
+export const Route = createFileRoute('/billetera')({ head: () => ({ meta: [{ title: 'Billetera TON · DOGG HOUSE' }, { name: 'description', content: 'Conecta tu wallet TON, consulta tu saldo DOGG y accede a DeDust.' }, { property: 'og:title', content: 'Billetera TON · DOGG HOUSE' }, { property: 'og:description', content: 'Your keys. Your stash. TON y DOGG COIN.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }), component: Billetera });
