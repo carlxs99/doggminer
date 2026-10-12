@@ -70,7 +70,7 @@ export function GrowOps() {
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={tier === t ? 'active' : ''} onClick={() => { haptic(); setTier(t); }}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div><p className="tier-count">{MINERS.length} mineros · 10 rangos</p>
     {[tier].map(category => <section key={category} className="miner-category"><div className="section-heading"><h2>{category}</h2><span className="text-gold">WEST COAST 420</span></div><div className="grow-grid">{MINERS.filter(m => m.category === category).map(miner => {
       const active = player.minerId === miner.id;
-      const eligible = miner.hold === 0 || (demo && player.balance >= miner.hold);
+      const eligible = miner.hold === 0 || player.balance + (demo ? 0 : player.hold ?? 0) >= miner.hold;
       return <article key={miner.id} className={`grow-card ${active ? 'owned' : ''}`} aria-label={miner.name}>
         <div className="flex justify-between"><span className="eyebrow">{category.toUpperCase()}</span>{active ? <Check className="text-primary" size={16} /> : !eligible ? <LockKeyhole className="text-muted-foreground" size={16} /> : <Sprout className="text-primary" size={16} />}</div>
         <div className={`grow-art tier-art ${active ? 'live' : 'idle'}`}>{active ? <video src={TIER_CLIP[MINER_TIERS.indexOf(category as never)]} poster={TIER_ART[MINER_TIERS.indexOf(category as never)]} autoPlay muted loop playsInline preload="auto" aria-label={`${category}: DOGG regando su planta`} /> : <img src={TIER_ART[MINER_TIERS.indexOf(category as never)] ?? TIER_ART[0]} alt={`${category}: DOGG regando su planta`} loading="lazy" />}</div>
