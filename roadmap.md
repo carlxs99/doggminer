@@ -1,6 +1,8 @@
 # DOGG mini app
-- [ ] Build five Spanish app screens and West Coast artwork.
-- [ ] Add 24-hour preview mining, daily tasks, grow levels and arcade.
-- [ ] Connect TON wallet and read actual chain balances; preserve DeDust links.
-- [ ] Prepare secure durable mining for Telegram; requires verified Telegram identity before real rewards.
-- [ ] Verify navigation, preview mining and wallet modal.
+- [x] Build five app screens with Spanish navigation and West Coast artwork.
+- [x] Add 24-hour demo mining, daily check-in, social timer preview, grow level preview and playable arcade.
+- [x] Add TON Connect modal and chain balance reader; preserve confirmed DeDust contract and links. Wallet pairing and actual balances remain unverified without a wallet session.
+- [x] Prepare identity-verified, row-locked durable credit mining in Cloud; real jetton payouts are not enabled.
+- [x] Verify navigation, accumulating demo counter, daily bonus, arcade scoring and wallet modal. Desktop/mobile render without overflow; build OK.
+- [ ] Activate Telegram durable sessions and referral links: requires the owner's bot token and bot username.
+- [ ] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.
