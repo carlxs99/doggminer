@@ -64,6 +64,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      dogg_best_miner: { Args: { p_total: number }; Returns: string }
       dogg_miner_stats: {
         Args: { p_id: string }
         Returns: Record<string, unknown>
