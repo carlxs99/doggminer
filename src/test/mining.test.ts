@@ -30,6 +30,6 @@ describe('miner catalog', () => {
   it('has 500 miners with rising power and hold', () => {
     expect(MINERS).toHaveLength(500);
     expect(minerAt(1).daily).toBe(5);
-    for (let i = 1; i < 500; i++) { expect(MINERS[i].daily).toBeGreaterThanOrEqual(MINERS[i-1].daily); expect(MINERS[i].hold).toBeGreaterThanOrEqual(MINERS[i-1].hold); }
+    for (let i = 1; i < 500; i++) { expect(MINERS[i]!.daily).toBeGreaterThanOrEqual(MINERS[i-1]!.daily); expect(MINERS[i]!.hold).toBeGreaterThanOrEqual(MINERS[i-1]!.hold); }
   });
 });
