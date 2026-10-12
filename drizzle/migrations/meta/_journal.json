@@ -43,6 +43,13 @@
       "when": 1791848759403,
       "tag": "0005_cache_wallet_hold",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791848864219,
+      "tag": "0006_withdrawals",
+      "breakpoints": true
     }
   ]
 }

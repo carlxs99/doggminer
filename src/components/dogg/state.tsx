@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
-import { playerAction, verifyWallet } from '@/lib/dogg.functions';
+import { playerAction, requestWithdraw, verifyWallet } from '@/lib/dogg.functions';
 import { haptic, SHIFT_MS, type Player } from '@/lib/dogg';
 import { getMiner, shiftTotal, switchMiner } from '@/lib/mining';
 import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
@@ -26,6 +26,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
   const call = useServerFn(playerAction);
   const verifyCall = useServerFn(verifyWallet);
+  const withdrawCall = useServerFn(requestWithdraw);
   const verifyProof = useCallback(async (address: string) => {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
@@ -102,7 +103,20 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(`El mínimo de retiro es ${WITHDRAW_MIN.toLocaleString('en-US')} $DOGG.`);
       if (!wallet) throw new Error('Conecta tu wallet TON para retirar.');
       if (amount + WITHDRAW_FEE > player.balance) throw new Error(`Saldo insuficiente: necesitas ${(amount + WITHDRAW_FEE).toLocaleString('en-US')} $DOGG (incluye ${WITHDRAW_FEE} de comisión).`);
-      if (!demo) throw new Error('Los retiros se activarán cuando se configure la wallet de pagos.');
+      if (!demo) {
+        const initData = window.Telegram?.WebApp?.initData;
+        if (!initData) throw new Error('Abre la app desde Telegram.');
+        setBusy(true);
+        try {
+          const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
+          if (r.player) setPlayer(p => ({ ...r.player!, hold: p.hold, walletAddress: p.walletAddress }));
+          if (r.status === 'failed') throw new Error('El envío falló y se te devolvió el saldo. Inténtalo más tarde.');
+          log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
+          coinRain(coinImg); bass(); strongHaptic();
+          toast.success(r.status === 'sent' ? `¡${amount.toLocaleString('en-US')} $DOGG enviados a tu wallet!` : 'Retiro en camino a tu wallet · llegará en unos minutos');
+        } finally { setBusy(false); }
+        return;
+      }
       setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
       log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), status: 'review' });
       toast.success('Solicitud de retiro enviada · En revisión');
