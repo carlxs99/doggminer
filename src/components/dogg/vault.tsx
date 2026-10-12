@@ -25,8 +25,8 @@ function useOnchain(wallet: string | null, refresh: number) {
     Promise.all([fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(wallet)}`), fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(wallet)}/jettons`)]).then(async rs => {
       for (const r of rs) if (!r.ok) throw new Error('No se pudieron consultar los saldos. Inténtalo de nuevo.');
       const [account, jettons] = await Promise.all(rs.map(r => r.json()));
-      const { Address } = await import('@ton/core');
-      const target = Address.parse(JETTON).toRawString();
+      // Raw form of JETTON, precomputed — avoids pulling @ton/core (needs Buffer) into the browser.
+      const target = '0:a74ffea7ade24751ac5b670ee0eb88243f9bf1e8bbd25d615ba16e6d62c0a92d';
       const j = jettons.balances?.find((b: { jetton: { address: string } }) => b.jetton.address === target);
       if (active) setBalances({ ton: Number(account.balance) / 1e9, dogg: j ? Number(j.balance) / 10 ** Number(j.jetton.decimals) : 0 });
     }).catch(e => { if (active) setError(e.message); }).finally(() => { if (active) setLoading(false); });
