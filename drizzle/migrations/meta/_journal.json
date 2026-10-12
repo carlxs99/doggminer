@@ -15,6 +15,13 @@
       "when": 1791842298147,
       "tag": "0001_selectable_miner_segments",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1791842857152,
+      "tag": "0002_dogg_500_miners",
+      "breakpoints": true
     }
   ]
 }

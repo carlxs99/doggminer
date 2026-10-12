@@ -58,6 +58,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      dogg_miner_stats: {
+        Args: { p_id: string }
+        Returns: Record<string, unknown>
+      }
       dogg_shift: {
         Args: { p_action: string; p_telegram_id: number }
         Returns: Json
