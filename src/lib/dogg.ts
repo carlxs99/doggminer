@@ -9,7 +9,7 @@ export type TelegramApp = {
   initDataUnsafe?: { user?: { first_name: string; username?: string; id: number } };
   ready: () => void; expand: () => void;
   setHeaderColor?: (color: string) => void;
-  HapticFeedback?: { impactOccurred: (type: 'light' | 'medium') => void; notificationOccurred: (type: 'success' | 'error') => void };
+  HapticFeedback?: { impactOccurred: (type: 'light' | 'medium' | 'heavy') => void; notificationOccurred: (type: 'success' | 'error') => void };
   openTelegramLink?: (url: string) => void;
 };
 declare global { interface Window { Telegram?: { WebApp?: TelegramApp } } }

@@ -4,6 +4,8 @@ import { toast } from 'sonner';
 import { playerAction, verifyWallet } from '@/lib/dogg.functions';
 import { haptic, SHIFT_MS, type Player } from '@/lib/dogg';
 import { getMiner, shiftTotal, switchMiner } from '@/lib/mining';
+import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
+import coinImg from '@/assets/dogg-coin.png';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
@@ -72,7 +74,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
           setPlayer(p => ({ ...p, balance: p.balance + 10, streak: p.streak % 7 + 1, lastCheckin: today }));
         }
       }
-      toast.success(kind === 'start' ? 'Turno iniciado. Keep it growing 🌱' : kind === 'checkin' ? 'Bonus diario reclamado: +10 créditos' : 'Cosecha del turno reclamada');
+      if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
+      toast.success(kind === 'start' ? 'Turno prendido. Keep it growing 🌱' : kind === 'checkin' ? 'Bonus diario reclamado: +10 créditos' : 'Puff puff… cosecha cobrada 💰');
     } catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo completar la acción'); }
     finally { setBusy(false); }
   };
