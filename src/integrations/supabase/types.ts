@@ -14,13 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      dogg_players: {
+        Row: {
+          balance: number
+          claimed_shifts: number
+          created_at: string
+          last_checkin: string | null
+          shift_started_at: string | null
+          streak: number
+          telegram_id: number
+        }
+        Insert: {
+          balance?: number
+          claimed_shifts?: number
+          created_at?: string
+          last_checkin?: string | null
+          shift_started_at?: string | null
+          streak?: number
+          telegram_id: number
+        }
+        Update: {
+          balance?: number
+          claimed_shifts?: number
+          created_at?: string
+          last_checkin?: string | null
+          shift_started_at?: string | null
+          streak?: number
+          telegram_id?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      dogg_shift: {
+        Args: { p_action: string; p_telegram_id: number }
+        Returns: Json
+      }
     }
     Enums: {
       [_ in never]: never
