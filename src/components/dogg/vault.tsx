@@ -109,10 +109,10 @@ export function Perfil() {
   const link = id && bot ? `https://t.me/${bot}?startapp=ref_${id}` : null;
   const initials = name.slice(0, 2).toUpperCase();
   async function copy() { haptic(); if (!link) { toast.info('Los referidos se activarán al configurar el bot de Telegram.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
-  function share() { haptic(); if (!link) { toast.info('Los referidos se activarán al configurar el bot de Telegram.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en DOGG HOUSE 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
+  function share() { haptic(); if (!link) { toast.info('Los referidos se activarán al configurar el bot de Telegram.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en $DOGG MINER 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
   return <><Title label="TU REPUTACIÓN" title="Real ones." accent="Real respect" description="Tu nombre en el hood. Tu legado en DOGG." />
     <section className="credential">
-      <span className="eyebrow">DOGG HOUSE · CREDENCIAL DEL HOOD</span>
+      <span className="eyebrow">$DOGG MINER · CREDENCIAL DEL HOOD</span>
       <div className="credential-body"><span className="credential-avatar">{initials}</span><div><h2>{name}</h2><div className="credential-tags"><span className="tag-gold">Nv {miner.level || 1}</span><span>{miner.category}</span></div><span className={`credential-wallet ${wallet ? 'ok' : ''}`}><Wallet /> {wallet ? 'Billetera' : 'Sin billetera'}</span><strong className="credential-rank">{miner.name}</strong></div><img src={mascot} alt="" width={120} height={120} /></div>
       {demo && <small className="credential-demo">Modo demo</small>}
     </section>
