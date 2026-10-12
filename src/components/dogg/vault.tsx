@@ -36,7 +36,7 @@ function useOnchain(wallet: string | null, refresh: number) {
 }
 
 export function Billetera() {
-  const { wallet, openWallet, player, history, withdraw, now, busy } = useDogg();
+  const { wallet, openWallet, player, history, withdraw, now, busy, demo } = useDogg();
   const [refresh, setRefresh] = useState(0);
   const [amount, setAmount] = useState('');
   const { balances, error, loading } = useOnchain(wallet, refresh);
