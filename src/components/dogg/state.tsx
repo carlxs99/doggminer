@@ -34,7 +34,14 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     setNow(Date.now());
     if (app?.initData) {
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name ?? 'Homie');
-      call({ data: { initData: app.initData, action: 'read' } }).then(setPlayer).catch(e => toast.error(e.message));
+      const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then((p: Player & { downgraded?: string | null }) => {
+        setPlayer(p);
+        if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
+      }).catch(e => { if (!silent) toast.error(e.message); });
+      read(false);
+      const holdTimer = setInterval(() => read(true), 60000);
+      const timer = setInterval(() => setNow(Date.now()), 100);
+      return () => { clearInterval(timer); clearInterval(holdTimer); };
     }
     const timer = setInterval(() => setNow(Date.now()), 100);
     return () => clearInterval(timer);
