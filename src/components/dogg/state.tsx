@@ -8,7 +8,9 @@ import { getMiner, shiftTotal, switchMiner } from '@/lib/mining';
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
 type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (address: string, proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string }) => Promise<void> };
-const Context = createContext<State | null>(null);
+// Reuse one context across hot reloads so the provider and consumers never disagree.
+const g = globalThis as { __doggContext?: React.Context<State | null> };
+const Context = g.__doggContext ??= createContext<State | null>(null);
 export function DoggProvider({ children }: { children: ReactNode }) {
   const [player, setPlayer] = useState<Player>({ balance: 0, shiftStartedAt: null, claimedShifts: 0, streak: 0, lastCheckin: null, minerId: 'rookie-1', shiftAccrued: 0, rateChangedAt: null });
   const [now, setNow] = useState(0);
