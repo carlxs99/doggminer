@@ -20,7 +20,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const [sound, setSoundState] = useState(false);
   useEffect(() => setSoundState(soundOn()), []);
   const toggleSound = () => { const next = !sound; setSound(next); setSoundState(next); if (next) scratch(); haptic(); };
-  return <div className="app-layout">
+  return <div className={`app-layout ${player.shiftStartedAt ? "shift-on" : ""}`}>
     <div className="smoke-layer" aria-hidden="true"><i /><i /><i /></div>
     <ClientOnly><Suspense fallback={null}><TonWallet /></Suspense></ClientOnly>
     <aside className="sidebar">
