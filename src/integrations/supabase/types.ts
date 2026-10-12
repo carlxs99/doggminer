@@ -26,6 +26,8 @@ export type Database = {
           shift_started_at: string | null
           streak: number
           telegram_id: number
+          wallet_address: string | null
+          wallet_verified_at: string | null
         }
         Insert: {
           balance?: number
@@ -38,6 +40,8 @@ export type Database = {
           shift_started_at?: string | null
           streak?: number
           telegram_id: number
+          wallet_address?: string | null
+          wallet_verified_at?: string | null
         }
         Update: {
           balance?: number
@@ -50,6 +54,8 @@ export type Database = {
           shift_started_at?: string | null
           streak?: number
           telegram_id?: number
+          wallet_address?: string | null
+          wallet_verified_at?: string | null
         }
         Relationships: []
       }
@@ -63,7 +69,7 @@ export type Database = {
         Returns: Record<string, unknown>
       }
       dogg_shift: {
-        Args: { p_action: string; p_telegram_id: number }
+        Args: { p_action: string; p_hold?: number; p_telegram_id: number }
         Returns: Json
       }
     }
