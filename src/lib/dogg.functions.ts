@@ -76,3 +76,18 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     if (result.error) throw new Error(result.error.message);
     return PlayerSchema.parse(result.data);
   });
+
+/** Deducts balance atomically, queues the withdrawal and pays it automatically from the payout wallet. */
+export const requestWithdraw = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), amount: z.number().int().min(1000).max(1_000_000_000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const w = await supabaseAdmin.rpc('dogg_withdraw', { p_telegram_id: telegramId, p_amount: data.amount });
+    if (w.error) throw new Error(w.error.message);
+    const { processPayouts } = await import('./payout.server');
+    await processPayouts(supabaseAdmin);
+    const row = await supabaseAdmin.from('dogg_withdrawals').select('status, error').eq('id', w.data).single();
+    const player = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: 0 });
+    return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: player.error ? null : PlayerSchema.parse(player.data) };
+  });
