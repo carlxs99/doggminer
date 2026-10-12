@@ -108,3 +108,5 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
+// Changing the shared game state forces a full reload so the provider and screens stay in sync.
+if (import.meta.hot) import.meta.hot.accept(() => window.location.reload());
