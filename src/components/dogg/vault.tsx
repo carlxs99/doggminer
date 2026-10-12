@@ -105,7 +105,7 @@ export function Perfil() {
   const miner = getMiner(player.minerId);
   const mined = history.filter(e => e.kind === 'mining').reduce((a, e) => a + e.amount, 0);
   const id = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user?.id : undefined;
-  const bot = import.meta.env['VITE_TELEGRAM_BOT_USERNAME'] as string | undefined;
+  const bot = (import.meta.env['VITE_TELEGRAM_BOT_USERNAME'] as string | undefined) ?? 'Doggminerbot';
   const link = id && bot ? `https://t.me/${bot}?startapp=ref_${id}` : null;
   const initials = name.slice(0, 2).toUpperCase();
   async function copy() { haptic(); if (!link) { toast.info('Los referidos se activarán al configurar el bot de Telegram.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
