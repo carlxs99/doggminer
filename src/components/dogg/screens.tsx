@@ -16,7 +16,8 @@ const TIER_CLIP = Array.from({ length: 10 }, (_, index) => {
   const fallback = Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/tier-${level}.mp4.asset.json`));
   return preferred?.[1].url ?? fallback?.[1].url;
 });
-const TIER_ART = Object.values(import.meta.glob<string>('@/assets/tiers/*.jpg', { eager: true, import: 'default' })).sort((a, b) => Number(a.match(/tier-(\d+)/)?.[1]) - Number(b.match(/tier-(\d+)/)?.[1]));
+const POSTERS = import.meta.glob<string>('@/assets/tiers/poster-*.jpg', { eager: true, import: 'default' });
+const TIER_ART = Array.from({ length: 10 }, (_, index) => Object.entries(POSTERS).find(([path]) => path.endsWith(`/poster-${index + 1}.jpg`))?.[1] ?? '');
 function Title({ label, title, accent, description }: { label: string; title: string; accent: string; description: string }) { return <div className="page-heading"><span className="eyebrow"><span />{label}</span><h1>{title} <em>{accent}</em><span className="heading-period">.</span></h1><p>{description}</p></div>; }
 function Countdown({ elapsed }: { elapsed: number }) { const s = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 1000)); return <>{String(Math.floor(s / 3600)).padStart(2, '0')}<span>:</span>{String(Math.floor(s % 3600 / 60)).padStart(2, '0')}<span>:</span>{String(s % 60).padStart(2, '0')}</>; }
 export { Title };
