@@ -281,5 +281,5 @@ body{background-color:var(--background);background-image:
 .fx-rain{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}
 .fx-coin,.fx-leaf{position:absolute;top:-60px;animation:fx-fall linear forwards}
 .fx-coin{width:34px;height:34px;filter:drop-shadow(0 0 8px color-mix(in oklch,var(--gold) 70%,transparent))}
-.fx-leaf{font-size:24px;filter:hue-rotate(60deg) saturate(1.6)}
+.fx-leaf{font-size:24px;filter:saturate(1.4)}
 @keyframes fx-fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--drift),110vh) rotate(540deg)}}

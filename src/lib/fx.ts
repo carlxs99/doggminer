@@ -40,7 +40,7 @@ export function coinRain(coinSrc: string) {
   for (let i = 0; i < 34; i++) {
     const leaf = i % 3 === 2;
     const el = document.createElement(leaf ? 'span' : 'img');
-    if (!leaf) (el as HTMLImageElement).src = coinSrc; else el.textContent = '🍁';
+    if (!leaf) (el as HTMLImageElement).src = coinSrc; else el.textContent = '🌿';
     el.className = leaf ? 'fx-leaf' : 'fx-coin';
     el.style.left = `${Math.random() * 100}%`;
     el.style.animationDelay = `${Math.random() * 0.9}s`;
