@@ -36,6 +36,13 @@
       "when": 1791847485484,
       "tag": "0004_downgrade_miner_on_hold_drop",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791848759403,
+      "tag": "0005_cache_wallet_hold",
+      "breakpoints": true
     }
   ]
 }

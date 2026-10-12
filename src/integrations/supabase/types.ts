@@ -20,6 +20,8 @@ export type Database = {
           claimed_shifts: number
           created_at: string
           last_checkin: string | null
+          last_hold: number | null
+          last_hold_at: string | null
           miner_id: string
           rate_changed_at: string | null
           shift_accrued: number
@@ -34,6 +36,8 @@ export type Database = {
           claimed_shifts?: number
           created_at?: string
           last_checkin?: string | null
+          last_hold?: number | null
+          last_hold_at?: string | null
           miner_id?: string
           rate_changed_at?: string | null
           shift_accrued?: number
@@ -48,6 +52,8 @@ export type Database = {
           claimed_shifts?: number
           created_at?: string
           last_checkin?: string | null
+          last_hold?: number | null
+          last_hold_at?: string | null
           miner_id?: string
           rate_changed_at?: string | null
           shift_accrued?: number
