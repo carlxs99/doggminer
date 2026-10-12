@@ -9,6 +9,7 @@ import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
 import { MINERS, MINER_TIERS, getMiner, shiftTotal } from '@/lib/mining';
+const TIER_ART = Object.values(import.meta.glob<string>('@/assets/tiers/*.jpg', { eager: true, import: 'default' })).sort((a, b) => Number(a.match(/tier-(\d+)/)?.[1]) - Number(b.match(/tier-(\d+)/)?.[1]));
 function Title({ label, title, accent, description }: { label: string; title: string; accent: string; description: string }) { return <div className="page-heading"><span className="eyebrow"><span />{label}</span><h1>{title} <em>{accent}</em><span className="heading-period">.</span></h1><p>{description}</p></div>; }
 function Countdown({ elapsed }: { elapsed: number }) { const s = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 1000)); return <>{String(Math.floor(s / 3600)).padStart(2, '0')}<span>:</span>{String(Math.floor(s % 3600 / 60)).padStart(2, '0')}<span>:</span>{String(s % 60).padStart(2, '0')}</>; }
 export { Title };
@@ -63,7 +64,7 @@ export function GrowOps() {
       const eligible = miner.hold === 0 || (demo && player.balance >= miner.hold);
       return <article key={miner.id} className={`grow-card ${active ? 'owned' : ''}`} aria-label={miner.name}>
         <div className="flex justify-between"><span className="eyebrow">{category.toUpperCase()}</span>{active ? <Check className="text-primary" size={16} /> : !eligible ? <LockKeyhole className="text-muted-foreground" size={16} /> : <Sprout className="text-primary" size={16} />}</div>
-        <div className="grow-art">{category === 'Legendarios' ? <Trophy /> : category === 'Rookie Rollers' ? <Leaf /> : <Flame />}</div>
+        <div className={`grow-art tier-art ${active ? 'live' : 'idle'}`}><img src={TIER_ART[MINER_TIERS.indexOf(category as never)] ?? TIER_ART[0]} alt={`${category}: DOGG regando su planta`} loading="lazy" />{active && <span className="water" aria-hidden><i /><i /><i /><i /></span>}</div>
         <h2>{miner.name}</h2><div className="grow-stats"><div><span>Potencia</span><strong><Zap size={15} /> {miner.power} <small>TH/s</small></strong></div><div><span>Producción diaria</span><strong>{miner.daily} <small>$DOGG/d</small></strong></div></div>
         <div className="hold-requirement"><Wallet />{miner.hold === 0 ? 'Disponible para todos' : `Hold: ${miner.hold.toLocaleString('en-US')} $DOGG`}</div>
         <Button variant={active ? 'default' : 'outline'} className="miner-state-button w-full" disabled={busy || active || !eligible} onClick={() => void activateMiner(miner.id)}>{active ? <><Check /> MINANDO AHORA</> : eligible ? 'MINAR' : `MANTÉN ${miner.hold.toLocaleString('en-US')} $DOGG`}</Button>
