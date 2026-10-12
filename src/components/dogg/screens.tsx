@@ -66,7 +66,7 @@ export function GrowOps() {
   const current = getMiner(player.minerId).category;
   const [tier, setTier] = useState<string>(MINER_TIERS.includes(current as never) ? current : MINER_TIERS[0]);
   return <><Title label="MINEROS / EQUIPOS" title="Elige tu equipo." accent="Sube el grow" description="La potencia de tu minero marca el ritmo de cada turno." />
-    <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : 'Los mineros con hold están pendientes de verificación de propiedad de la wallet.'}</span></div>
+    <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : player.walletAddress ? `Wallet verificada · ${(player.hold ?? 0).toLocaleString('en-US')} $DOGG en hold desbloquean tus mineros.` : 'Verifica tu wallet en Billetera (firma gratuita) para que tu $DOGG desbloquee mineros.'}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={tier === t ? 'active' : ''} onClick={() => { haptic(); setTier(t); }}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div><p className="tier-count">{MINERS.length} mineros · 10 rangos</p>
     {[tier].map(category => <section key={category} className="miner-category"><div className="section-heading"><h2>{category}</h2><span className="text-gold">WEST COAST 420</span></div><div className="grow-grid">{MINERS.filter(m => m.category === category).map(miner => {
       const active = player.minerId === miner.id;
