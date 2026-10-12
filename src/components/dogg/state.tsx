@@ -9,7 +9,7 @@ import coinImg from '@/assets/dogg-coin.png';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (address: string, proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string }) => Promise<void> };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (address: string) => Promise<void> };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
 const Context = g.__doggContext ??= createContext<State | null>(null);
@@ -26,11 +26,11 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
   const call = useServerFn(playerAction);
   const verifyCall = useServerFn(verifyWallet);
-  const verifyProof = useCallback(async (address: string, proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string }) => {
+  const verifyProof = useCallback(async (address: string) => {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
-    try { const p = await verifyCall({ data: { initData, address, proof } }); setPlayer(p); toast.success(`Wallet verificada · ${(p.hold ?? 0).toLocaleString('en-US')} $DOGG en hold`); }
-    catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo verificar la wallet'); }
+    try { const p = await verifyCall({ data: { initData, address } }); setPlayer(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('en-US')} $DOGG en hold`); }
+    catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo vincular la wallet'); }
   }, [verifyCall]);
   useEffect(() => {
     const app = window.Telegram?.WebApp;

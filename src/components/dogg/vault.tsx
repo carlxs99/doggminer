@@ -71,7 +71,7 @@ export function Billetera() {
     {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('en-US', { maximumFractionDigits: 4 })}</p>}
     {error && <p role="alert" className="text-destructive text-sm mt-2">{error}</p>}
     <section className="vault-verify">
-      <div className="vault-verify-head"><span className="vault-icon"><ShieldCheck /></span><div><strong>{player.walletAddress ? 'Billetera verificada' : 'Billetera sin verificar'}</strong><small>Tu hold real ({formatDogg(player.hold ?? 0)} $DOGG) + lo minado en la app desbloquean mineros. Se comprueba al activar y al cobrar.</small></div></div>
+      <div className="vault-verify-head"><span className="vault-icon"><ShieldCheck /></span><div><strong>{player.walletAddress ? 'Billetera vinculada' : 'Billetera sin vincular'}</strong><small>Tu hold real ({formatDogg(player.hold ?? 0)} $DOGG) + lo minado en la app desbloquean mineros. Se comprueba al activar y al cobrar.</small></div></div>
       <ul><li className={wallet ? 'ok' : ''}><Check /> Billetera conectada</li><li className={player.walletAddress ? 'ok' : ''}><Check /> Firma de propiedad {player.walletAddress ? '' : <em>{demo ? 'solo en Telegram' : 'reconecta para firmar'}</em>}</li></ul>
     </section>
 
