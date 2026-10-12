@@ -9,4 +9,4 @@
 - [x] Prepare identity-verified, row-locked durable credit mining in Cloud; real jetton payouts are not enabled.
 - [x] Verify navigation, accumulating demo counter, daily bonus, arcade scoring and wallet modal. Desktop/mobile render without overflow; build OK.
 - [ ] Activate Telegram durable sessions and referral links: requires the owner's bot token and bot username.
-- [ ] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.
+- [x] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.

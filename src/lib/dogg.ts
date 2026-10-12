@@ -3,7 +3,7 @@ export const SWAP = `https://dedust.io/swap/GRAM/${JETTON}`;
 export const PRICE = `https://dedust.io/coins/${JETTON}`;
 export const SHIFT_MS = 86400000;
 export const formatDogg = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-export type Player = { balance: number; shiftStartedAt: string | null; claimedShifts: number; streak: number; lastCheckin: string | null; minerId: string; shiftAccrued: number; rateChangedAt: string | null };
+export type Player = { balance: number; shiftStartedAt: string | null; claimedShifts: number; streak: number; lastCheckin: string | null; minerId: string; shiftAccrued: number; rateChangedAt: string | null; walletAddress?: string | null | undefined; hold?: number | undefined };
 export type TelegramApp = {
   initData: string;
   initDataUnsafe?: { user?: { first_name: string; username?: string; id: number } };

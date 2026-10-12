@@ -36,7 +36,7 @@ function useOnchain(wallet: string | null, refresh: number) {
 }
 
 export function Billetera() {
-  const { wallet, openWallet, player, history, withdraw, now, busy } = useDogg();
+  const { wallet, openWallet, player, history, withdraw, now, busy, demo } = useDogg();
   const [refresh, setRefresh] = useState(0);
   const [amount, setAmount] = useState('');
   const { balances, error, loading } = useOnchain(wallet, refresh);
@@ -71,8 +71,8 @@ export function Billetera() {
     {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('en-US', { maximumFractionDigits: 4 })}</p>}
     {error && <p role="alert" className="text-destructive text-sm mt-2">{error}</p>}
     <section className="vault-verify">
-      <div className="vault-verify-head"><span className="vault-icon"><ShieldCheck /></span><div><strong>{wallet ? 'Verificación en curso' : 'Billetera sin verificar'}</strong><small>Retiros y premios por referidos se desbloquean al verificar.</small></div></div>
-      <ul><li className={wallet ? 'ok' : ''}><Check /> Billetera conectada</li><li><Check /> Billetera de al menos 7 días <em>pendiente</em></li><li><Check /> Verificación única de 0.05 TON <em>pendiente</em></li></ul>
+      <div className="vault-verify-head"><span className="vault-icon"><ShieldCheck /></span><div><strong>{player.walletAddress ? 'Billetera verificada' : 'Billetera sin verificar'}</strong><small>Tu hold real ({formatDogg(player.hold ?? 0)} $DOGG) + lo minado en la app desbloquean mineros. Se comprueba al activar y al cobrar.</small></div></div>
+      <ul><li className={wallet ? 'ok' : ''}><Check /> Billetera conectada</li><li className={player.walletAddress ? 'ok' : ''}><Check /> Firma de propiedad {player.walletAddress ? '' : <em>{demo ? 'solo en Telegram' : 'reconecta para firmar'}</em>}</li></ul>
     </section>
 
     <h2 className="vault-h">Comprar <Coin size={20} /></h2>
