@@ -11,4 +11,4 @@
 - [ ] Activate Telegram durable sessions and referral links: requires the owner's bot token and bot username.
 - [x] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.
 - [x] Fix 429 balance error on app open (cache + retry)
-- [ ] Automatic withdrawals: code done; waiting on payout wallet secret words from owner
+- [x] Automatic withdrawals (payout wallet configured; real send untested)
