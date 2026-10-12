@@ -60,12 +60,12 @@ export const verifyWallet = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { createHmac, createHash, timingSafeEqual } = await import('node:crypto');
-    const [ts, nonce, sig] = data.proof.payload.split('.');
+    const [ts = '', nonce = '', sig] = data.proof.payload.split('.');
     const expect = createHmac('sha256', process.env['DOGG_PROOF_SECRET']!).update(`${ts}.${nonce}`).digest('hex').slice(0, 32);
     if (!sig || sig.length !== expect.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expect)) || Date.now() - parseInt(ts, 36) > 15 * 60_000) throw new Error('La firma caducó. Desconecta y vuelve a conectar la wallet.');
     if (Math.abs(Date.now() / 1000 - data.proof.timestamp) > 15 * 60) throw new Error('La firma caducó. Vuelve a conectar la wallet.');
 
-    const [wcStr, hashHex] = data.address.split(':');
+    const [wcStr = '0', hashHex = ''] = data.address.split(':');
     const wc = Buffer.alloc(4); wc.writeInt32BE(Number(wcStr));
     const domain = Buffer.from(data.proof.domain.value, 'utf8');
     const dl = Buffer.alloc(4); dl.writeUInt32LE(domain.length);
