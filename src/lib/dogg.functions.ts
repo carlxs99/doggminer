@@ -59,7 +59,7 @@ export const verifyWallet = createServerFn({ method: 'POST' })
   }))
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
-    const { createHmac, createHash, timingSafeEqual } = await import('node:crypto');
+    const [{ createHmac, createHash, timingSafeEqual }, { Buffer }] = await Promise.all([import('node:crypto'), import('node:buffer')]);
     const [ts = '', nonce = '', sig] = data.proof.payload.split('.');
     const expect = createHmac('sha256', process.env['DOGG_PROOF_SECRET']!).update(`${ts}.${nonce}`).digest('hex').slice(0, 32);
     if (!sig || sig.length !== expect.length || !timingSafeEqual(Buffer.from(sig), Buffer.from(expect)) || Date.now() - parseInt(ts, 36) > 15 * 60_000) throw new Error('La firma caducó. Desconecta y vuelve a conectar la wallet.');
