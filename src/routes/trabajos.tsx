@@ -1,0 +1,3 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { Trabajos } from '@/components/dogg/screens';
+export const Route = createFileRoute('/trabajos')({ head: () => ({ meta: [{ title: 'Trabajos · DOGG HOUSE' }, { name: 'description', content: 'Bonus diarios, tareas del hood y DOGG Arcade.' }, { property: 'og:title', content: 'Trabajos · DOGG HOUSE' }, { property: 'og:description', content: 'Make moves. Get paid. Descubre el tablón de DOGG.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }), component: Trabajos });

@@ -1,24 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
+import { Humero } from '@/components/dogg/screens';
 export const Route = createFileRoute("/")({
-  component: Index,
+  head: () => ({ meta: [{ title: 'Humero · DOGG HOUSE' }, { name: 'description', content: 'Tu zona de minado DOGG: turnos de 24 horas, cosechas y cultura West Coast.' }, { property: 'og:title', content: 'Humero · DOGG HOUSE' }, { property: 'og:description', content: 'Stay high. Stack DOGG. El club de minado West Coast.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }),
+  component: Humero,
 });
-
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
-  return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
-    </div>
-  );
-}

@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { playerAction } from '@/lib/dogg.functions';
@@ -14,6 +14,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [wallet, setWallet] = useState<string | null>(null);
   const [openWallet, storeOpenWallet] = useState<(() => void) | null>(null);
+  const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
   const call = useServerFn(playerAction);
   useEffect(() => {
     const app = window.Telegram?.WebApp;
@@ -51,6 +52,6 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     } catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo completar la acción'); }
     finally { setBusy(false); }
   };
-  return <Context.Provider value={{ player, now, demo, name, busy, action, wallet, setWallet, openWallet, setOpenWallet: fn => storeOpenWallet(() => fn) }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ player, now, demo, name, busy, action, wallet, setWallet, openWallet, setOpenWallet }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
