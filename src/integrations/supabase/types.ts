@@ -14,6 +14,21 @@ export type Database = {
   }
   public: {
     Tables: {
+      dogg_payout_lock: {
+        Row: {
+          id: number
+          locked_until: string
+        }
+        Insert: {
+          id: number
+          locked_until?: string
+        }
+        Update: {
+          id?: number
+          locked_until?: string
+        }
+        Relationships: []
+      }
       dogg_players: {
         Row: {
           balance: number
@@ -65,6 +80,45 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_withdrawals: {
+        Row: {
+          address: string
+          amount: number
+          created_at: string
+          error: string | null
+          fee: number
+          id: string
+          sent_at: string | null
+          seqno: number | null
+          status: string
+          telegram_id: number
+        }
+        Insert: {
+          address: string
+          amount: number
+          created_at?: string
+          error?: string | null
+          fee?: number
+          id?: string
+          sent_at?: string | null
+          seqno?: number | null
+          status?: string
+          telegram_id: number
+        }
+        Update: {
+          address?: string
+          amount?: number
+          created_at?: string
+          error?: string | null
+          fee?: number
+          id?: string
+          sent_at?: string | null
+          seqno?: number | null
+          status?: string
+          telegram_id?: number
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -75,9 +129,19 @@ export type Database = {
         Args: { p_id: string }
         Returns: Record<string, unknown>
       }
+      dogg_payout_acquire: { Args: never; Returns: boolean }
+      dogg_payout_release: { Args: never; Returns: undefined }
       dogg_shift: {
         Args: { p_action: string; p_hold?: number; p_telegram_id: number }
         Returns: Json
+      }
+      dogg_withdraw: {
+        Args: { p_amount: number; p_telegram_id: number }
+        Returns: string
+      }
+      dogg_withdraw_fail: {
+        Args: { p_error: string; p_id: string }
+        Returns: undefined
       }
     }
     Enums: {
