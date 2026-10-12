@@ -15,4 +15,4 @@
 - Preview credits are ephemeral React state and never represent on-chain balances; read jetton balances independently through TONAPI.
 - Miner changes checkpoint accumulated credit at the bounded shift time and apply the new daily rate prospectively; keep demo calculation and database miner catalog aligned.
 - Pre-optimize shared UI and lazy wallet dependencies and reject outdated optimizer requests so preview updates cannot mix separate React module generations.
-- Real hold = TONAPI jetton balance of a wallet proven via TON Connect ton_proof (server-signed payload, signature checked against on-chain public key) plus in-app balance; checked server-side on miner activation and on claim, because client-reported balances can't be trusted.
+- Real hold = TONAPI jetton balance of the TON Connect wallet linked to the Telegram account (owner chose no ownership signature; one wallet per account) plus in-app balance; checked server-side on every player action, because client-reported balances can't be trusted.
