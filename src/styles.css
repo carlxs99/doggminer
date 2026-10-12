@@ -234,3 +234,52 @@ main{padding-left:14px;padding-right:14px}
 .mobile-brand{font-size:17px}
 .bottom-nav>a{padding:3px 4px}
 }
+
+/* ===== West Coast 420 street layer ===== */
+:root{--purple-haze:oklch(0.62 0.2 305);--bandana:oklch(0.6 0.21 25);--font-graffiti:'Permanent Marker',cursive;--font-chicano:'Pirata One',serif;
+--chain:repeating-linear-gradient(90deg,transparent 0 2px,var(--gold) 2px 9px,transparent 9px 11px,color-mix(in oklch,var(--gold) 55%,transparent) 11px 18px,transparent 18px 20px);}
+body{background-color:var(--background);background-image:
+ radial-gradient(ellipse at 50% -10%,color-mix(in oklch,var(--primary) 9%,transparent),transparent 60%),
+ url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120' viewBox='0 0 120 120'%3E%3Cg fill='%23a3e635' fill-opacity='0.035'%3E%3Cpath d='M30 52c-2-8-1-16 0-22 1 6 2 14 0 22zm0 0c-6-4-10-10-12-16 5 3 10 9 12 16zm0 0c6-4 10-10 12-16-5 3-10 9-12 16zm0 0c-7 0-12-3-16-6 6 0 11 2 16 6zm0 0c7 0 12-3 16-6-6 0-11 2-16 6z'/%3E%3Cpath d='M90 112c-2-8-1-16 0-22 1 6 2 14 0 22zm0 0c-6-4-10-10-12-16 5 3 10 9 12 16zm0 0c6-4 10-10 12-16-5 3-10 9-12 16z'/%3E%3C/g%3E%3C/svg%3E"),
+ linear-gradient(color-mix(in oklch,var(--foreground) 2.5%,transparent) 1px,transparent 1px),
+ linear-gradient(90deg,color-mix(in oklch,var(--foreground) 2%,transparent) 1px,transparent 1px);
+ background-size:auto,120px 120px,60px 26px,60px 52px;background-attachment:fixed}
+.topbar,.mining-area,.stash-panel,.power-panel,.grow-card{background-color:color-mix(in oklch,var(--card) 92%,transparent)}
+.smoke-layer{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden;opacity:.55;transition:opacity 1.2s}
+.shift-on .smoke-layer{opacity:1}
+.smoke-layer i{position:absolute;width:70vmax;height:70vmax;border-radius:50%;filter:blur(60px);background:radial-gradient(circle,color-mix(in oklch,var(--primary) 10%,transparent),transparent 65%);animation:smoke 28s ease-in-out infinite alternate}
+.smoke-layer i:nth-child(1){left:-25vmax;top:30%}
+.smoke-layer i:nth-child(2){right:-30vmax;top:-20%;background:radial-gradient(circle,color-mix(in oklch,var(--purple-haze) 9%,transparent),transparent 65%);animation-duration:36s}
+.smoke-layer i:nth-child(3){left:20%;bottom:-40vmax;animation-duration:44s}
+@keyframes smoke{0%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,-6vh) scale(1.15)}100%{transform:translate(-6vw,4vh) scale(.95)}}
+@media (prefers-reduced-motion:reduce){.smoke-layer i{animation:none}}
+.app-layout>*:not(.smoke-layer){position:relative;z-index:1}
+.app-layout>.sidebar{position:fixed}.app-layout>.bottom-nav{position:fixed;z-index:20}
+/* Typography: graffiti titles, chicano numbers */
+.page-heading h1,.section-heading h2,.brand,.mobile-brand{font-family:var(--font-graffiti);font-weight:400;letter-spacing:.01em}
+.page-heading h1 em{text-shadow:0 0 18px color-mix(in oklch,var(--primary) 45%,transparent)}
+.token-counter,.stash-number,.power-number,.vault-total strong{font-family:var(--font-chicano);font-weight:400;letter-spacing:.02em}
+.token-counter{text-shadow:0 0 22px color-mix(in oklch,var(--gold) 35%,transparent);color:var(--gold)}
+/* Gold chain dividers */
+.section-heading{position:relative;padding-bottom:12px}
+.section-heading::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:var(--chain);border-radius:2px;opacity:.75}
+.page-heading::after{content:"";display:block;width:140px;height:3px;margin-top:16px;background:var(--chain);border-radius:2px}
+/* Rank colors & emblems: more gold the higher the rank */
+.rank-1{--rank:var(--muted-foreground)}.rank-2{--rank:var(--primary)}.rank-3{--rank:var(--bandana)}.rank-4{--rank:oklch(0.7 0.15 220)}.rank-5{--rank:var(--purple-haze)}
+.rank-6{--rank:oklch(0.75 0.17 60)}.rank-7{--rank:oklch(0.72 0.2 340)}.rank-8,.rank-9,.rank-10{--rank:var(--gold)}
+.tier-tabs button{border-bottom:2px solid color-mix(in oklch,var(--rank) 60%,transparent)}
+.tier-tabs button.active{border-color:var(--rank);color:var(--rank);box-shadow:inset 0 -14px 18px -14px var(--rank)}
+.grow-card{border-top:2px solid color-mix(in oklch,var(--rank) 70%,transparent)}
+.grow-card.rank-6,.grow-card.rank-7{border-color:color-mix(in oklch,var(--gold) 35%,var(--border))}
+.grow-card.rank-8,.grow-card.rank-9,.grow-card.rank-10{border:1px solid color-mix(in oklch,var(--gold) 60%,transparent);box-shadow:0 0 0 1px color-mix(in oklch,var(--gold) 20%,transparent),0 0 24px -6px color-mix(in oklch,var(--gold) 55%,transparent)}
+.grow-card.rank-10{background-image:linear-gradient(160deg,color-mix(in oklch,var(--gold) 14%,transparent),transparent 45%)}
+.grow-card.rank-10 h3,.grow-card.rank-9 h3{color:var(--gold)}
+.destructive-note,.text-destructive{color:var(--bandana)}
+/* Sound toggle */
+.sound-toggle{color:var(--muted-foreground)}.sound-toggle svg{width:16px;height:16px}
+/* Claim rain */
+.fx-rain{position:fixed;inset:0;pointer-events:none;z-index:100;overflow:hidden}
+.fx-coin,.fx-leaf{position:absolute;top:-60px;animation:fx-fall linear forwards}
+.fx-coin{width:34px;height:34px;filter:drop-shadow(0 0 8px color-mix(in oklch,var(--gold) 70%,transparent))}
+.fx-leaf{font-size:24px;filter:saturate(1.4)}
+@keyframes fx-fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--drift),110vh) rotate(540deg)}}
