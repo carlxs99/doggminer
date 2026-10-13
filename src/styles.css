@@ -268,7 +268,7 @@ body{background-color:var(--background);background-image:
 .rank-1{--rank:var(--muted-foreground)}.rank-2{--rank:var(--primary)}.rank-3{--rank:var(--bandana)}.rank-4{--rank:oklch(0.7 0.15 220)}.rank-5{--rank:var(--purple-haze)}
 .rank-6{--rank:oklch(0.75 0.17 60)}.rank-7{--rank:oklch(0.72 0.2 340)}.rank-8,.rank-9,.rank-10{--rank:var(--gold)}
 .tier-tabs button{border-bottom:2px solid color-mix(in oklch,var(--rank) 60%,transparent)}
-.tier-tabs button.active{border-color:var(--rank);color:var(--rank);box-shadow:inset 0 -14px 18px -14px var(--rank)}
+.tier-tabs button.active,.tier-tabs button[aria-selected=true]{border-color:var(--rank)!important;color:var(--rank)!important;background:color-mix(in oklch,var(--rank) 14%,var(--card))!important;box-shadow:inset 0 -14px 18px -14px var(--rank)}
 .grow-card{border-top:2px solid color-mix(in oklch,var(--rank) 70%,transparent)}
 .grow-card.rank-6,.grow-card.rank-7{border-color:color-mix(in oklch,var(--gold) 35%,var(--border))}
 .grow-card.rank-8,.grow-card.rank-9,.grow-card.rank-10{border:1px solid color-mix(in oklch,var(--gold) 60%,transparent);box-shadow:0 0 0 1px color-mix(in oklch,var(--gold) 20%,transparent),0 0 24px -6px color-mix(in oklch,var(--gold) 55%,transparent)}
