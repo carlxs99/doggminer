@@ -132,6 +132,8 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     if (!ok) throw new Error('La firma de la wallet no es válida.');
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: 0 });
+    // A valid signature proves ownership: release the wallet from any account that claimed it without proof.
+    await supabaseAdmin.from('dogg_players').update({ wallet_address: null, wallet_verified_at: null, last_hold: null, last_hold_at: null }).eq('wallet_address', address).neq('telegram_id', telegramId);
     const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: address, wallet_verified_at: new Date().toISOString(), last_hold: null, last_hold_at: null }).eq('telegram_id', telegramId);
     if (upd.error) throw new Error(upd.error.code === '23505' ? 'Esta wallet ya está vinculada a otra cuenta de Telegram.' : upd.error.message);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: await jettonHold(address) });
