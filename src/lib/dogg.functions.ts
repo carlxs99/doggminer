@@ -23,12 +23,30 @@ async function verifyTelegram(initData: string) {
 
 /** Real on-chain $DOGG balance (whole tokens) of a raw/friendly address, read server-side from TONAPI. */
 async function jettonHold(address: string) {
-  let res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}`);
-  if (res.status === 429) { await new Promise(r => setTimeout(r, 1200)); res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}`); }
-  if (res.status === 404) return 0;
-  if (!res.ok) throw new Error(`No se pudo leer tu saldo de $DOGG (${res.status}). Inténtalo de nuevo.`);
-  const j = await res.json() as { balance?: string; jetton?: { decimals?: number } };
-  return Number(j.balance ?? '0') / 10 ** (j.jetton?.decimals ?? 9);
+  const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
+  const key = process.env['TONAPI_KEY'];
+  let lastStatus = 0;
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}`, key ? { headers: { Authorization: `Bearer ${key}` } } : undefined);
+    if (res.status === 404) return 0;
+    if (res.ok) {
+      const j = await res.json() as { balance?: string; jetton?: { decimals?: number } };
+      return Number(j.balance ?? '0') / 10 ** (j.jetton?.decimals ?? 9);
+    }
+    lastStatus = res.status;
+    await wait(700 + attempt * 800);
+  }
+  // Backup source: toncenter (DOGG has 9 decimals).
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const res = await fetch(`https://toncenter.com/api/v3/jetton/wallets?owner_address=${encodeURIComponent(address)}&jetton_address=${JETTON}&limit=1`);
+    if (res.ok) {
+      const j = await res.json() as { jetton_wallets?: { balance?: string }[] };
+      return Number(j.jetton_wallets?.[0]?.balance ?? '0') / 1e9;
+    }
+    lastStatus = res.status;
+    await wait(1100);
+  }
+  throw new Error(`No se pudo leer tu saldo de $DOGG (${lastStatus}). Inténtalo de nuevo.`);
 }
 
 export const playerAction = createServerFn({ method: 'POST' })
