@@ -59,7 +59,7 @@ export function Billetera() {
       <span className="eyebrow">TENENCIA TOTAL · DECIDE TU NIVEL</span>
       <div className="vault-total"><Coin size={34} />{formatDogg(total)}</div>
       <span className="vault-level"><Coin size={14} /> Nivel {level} · {getMiner(level === 1 ? 'rookie-1' : `miner-${level}`).name}</span>
-      <div className="vault-split"><div><span><Pickaxe /> En la app</span><strong>{formatDogg(player.balance)}</strong></div><div><span><Wallet /> On-chain {wallet && <button aria-label="Actualizar saldo on-chain" onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</span><strong>{loading ? '…' : wallet ? formatDogg(onchain) : '—'}</strong></div></div>
+      <div className="vault-split"><div><span><Pickaxe /> En la app</span><strong>{formatDogg(player.balance)}</strong></div><div><span><Wallet /> On-chain {wallet && <button aria-label="Actualizar saldo on-chain" onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</span>{loading && !balances ? <strong className="skeleton">000.000,000</strong> : <strong>{wallet ? formatDogg(onchain) : '—'}</strong>}</div></div>
     </section>
 
     <h2 className="vault-h">Billetera TON</h2>
