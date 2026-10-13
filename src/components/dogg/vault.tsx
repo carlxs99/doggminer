@@ -29,7 +29,7 @@ function useOnchain(wallet: string | null, refresh: number) {
       const target = '0:a74ffea7ade24751ac5b670ee0eb88243f9bf1e8bbd25d615ba16e6d62c0a92d';
       const j = jettons.balances?.find((b: { jetton: { address: string } }) => b.jetton.address === target);
       if (active) setBalances({ ton: Number(account.balance) / 1e9, dogg: j ? Number(j.balance) / 10 ** Number(j.jetton.decimals) : 0 });
-    }).catch(e => { if (active) setError(e.message); }).finally(() => { if (active) setLoading(false); });
+    }).catch(e => { if (active) setError('No se pudieron leer tus saldos ahora mismo. Toca actualizar en unos segundos.'); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [wallet, refresh]);
   return { balances, error, loading };
@@ -59,7 +59,7 @@ export function Billetera() {
       <span className="eyebrow">TENENCIA TOTAL · DECIDE TU NIVEL</span>
       <div className="vault-total"><Coin size={34} />{formatDogg(total)}</div>
       <span className="vault-level"><Coin size={14} /> Nivel {level} · {getMiner(level === 1 ? 'rookie-1' : `miner-${level}`).name}</span>
-      <div className="vault-split"><div><span><Pickaxe /> En la app</span><strong>{formatDogg(player.balance)}</strong></div><div><span><Wallet /> On-chain {wallet && <button aria-label="Actualizar saldo on-chain" onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</span><strong>{loading ? '…' : wallet ? formatDogg(onchain) : '—'}</strong></div></div>
+      <div className="vault-split"><div><span><Pickaxe /> En la app</span><strong>{formatDogg(player.balance)}</strong></div><div><span><Wallet /> On-chain {wallet && <button aria-label="Actualizar saldo on-chain" onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</span>{loading && !balances ? <strong className="skeleton">000.000,000</strong> : <strong>{wallet ? formatDogg(onchain) : '—'}</strong>}</div></div>
     </section>
 
     <h2 className="vault-h">Billetera TON</h2>
@@ -68,7 +68,7 @@ export function Billetera() {
       <div><strong>{wallet ? 'Conectada' : 'Sin conectar'}</strong>{wallet ? <button className="vault-addr" onClick={() => void navigator.clipboard.writeText(wallet).then(() => toast.success('Dirección copiada')).catch(() => toast.error('No se pudo copiar'))}>{short(wallet)} <Copy /></button> : <small>Conecta para ver tu stash on-chain</small>}</div>
       <Button size="icon" variant={wallet ? 'outline' : 'default'} aria-label={wallet ? 'Desconectar wallet' : 'Conectar wallet'} onClick={() => openWallet?.()} disabled={!openWallet}>{wallet ? <LogOut /> : <ArrowUpRight />}</Button>
     </section>
-    {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('en-US', { maximumFractionDigits: 4 })}</p>}
+    {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('de-DE', { maximumFractionDigits: 4 })}</p>}
     {error && <p role="alert" className="text-destructive text-sm mt-2">{error}</p>}
     <section className="vault-verify">
       <div className="vault-verify-head"><span className="vault-icon"><ShieldCheck /></span><div><strong>{player.walletAddress ? 'Billetera vinculada' : 'Billetera sin vincular'}</strong><small>Tu hold real ({formatDogg(player.hold ?? 0)} $DOGG) + lo minado en la app desbloquean mineros. Se comprueba al activar y al cobrar.</small></div></div>
@@ -80,7 +80,7 @@ export function Billetera() {
     <p className="vault-info"><Info /> Los $DOGG que compras se quedan en tu billetera y cuentan para tu nivel. Ahora estás en el nivel {level}. Vender hace que bajes de nivel.</p>
 
     <h2 className="vault-h">Retirar</h2>
-    <section className="vault-withdraw"><div><strong>Envía tus <Coin /> de la app a tu billetera</strong><small>Mín. {WITHDRAW_MIN.toLocaleString('en-US')} · comisión {WITHDRAW_FEE} <Coin size={12} /></small></div>
+    <section className="vault-withdraw"><div><strong>Envía tus <Coin /> de la app a tu billetera</strong><small>Mín. {WITHDRAW_MIN.toLocaleString('de-DE')} · comisión {WITHDRAW_FEE} <Coin size={12} /></small></div>
       <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><Button type="submit" disabled={busy}><ArrowUpRight /> Retirar</Button></form></section>
 
     <h2 className="vault-h">Nómina</h2>

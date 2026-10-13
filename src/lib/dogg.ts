@@ -2,7 +2,7 @@ export const JETTON = 'EQCnT_6nreJHUaxbZw7g64gkP5vx6LvSXWFboW5tYsCpLS7I';
 export const SWAP = `https://dedust.io/swap/GRAM/${JETTON}`;
 export const PRICE = `https://dedust.io/coins/${JETTON}`;
 export const SHIFT_MS = 86400000;
-export const formatDogg = (value: number) => value.toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+export const formatDogg = (value: number) => value.toLocaleString('de-DE', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 export type Player = { balance: number; shiftStartedAt: string | null; claimedShifts: number; streak: number; lastCheckin: string | null; minerId: string; shiftAccrued: number; rateChangedAt: string | null; walletAddress?: string | null | undefined; hold?: number | undefined };
 export type TelegramApp = {
   initData: string;
@@ -13,4 +13,12 @@ export type TelegramApp = {
   openTelegramLink?: (url: string) => void;
 };
 declare global { interface Window { Telegram?: { WebApp?: TelegramApp } } }
-export function haptic() { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }
+export function haptic() { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }/** Turns technical errors into short, human messages (no status codes). */
+export function friendlyError(e: unknown, fallback = 'Algo salió mal. Inténtalo de nuevo.') {
+  const raw = e instanceof Error ? e.message : typeof e === 'string' ? e : '';
+  if (!raw) return fallback;
+  if (/429|rate|too many/i.test(raw)) return 'Mucho tráfico ahora mismo. Espera unos segundos y vuelve a intentarlo.';
+  if (/failed to fetch|network|load failed|timeout/i.test(raw)) return 'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
+  if (/\b5\d\d\b|internal/i.test(raw)) return 'El servicio no responde ahora mismo. Inténtalo en un momento.';
+  return raw.replace(/\s*\(\d{3}\)/g, '');
+}

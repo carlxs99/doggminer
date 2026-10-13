@@ -283,3 +283,33 @@ body{background-color:var(--background);background-image:
 .fx-coin{width:34px;height:34px;filter:drop-shadow(0 0 8px color-mix(in oklch,var(--gold) 70%,transparent))}
 .fx-leaf{font-size:24px;filter:saturate(1.4)}
 @keyframes fx-fall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--drift),110vh) rotate(540deg)}}
+/* ===== Pro polish: consistent rhythm, calmer effects, clear states ===== */
+:root{--radius-ui:10px}
+.mining-area,.stash-panel,.power-panel,.daily-promo,.grow-card,.task-row,.vault-card,.side-link,.tier-tabs button{border-radius:var(--radius-ui)}
+.smoke-layer{opacity:.55}.app-layout.shift-on .smoke-layer{opacity:.8}
+.page-heading p,.shift-hint,.power-meta,.stash-panel>p{line-height:1.5}
+button,a{-webkit-tap-highlight-color:transparent}
+button:not(:disabled),a{transition:transform .12s ease,background-color .18s ease,border-color .18s ease,color .18s ease,opacity .18s ease}
+button:not(:disabled):active{transform:scale(.97)}
+button:disabled{opacity:.5;cursor:not-allowed}
+:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+.start-shift{border-radius:var(--radius-ui);letter-spacing:.06em;box-shadow:0 8px 24px -10px color-mix(in oklch,var(--primary) 70%,transparent)}
+.page-enter{animation:page-in .28s ease both}
+@keyframes page-in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.skeleton{background:linear-gradient(90deg,var(--muted),color-mix(in oklch,var(--muted) 60%,var(--card)),var(--muted));background-size:200% 100%;animation:sk 1.2s linear infinite;border-radius:6px;color:transparent!important}
+@keyframes sk{to{background-position:-200% 0}}
+.faq{display:flex;flex-direction:column;gap:8px}
+.faq details{border:1px solid var(--border);border-radius:var(--radius-ui);padding:10px 12px;background:var(--card)}
+.faq summary{cursor:pointer;font-weight:600;font-size:13px;list-style:none}.faq summary::after{content:"+";float:right;color:var(--primary)}.faq details[open] summary::after{content:"–"}
+.faq p{font-size:12px;color:var(--muted-foreground);margin-top:8px;line-height:1.5}
+.help-contract{margin-top:14px}.help-contract small{font-size:10px;color:var(--muted-foreground);letter-spacing:.06em;text-transform:uppercase}
+.help-contract button{display:flex;align-items:center;justify-content:space-between;width:100%;margin-top:6px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-ui);background:var(--card);font-size:12px}.help-contract svg,.help-links svg{width:13px;height:13px;color:var(--gold)}
+.help-links{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.help-links a{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-ui);font-size:12px;font-weight:600}
+.help-links a:hover{border-color:var(--primary);color:var(--primary)}
+.help-dialog,.welcome-dialog{max-height:85vh;overflow-y:auto;border-radius:16px}
+.welcome-steps{display:flex;flex-direction:column;gap:12px;margin:4px 0 16px;counter-reset:s}
+.welcome-steps li{display:flex;flex-direction:column;gap:3px;padding:12px 12px 12px 46px;position:relative;border:1px solid var(--border);border-radius:var(--radius-ui);background:var(--card);counter-increment:s}
+.welcome-steps li::before{content:counter(s);position:absolute;left:12px;top:12px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklch,var(--primary) 18%,transparent);color:var(--primary);font-weight:700;font-size:12px}
+.welcome-steps strong{font-size:14px}.welcome-steps span{font-size:12px;color:var(--muted-foreground);line-height:1.45}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
