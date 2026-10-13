@@ -68,7 +68,7 @@ export function Billetera() {
       <div><strong>{wallet ? 'Conectada' : 'Sin conectar'}</strong>{wallet ? <button className="vault-addr" onClick={() => void navigator.clipboard.writeText(wallet).then(() => toast.success('Dirección copiada')).catch(() => toast.error('No se pudo copiar'))}>{short(wallet)} <Copy /></button> : <small>Conecta para ver tu stash on-chain</small>}</div>
       <Button size="icon" variant={wallet ? 'outline' : 'default'} aria-label={wallet ? 'Desconectar wallet' : 'Conectar wallet'} onClick={() => openWallet?.()} disabled={!openWallet}>{wallet ? <LogOut /> : <ArrowUpRight />}</Button>
     </section>
-    {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('en-US', { maximumFractionDigits: 4 })}</p>}
+    {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('de-DE', { maximumFractionDigits: 4 })}</p>}
     {error && <p role="alert" className="text-destructive text-sm mt-2">{error}</p>}
     <section className="vault-verify">
       <div className="vault-verify-head"><span className="vault-icon"><ShieldCheck /></span><div><strong>{player.walletAddress ? 'Billetera vinculada' : 'Billetera sin vincular'}</strong><small>Tu hold real ({formatDogg(player.hold ?? 0)} $DOGG) + lo minado en la app desbloquean mineros. Se comprueba al activar y al cobrar.</small></div></div>
@@ -80,7 +80,7 @@ export function Billetera() {
     <p className="vault-info"><Info /> Los $DOGG que compras se quedan en tu billetera y cuentan para tu nivel. Ahora estás en el nivel {level}. Vender hace que bajes de nivel.</p>
 
     <h2 className="vault-h">Retirar</h2>
-    <section className="vault-withdraw"><div><strong>Envía tus <Coin /> de la app a tu billetera</strong><small>Mín. {WITHDRAW_MIN.toLocaleString('en-US')} · comisión {WITHDRAW_FEE} <Coin size={12} /></small></div>
+    <section className="vault-withdraw"><div><strong>Envía tus <Coin /> de la app a tu billetera</strong><small>Mín. {WITHDRAW_MIN.toLocaleString('de-DE')} · comisión {WITHDRAW_FEE} <Coin size={12} /></small></div>
       <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><Button type="submit" disabled={busy}><ArrowUpRight /> Retirar</Button></form></section>
 
     <h2 className="vault-h">Nómina</h2>

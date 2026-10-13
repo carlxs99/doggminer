@@ -37,7 +37,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const verifyProof = useCallback(async (v: WalletProof) => {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
-    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('en-US')} $DOGG en hold`); }
+    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold`); }
     catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo vincular la wallet'); }
   }, [verifyCall]);
   useEffect(() => {
@@ -94,7 +94,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       const miner = getMiner(id);
       if (demo) {
-        if (player.balance < miner.hold) throw new Error(`Mantén ${miner.hold.toLocaleString('en-US')} $DOGG de demo para activar este minero.`);
+        if (player.balance < miner.hold) throw new Error(`Mantén ${miner.hold.toLocaleString('de-DE')} $DOGG de demo para activar este minero.`);
         setPlayer(p => switchMiner(p, id, Date.now()));
       } else {
         const initData = window.Telegram?.WebApp?.initData;
@@ -108,9 +108,9 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const withdraw = async (amount: number) => {
     if (busy) return; haptic();
     try {
-      if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(`El mínimo de retiro es ${WITHDRAW_MIN.toLocaleString('en-US')} $DOGG.`);
+      if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(`El mínimo de retiro es ${WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG.`);
       if (!wallet) throw new Error('Conecta tu wallet TON para retirar.');
-      if (amount + WITHDRAW_FEE > player.balance) throw new Error(`Saldo insuficiente: necesitas ${(amount + WITHDRAW_FEE).toLocaleString('en-US')} $DOGG (incluye ${WITHDRAW_FEE} de comisión).`);
+      if (amount + WITHDRAW_FEE > player.balance) throw new Error(`Saldo insuficiente: necesitas ${(amount + WITHDRAW_FEE).toLocaleString('de-DE')} $DOGG (incluye ${WITHDRAW_FEE} de comisión).`);
       if (!demo) {
         const initData = window.Telegram?.WebApp?.initData;
         if (!initData) throw new Error('Abre la app desde Telegram.');
@@ -121,7 +121,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
           if (r.status === 'failed') throw new Error('El envío falló y se te devolvió el saldo. Inténtalo más tarde.');
           log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
           coinRain(coinImg); bass(); strongHaptic();
-          toast.success(r.status === 'sent' ? `¡${amount.toLocaleString('en-US')} $DOGG enviados a tu wallet!` : 'Retiro en camino a tu wallet · llegará en unos minutos');
+          toast.success(r.status === 'sent' ? `¡${amount.toLocaleString('de-DE')} $DOGG enviados a tu wallet!` : 'Retiro en camino a tu wallet · llegará en unos minutos');
         } finally { setBusy(false); }
         return;
       }
