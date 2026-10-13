@@ -3,6 +3,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { haptic, SHIFT_MS, type Player } from '@/lib/dogg';
+import { friendlyError } from '@/lib/dogg';
 import { getMiner, shiftTotal, switchMiner } from '@/lib/mining';
 import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
 import coinImg from '@/assets/dogg-coin.png';
@@ -38,11 +39,11 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
     try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold`); }
-    catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo vincular la wallet'); }
+    catch (e) { toast.error(friendlyError(e, 'No se pudo vincular la wallet')); }
   }, [verifyCall]);
   useEffect(() => {
     const app = window.Telegram?.WebApp;
-    app?.ready(); app?.expand();
+    app?.ready(); app?.expand(); try { app?.setHeaderColor?.('#070b08'); (app as unknown as { setBackgroundColor?: (c: string) => void })?.setBackgroundColor?.('#070b08'); } catch { /* older clients */ }
     (app as unknown as { setHeaderTitle?: (title: string) => void } | undefined)?.setHeaderTitle?.('$DOGG MINER');
     setNow(Date.now());
     if (app?.initData) {
@@ -50,7 +51,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then((p: Player & { downgraded?: string | null }) => {
         setPlayer(p);
         if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
-      }).catch(e => { if (!silent) toast.error(e.message); });
+      }).catch(e => { if (!silent) toast.error(friendlyError(e)); });
       read(false);
       const holdTimer = setInterval(() => read(true), 60000);
       const timer = setInterval(() => setNow(Date.now()), 100);
@@ -85,7 +86,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
       toast.success(kind === 'start' ? 'Turno prendido. Keep it growing 🌱' : kind === 'checkin' ? 'Bonus diario reclamado: +10 créditos' : 'Puff puff… cosecha cobrada 💰');
-    } catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo completar la acción'); }
+    } catch (e) { toast.error(friendlyError(e, 'No se pudo completar la acción')); }
     finally { setBusy(false); }
   };
   const activateMiner = async (id: string) => {
@@ -102,7 +103,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         setPlayer(await call({ data: { initData, action: 'select', minerId: id } }));
       }
       setNow(Date.now()); toast.success(`${miner.name} · ${miner.daily} $DOGG/d`);
-    } catch(e) { toast.error(e instanceof Error ? e.message : 'No se pudo activar'); }
+    } catch(e) { toast.error(friendlyError(e, 'No se pudo activar')); }
     finally { setBusy(false); }
   };
   const withdraw = async (amount: number) => {
@@ -128,7 +129,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
       log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), status: 'review' });
       toast.success('Solicitud de retiro enviada · En revisión');
-    } catch (e) { toast.error(e instanceof Error ? e.message : 'No se pudo retirar'); }
+    } catch (e) { toast.error(friendlyError(e, 'No se pudo retirar')); }
   };
   return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge }}>{children}</Context.Provider>;
 }

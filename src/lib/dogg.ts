@@ -13,4 +13,12 @@ export type TelegramApp = {
   openTelegramLink?: (url: string) => void;
 };
 declare global { interface Window { Telegram?: { WebApp?: TelegramApp } } }
-export function haptic() { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }
+export function haptic() { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }/** Turns technical errors into short, human messages (no status codes). */
+export function friendlyError(e: unknown, fallback = 'Algo salió mal. Inténtalo de nuevo.') {
+  const raw = e instanceof Error ? e.message : typeof e === 'string' ? e : '';
+  if (!raw) return fallback;
+  if (/429|rate|too many/i.test(raw)) return 'Mucho tráfico ahora mismo. Espera unos segundos y vuelve a intentarlo.';
+  if (/failed to fetch|network|load failed|timeout/i.test(raw)) return 'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
+  if (/\b5\d\d\b|internal/i.test(raw)) return 'El servicio no responde ahora mismo. Inténtalo en un momento.';
+  return raw.replace(/\s*\(\d{3}\)/g, '');
+}

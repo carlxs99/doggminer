@@ -29,7 +29,7 @@ function useOnchain(wallet: string | null, refresh: number) {
       const target = '0:a74ffea7ade24751ac5b670ee0eb88243f9bf1e8bbd25d615ba16e6d62c0a92d';
       const j = jettons.balances?.find((b: { jetton: { address: string } }) => b.jetton.address === target);
       if (active) setBalances({ ton: Number(account.balance) / 1e9, dogg: j ? Number(j.balance) / 10 ** Number(j.jetton.decimals) : 0 });
-    }).catch(e => { if (active) setError(e.message); }).finally(() => { if (active) setLoading(false); });
+    }).catch(e => { if (active) setError('No se pudieron leer tus saldos ahora mismo. Toca actualizar en unos segundos.'); }).finally(() => { if (active) setLoading(false); });
     return () => { active = false; };
   }, [wallet, refresh]);
   return { balances, error, loading };
