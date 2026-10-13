@@ -59,18 +59,80 @@ export const playerAction = createServerFn({ method: 'POST' })
     return PlayerSchema.parse(result.data);
   });
 
-/** Links the connected wallet to the Telegram account (no ownership signature). */
+async function proofSig(telegramId: number, exp: number) {
+  const secret = process.env['DOGG_PROOF_SECRET'];
+  if (!secret) throw new Error('Falta configurar la verificación de wallets.');
+  const { createHmac } = await import('node:crypto');
+  return createHmac('sha256', secret).update(`${telegramId}.${exp}`).digest('hex').slice(0, 32);
+}
+
+/** One-time payload the wallet must sign (ton_proof) to prove ownership; bound to the Telegram account. */
+export const walletChallenge = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const exp = Math.floor(Date.now() / 1000) + 15 * 60;
+    return { payload: `${telegramId}.${exp}.${await proofSig(telegramId, exp)}` };
+  });
+
+const ProofSchema = z.object({
+  timestamp: z.number().int(),
+  domain: z.object({ lengthBytes: z.number().int(), value: z.string().max(253) }),
+  payload: z.string().max(128),
+  signature: z.string().max(200),
+});
+
+async function walletPublicKey(address: string, publicKey: string | undefined, stateInit: string | undefined) {
+  try {
+    const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/publickey`);
+    if (r.ok) { const j = await r.json() as { public_key?: string }; if (j.public_key) return j.public_key.toLowerCase(); }
+  } catch { /* fall through to stateInit */ }
+  if (!publicKey || !stateInit) return null;
+  // Undeployed wallet: stateInit must hash to the address and embed the claimed key.
+  const { Cell, loadStateInit } = await import('@ton/core');
+  const cell = Cell.fromBase64(stateInit);
+  if (cell.hash().toString('hex') !== address.split(':')[1]) return null;
+  const data = loadStateInit(cell.beginParse()).data;
+  if (!data || !data.bits.toString().toLowerCase().includes(publicKey.toLowerCase())) return null;
+  return publicKey.toLowerCase();
+}
+
+/** Links the wallet only after verifying a TON Connect ownership signature (ton_proof). */
 export const verifyWallet = createServerFn({ method: 'POST' })
   .inputValidator(z.object({
     initData: z.string().min(1).max(10000),
     address: z.string().regex(/^-?\d+:[0-9a-fA-F]{64}$/),
+    publicKey: z.string().regex(/^[0-9a-fA-F]{64}$/).optional(),
+    stateInit: z.string().max(10000).optional(),
+    proof: ProofSchema,
   }))
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const address = data.address.toLowerCase();
+    const { proof } = data;
+    const [pid, pexp, psig] = proof.payload.split('.');
+    const exp = Number(pexp);
+    if (Number(pid) !== telegramId || !exp || exp < Date.now() / 1000 || psig !== await proofSig(telegramId, exp)) throw new Error('La firma caducó. Vuelve a conectar tu wallet.');
+    if (Math.abs(Date.now() / 1000 - proof.timestamp) > 15 * 60) throw new Error('La firma caducó. Vuelve a conectar tu wallet.');
+    const { getRequestHeader } = await import('@tanstack/react-start/server');
+    const host = (getRequestHeader('host') ?? '').split(':')[0];
+    if (proof.domain.value !== host && proof.domain.value !== 'doggminer.lovable.app') throw new Error('Firma de otro dominio.');
+    const pk = await walletPublicKey(address, data.publicKey, data.stateInit);
+    if (!pk) throw new Error('No se pudo comprobar la clave de tu wallet. Haz al menos una transacción con ella e inténtalo de nuevo.');
+    const { Buffer } = await import('node:buffer');
+    const { createHash } = await import('node:crypto');
+    const { signVerify } = await import('@ton/crypto');
+    const [wc, hash] = address.split(':');
+    const wcBuf = Buffer.alloc(4); wcBuf.writeInt32BE(Number(wc));
+    const dl = Buffer.alloc(4); dl.writeUInt32LE(proof.domain.lengthBytes);
+    const ts = Buffer.alloc(8); ts.writeBigUInt64LE(BigInt(proof.timestamp));
+    const msg = Buffer.concat([Buffer.from('ton-proof-item-v2/'), wcBuf, Buffer.from(hash, 'hex'), dl, Buffer.from(proof.domain.value), ts, Buffer.from(proof.payload)]);
+    const full = Buffer.concat([Buffer.from([0xff, 0xff]), Buffer.from('ton-connect'), createHash('sha256').update(msg).digest()]);
+    const ok = signVerify(createHash('sha256').update(full).digest(), Buffer.from(proof.signature, 'base64'), Buffer.from(pk, 'hex'));
+    if (!ok) throw new Error('La firma de la wallet no es válida.');
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: 0 });
-    const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: address, wallet_verified_at: new Date().toISOString() }).eq('telegram_id', telegramId);
+    const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: address, wallet_verified_at: new Date().toISOString(), last_hold: null, last_hold_at: null }).eq('telegram_id', telegramId);
     if (upd.error) throw new Error(upd.error.code === '23505' ? 'Esta wallet ya está vinculada a otra cuenta de Telegram.' : upd.error.message);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: await jettonHold(address) });
     if (result.error) throw new Error(result.error.message);
