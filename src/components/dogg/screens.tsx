@@ -29,18 +29,18 @@ export function Humero() {
   const miner = getMiner(player.minerId);
   const earned = shiftTotal(player, now);
   const remaining = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 60000));
-  return <><Title label="EL HUMERO" title="Stay high." accent="Stack DOGG" description="Tu turno. Tu cosecha. El hood nunca duerme." />
-    <div className="humero-grid"><section className="mining-area"><div className="mining-status"><span className={player.shiftStartedAt ? 'live-label' : 'idle-label'}><i />{player.shiftStartedAt ? (finished ? 'COSECHA LISTA' : 'TURNO EN MARCHA') : 'LISTO PARA EL TURNO'}</span><span className="season">SEASON 01 <span>·</span> THE GENESIS</span></div>
-      <div className="mining-balance turn-summary"><h2 className="eyebrow muted">MINADO ESTE TURNO</h2><div className="token-counter" data-testid="turn-total">{earned.toLocaleString('de-DE', { minimumFractionDigits: 4, maximumFractionDigits: 4 })} <span>$DOGG</span></div><div className="turn-badges"><span className="turn-badge"><Zap /> {miner.power} TH/s</span><span className="turn-badge"><Clock3 /> {Math.floor(remaining / 60)}h {remaining % 60}m</span></div><p className="active-miner-caption">{miner.name} · {miner.daily} $DOGG/d {demo && '· DEMO'}</p></div>
-      <div className={`mascot-scene coin-scene ${player.shiftStartedAt && !finished ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt="Moneda oficial del jetton $DOGG" width={640} height={631} fetchPriority="high" /><span className="scene-chip"><Flame /> ORIGINAL GANGSTA</span><span className="scene-coordinates">33.7701° N<br />118.1937° W</span><div className="scene-caption">LONG BEACH, CA <span>EST. 420</span></div></div>
-      <div className="shift-controls"><Button className="start-shift" disabled={busy || Boolean(player.shiftStartedAt && !finished)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? 'Procesando…' : player.shiftStartedAt ? (finished ? 'PUFF PUFF, COBRA' : 'QUEMANDO EL TURNO') : 'PRENDE EL TURNO'}<ArrowRight /></Button><div className="shift-hint"><Clock3 /><span>{player.shiftStartedAt ? 'Tiempo restante' : 'Un turno de 24h. Una cosecha a tu ritmo.'}</span>{player.shiftStartedAt && <strong><Countdown elapsed={elapsed} /></strong>}</div></div>
-    </section>
-    <aside className="mining-details"><section className="stash-panel"><div className="panel-heading"><span className="eyebrow">TU STASH</span><span className="gold-icon"><Wallet /></span></div><div className="stash-number">{formatDogg(player.balance)}<span>$DOGG</span></div><p>Créditos de juego acumulados</p><div className="stash-bottom"><span>Turnos completados</span><strong>{String(player.claimedShifts).padStart(2, '0')}</strong></div></section>
-      <section className="power-panel"><div className="panel-heading"><span className="eyebrow">GROW POWER</span><Zap className="text-primary" size={18} /></div><div className="power-number">{miner.power} <span>TH/s</span><small>{miner.daily} $DOGG/d</small></div><div className="power-track"><span /></div><div className="power-meta"><span>{miner.name}</span><span>OG Kingpin <LockKeyhole size={12} /></span></div><Button asChild variant="outline" className="w-full"><Link to="/grow-ops">MEJORAR MI GROW <ArrowUpRight /></Link></Button></section>
-      <Link to="/trabajos" className="daily-promo"><span className="gift-square"><Gift /></span><div><span className="eyebrow text-gold">DAILY DROP</span><h3>El hood tiene regalos.</h3><p>Recoge tu bonus de hoy.</p></div><ArrowUpRight /></Link>
-      <div className="quote-block"><span>“</span><p>It's not about the destination.<br />It's about the <em>grow</em>.</p><small>THE DOGG WAY</small></div>
-    </aside></div>
-    <section className="hood-strip"><span className="hood-strip-icon"><ShieldCheck /></span><div><h3>Tu hustle, tus reglas.</h3><p>Sin gas para minar. Sin prisas para crecer.</p></div><span className="hood-strip-end"><Leaf /> KEEP IT GROWING</span></section></>;
+  const live = Boolean(player.shiftStartedAt && !finished);
+  return <div className="mine-screen">
+    <section className="mine-stats"><div><span>TASA DE MINERÍA</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? 'Minando' : finished ? 'Cosecha lista' : 'En pausa'}</em></div><div><span>RANGO ACTUAL</span><strong>Nivel {miner.level || 1}</strong><em>{miner.name}{demo ? ' · demo' : ''}</em></div></section>
+    <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>Reclamado en la app</span></div>
+    <div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt="Moneda oficial del jetton $DOGG" width={640} height={631} fetchPriority="high" /></div>
+    <div className="mine-live" data-testid="turn-total">+{earned.toLocaleString('de-DE', { minimumFractionDigits: 6, maximumFractionDigits: 6 })}</div>
+    <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
+    <div className="mine-claim"><Button className="start-shift" disabled={busy || live} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? 'Procesando…' : player.shiftStartedAt ? (finished ? 'PUFF PUFF, COBRA' : 'QUEMANDO EL TURNO') : 'PRENDE EL TURNO'}<ArrowRight /></Button></div>
+    <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Gift /> Bonus diario y tareas del hood</Link></Button>
+    <div className="mine-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-green">Comprar en DeDust</a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">Ver precio</a></div>
+    <p className="mine-note">También puedes comprar y vender $DOGG desde Tonkeeper. Lo que tengas en tu wallet cuenta para tu rango.</p>
+  </div>;
 }
 
 export function Trabajos() {
