@@ -61,11 +61,31 @@ function Arcade() {
   useEffect(() => { if(time===0) setPlaying(false); },[time]);
   return <div className="arcade-banner"><Gamepad2 /><div><span className="eyebrow text-gold">DOGG ARCADE</span><h2>Un break para el hustle.</h2><p>Catch the leaf · 20 segundos · sin apuestas</p></div><Dialog onOpenChange={open => { if (!open) setPlaying(false); }}><DialogTrigger asChild><Button>JUGAR <ArrowUpRight /></Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Catch the leaf 🌱</DialogTitle></DialogHeader><div className="flex justify-between text-primary"><strong>{score} hojas</strong><span>{time}s</span></div><div className="arcade-grid">{Array.from({ length:9 },(_,i)=><Button aria-label={pos===i ? 'Atrapar hoja' : 'Casilla vacía'} key={i} variant="outline" disabled={!playing} onClick={() => { if(i===pos){ haptic(); setScore(s=>s+1); setPos((pos+1+Math.floor(Math.random()*7))%9); } }}>{pos===i && <Leaf />}</Button>)}</div><Button onClick={()=>{setTime(20);setScore(0);setPlaying(true);}} disabled={playing}>{time===0 ? 'VOLVER A JUGAR' : 'INICIAR PARTIDA'}</Button><p className="text-xs text-muted-foreground">Partida de práctica. No genera tokens ni créditos.</p></DialogContent></Dialog></div>;
 }
+const RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
+function PnlChart() {
+  const { history, now, player } = useDogg();
+  const [range, setRange] = useState<keyof typeof RANGES>('7d');
+  const from = now - RANGES[range];
+  const gains = history.filter(e => e.amount > 0).sort((a, b) => a.at - b.at);
+  const today = gains.filter(e => e.at >= now - 864e5).reduce((a, e) => a + e.amount, 0);
+  let acc = gains.filter(e => e.at < from).reduce((a, e) => a + e.amount, 0);
+  const pts: [number, number][] = [[Number.isFinite(from) ? from : (gains[0]?.at ?? now - 864e5), acc]];
+  for (const e of gains.filter(e => e.at >= from)) { pts.push([e.at, acc]); acc += e.amount; pts.push([e.at, acc]); }
+  pts.push([now, acc]);
+  const x0 = pts[0][0], span = Math.max(1, now - x0), top = Math.max(1, acc);
+  const line = pts.map(([t, v]) => `${((t - x0) / span * 100).toFixed(2)},${(38 - v / top * 34).toFixed(2)}`).join(' ');
+  const miner = getMiner(player.minerId);
+  return <section className="boost-head">
+    <div className="boost-level"><div><strong>Nivel {miner.level || 1}</strong><span>PNL de hoy +{today.toLocaleString('de-DE', { maximumFractionDigits: 2 })} $DOGG</span></div><em>{miner.category}</em></div>
+    <div className="boost-ranges" role="tablist">{(Object.keys(RANGES) as (keyof typeof RANGES)[]).map(r => <button key={r} role="tab" aria-selected={range === r} className={range === r ? 'active' : ''} onClick={() => { haptic(); setRange(r); }}>{r === 'All' ? 'Todo' : r}</button>)}</div>
+    <svg className="boost-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Progreso de $DOGG ganado"><polygon points={`0,40 ${line} 100,40`} /><polyline points={line} /></svg>
+  </section>;
+}
 export function GrowOps() {
   const { player, demo, busy, activateMiner } = useDogg();
   const current = getMiner(player.minerId).category;
   const [tier, setTier] = useState<string>(MINER_TIERS.includes(current as never) ? current : MINER_TIERS[0]);
-  return <><Title label="MINEROS / EQUIPOS" title="Elige tu equipo." accent="Sube el grow" description="La potencia de tu minero marca el ritmo de cada turno." />
+  return <><div className="screen-head"><h1>Aumentar velocidad de minería</h1><p>Tu rango sigue al $DOGG minado en la app más tu hold on-chain.</p></div><PnlChart /><h2 className="vault-h">Paquetes de velocidad</h2>
     <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : player.walletAddress ? `Wallet vinculada · ${(player.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold desbloquean tus mineros.` : 'Conecta tu wallet en Billetera para que tu $DOGG desbloquee mineros.'}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={`rank-${i + 1} ${tier === t ? 'active' : ''}`} onClick={() => { haptic(); setTier(t); }}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div><p className="tier-count">{MINERS.length} mineros · 10 rangos</p>
     {[tier].map(category => <section key={category} className="miner-category"><div className="section-heading"><h2>{category}</h2><span className="text-gold">WEST COAST 420</span></div><div className="grow-grid">{MINERS.filter(m => m.category === category).map(miner => {
