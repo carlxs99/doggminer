@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AmigosRouteImport } from './routes/amigos'
 import { Route as BilleteraRouteImport } from './routes/billetera'
 import { Route as GrowOpsRouteImport } from './routes/grow-ops'
 import { Route as PerfilRouteImport } from './routes/perfil'
@@ -19,6 +20,11 @@ import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.to
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AmigosRoute = AmigosRouteImport.update({
+  id: '/amigos',
+  path: '/amigos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const BilleteraRoute = BilleteraRouteImport.update({
@@ -49,6 +55,7 @@ const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
   '/perfil': typeof PerfilRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
   '/perfil': typeof PerfilRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
   '/perfil': typeof PerfilRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/amigos'
     | '/billetera'
     | '/grow-ops'
     | '/perfil'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/amigos'
     | '/billetera'
     | '/grow-ops'
     | '/perfil'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/amigos'
     | '/billetera'
     | '/grow-ops'
     | '/perfil'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AmigosRoute: typeof AmigosRoute
   BilleteraRoute: typeof BilleteraRoute
   GrowOpsRoute: typeof GrowOpsRoute
   PerfilRoute: typeof PerfilRoute
@@ -115,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/amigos': {
+      id: '/amigos'
+      path: '/amigos'
+      fullPath: '/amigos'
+      preLoaderRoute: typeof AmigosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/billetera': {
@@ -157,6 +177,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AmigosRoute: AmigosRoute,
   BilleteraRoute: BilleteraRoute,
   GrowOpsRoute: GrowOpsRoute,
   PerfilRoute: PerfilRoute,

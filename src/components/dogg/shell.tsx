@@ -1,7 +1,7 @@
 import { ClientOnly, Link, useLocation } from '@tanstack/react-router';
 import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { setSound, soundOn, scratch } from '@/lib/fx';
-import { Leaf, Cigarette, Radio, Sprout, Wallet, Link2, Crown, ArrowUpRight, Volume2, VolumeX, CircleHelp, Copy, ExternalLink } from 'lucide-react';
+import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume2, VolumeX, CircleHelp, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
@@ -16,11 +16,11 @@ const FAQ: [string, string][] = [
   ['¿Qué es el modo demo?', 'Fuera de Telegram puedes probar la app con créditos de prueba que se reinician al recargar y no son tokens reales.'],
 ];
 const navigation = [
-  { to: '/', name: 'Humero', subtitle: 'Tu zona de minado', icon: Cigarette },
-  { to: '/trabajos', name: 'Trabajos', subtitle: 'Haz moves. Gana DOGG.', icon: Radio },
-  { to: '/grow-ops', name: 'Grow Ops', subtitle: 'Sube tu potencia', icon: Sprout },
-  { to: '/billetera', name: 'Billetera', subtitle: 'Tu stash, a salvo', icon: Link2 },
-  { to: '/perfil', name: 'Mi hood', subtitle: 'Tu perfil y tus homies', icon: Crown },
+  { to: '/', name: 'Minar', subtitle: 'El Humero', icon: Cigarette },
+  { to: '/trabajos', name: 'Tareas', subtitle: 'Haz moves. Gana DOGG.', icon: Radio },
+  { to: '/grow-ops', name: 'Boost', subtitle: 'Sube tu potencia', icon: Zap },
+  { to: '/amigos', name: 'Amigos', subtitle: 'Tu crew', icon: Users },
+  { to: '/perfil', name: 'Perfil', subtitle: 'Wallet y retiros', icon: Crown },
 ] as const;
 export function Shell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();

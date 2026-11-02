@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, ArrowDownLeft, Wallet, RefreshCw, Copy, Check, ShieldCheck, Zap, LogOut, Info, Pickaxe, Gift, Users, Trophy, Percent, Share2, Smartphone, LineChart } from 'lucide-react';
+import { ArrowUpRight, Wallet, RefreshCw, Copy, Check, ShieldCheck, LogOut, Info, Pickaxe, Gift, Users, Percent, Share2, Smartphone, LineChart, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -98,39 +98,51 @@ export function Billetera() {
   </>;
 }
 
-export function Perfil() {
-  const { name, player, demo, wallet, history } = useDogg();
-  const [copied, setCopied] = useState(false);
-  const [tab, setTab] = useState<'team' | 'top'>('team');
-  const miner = getMiner(player.minerId);
-  const mined = history.filter(e => e.kind === 'mining').reduce((a, e) => a + e.amount, 0);
+function useReferral() {
   const id = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user?.id : undefined;
   const bot = (import.meta.env['VITE_TELEGRAM_BOT_USERNAME'] as string | undefined) ?? 'Doggminerbot';
-  const link = id && bot ? `https://t.me/${bot}?startapp=ref_${id}` : null;
-  const initials = name.slice(0, 2).toUpperCase();
-  async function copy() { haptic(); if (!link) { toast.info('Los referidos se activarán al configurar el bot de Telegram.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
-  function share() { haptic(); if (!link) { toast.info('Los referidos se activarán al configurar el bot de Telegram.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en $DOGG MINER 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
-  return <><Title label="TU REPUTACIÓN" title="Real ones." accent="Real respect" description="Tu nombre en el hood. Tu legado en DOGG." />
-    <section className="credential">
-      <span className="eyebrow">$DOGG MINER · CREDENCIAL DEL HOOD</span>
-      <div className="credential-body"><span className="credential-avatar">{initials}</span><div><h2>{name}</h2><div className="credential-tags"><span className="tag-gold">Nv {miner.level || 1}</span><span>{miner.category}</span></div><span className={`credential-wallet ${wallet ? 'ok' : ''}`}><Wallet /> {wallet ? 'Billetera' : 'Sin billetera'}</span><strong className="credential-rank">{miner.name}</strong></div><img src={mascot} alt="" width={120} height={120} /></div>
-      {demo && <small className="credential-demo">Modo demo</small>}
-    </section>
-    <div className="profile-stats four"><div><Pickaxe /><span>MINADO</span><strong>{Math.round(mined)}</strong></div><div><Trophy /><span>MÁX.</span><strong>Nv {miner.level || 1}</strong></div><div><Users /><span>RECLUTAS</span><strong>0</strong></div><div><Zap /><span>RACHA</span><strong>{player.streak}</strong></div></div>
+  return id ? `https://t.me/${bot}?startapp=ref_${id}` : null;
+}
 
-    <h2 className="vault-h">Recluta homies</h2>
-    <section className="crew-card">
-      <h3>¡Arma tu crew!</h3>
-      <div className="crew-perk"><Gift /><strong>+100 <Coin size={14} /></strong> por cada recluta que CALIFIQUE</div>
-      <div className="crew-perk"><Percent /> <span><strong>10%</strong> de todo lo que minen tus reclutas, para siempre</span></div>
-      <div className="crew-link"><span>{link ?? 'Enlace disponible al abrir desde Telegram'}</span><Button size="icon" variant="ghost" aria-label="Copiar enlace" onClick={() => void copy()}>{copied ? <Check /> : <Copy />}</Button></div>
-      <Button className="crew-invite" onClick={share}><Share2 /> Invitar homies</Button>
-      <small>Tu propia billetera debe estar verificada para reclamar premios.</small>
-    </section>
-    <div className="crew-claims"><section><h3>Bono de reclutamiento</h3><small>0 calificados · 0 reclamados</small><strong><Coin size={20} /> 0</strong><Button variant="outline" disabled>Reclamar</Button></section><section><h3>Comisión del crew</h3><small>0 mineros verificados</small><strong><Coin size={20} /> 0</strong><Button disabled>Reclamar</Button></section></div>
+export function Amigos() {
+  const link = useReferral();
+  const [copied, setCopied] = useState(false);
+  async function copy() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
+  function share() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en $DOGG MINER 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
+  return <>
+    <div className="screen-head"><small>$DOGG MINER</small><h1>Amigos</h1><p>¡Invita a tus homies para crecer juntos! Solo califican después de conectar su wallet.</p></div>
+    <div className="row-list">
+      <section className="info-row"><span className="row-icon"><Link2 /></span><div><strong>Tu enlace de invitación</strong><small className="break">{link ?? 'Disponible al abrir desde Telegram'}</small></div><Button size="sm" onClick={() => void copy()}>{copied ? <Check /> : 'Copiar'}</Button></section>
+      <section className="info-row"><span className="row-icon"><Users /></span><div><strong>Tus referidos</strong><small>0 calificados · 0 en total</small></div></section>
+      <section className="info-row"><span className="row-icon gold"><Gift /></span><div><strong>Recompensa por recluta</strong><small>0 disponibles · +100 $DOGG c/u</small></div><Button size="sm" variant="secondary" disabled>Reclamar</Button></section>
+      <section className="info-row"><span className="row-icon gold"><Percent /></span><div><strong>Billetera del crew</strong><small>10 % de lo que minen tus reclutas, para siempre</small></div><Button size="sm" onClick={share}><Share2 /> Compartir</Button></section>
+    </div>
+    <h2 className="vault-h center">Últimos amigos invitados</h2>
+    <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace y aparecerán aquí con su estado.</p></section>
+  </>;
+}
 
-    <div className="crew-tabs" role="tablist"><button role="tab" aria-selected={tab === 'team'} className={tab === 'team' ? 'active' : ''} onClick={() => setTab('team')}><Users /> Mi crew (0)</button><button role="tab" aria-selected={tab === 'top'} className={tab === 'top' ? 'active' : ''} onClick={() => setTab('top')}><Trophy /> Top mineros</button></div>
-    <section className="vault-list empty">{tab === 'team' ? <><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace y aparecerán aquí con su nivel y producción.</p></> : <><Trophy /><p>El ranking se mostrará cuando haya mineros verificados en Telegram.</p></>}</section>
-    <p className="vault-note"><ArrowDownLeft /> Referidos y ranking pendientes de activar con el bot de Telegram.</p>
+export function Perfil() {
+  const { name, player, demo, wallet, openWallet, history, withdraw, busy } = useDogg();
+  const [refresh, setRefresh] = useState(0);
+  const [amount, setAmount] = useState('');
+  const { balances, error, loading } = useOnchain(wallet, refresh);
+  const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user : undefined;
+  const withdrawals = history.filter(e => e.kind === 'withdraw');
+  const now = Date.now();
+  return <>
+    <div className="screen-head"><h1>Perfil</h1></div>
+    <section className="info-row profile-card"><span className="credential-avatar">{name.slice(0, 1).toUpperCase()}</span><div><strong>{name}</strong>{tg?.username && <small>@{tg.username}</small>}<small>{tg?.id ? `ID ${tg.id}` : demo ? 'Modo demo' : ''}</small></div><img src={mascot} alt="" width={56} height={56} /></section>
+    <Button className="wallet-pill" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet />{wallet ? `Wallet conectada · ${short(wallet)}` : 'Conectar wallet'}</Button>
+    <div className="row-list">
+      <section className="info-row"><div><strong>Billetera de hold</strong><small>$DOGG on-chain {wallet && <button className="inline-refresh" aria-label="Actualizar saldo" onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</small></div><b className="row-amount">{wallet ? (loading && !balances ? '…' : formatDogg(balances?.dogg ?? 0)) : '—'} <Coin /></b></section>
+      <section className="info-row"><div><strong>Billetera de minería</strong><small>{player.walletAddress ? 'Vinculada a tu cuenta' : 'Lista para retirar'}</small></div><b className="row-amount">{formatDogg(player.balance)} <Coin /></b></section>
+    </div>
+    {error && <p role="alert" className="text-destructive text-sm mt-2">{error}</p>}
+    <section className="vault-withdraw stacked"><strong>Retirar $DOGG</strong>
+      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`Mínimo ${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><small>Mínimo {WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG. Comisión {WITHDRAW_FEE} $DOGG.</small><Button type="submit" disabled={busy}><ArrowUpRight /> Solicitar retiro</Button></form></section>
+    <section className="vault-list"><h3 className="list-title">Historial de retiros</h3>{withdrawals.length === 0 ? <p className="vault-empty">Aún no hay retiros.</p> : withdrawals.map(e => <div key={e.at + e.label} className="vault-item"><span className="vault-icon withdraw"><ArrowUpRight /></span><div><strong>{e.label}</strong><small>{ago(e.at, now)}</small></div><div className="vault-amount"><strong className="neg">{formatDogg(e.amount)} <Coin size={14} /></strong>{e.status === 'review' && <em>En revisión</em>}</div></div>)}</section>
+    <div className="vault-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>Cambiar TON → $DOGG</small></a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>Gráfico en vivo</strong><small>Precio de $DOGG</small></a></div>
+    <div className="token-contract"><span className="eyebrow">CONTRATO DEL JETTON</span><code>{JETTON}</code></div>
   </>;
 }
