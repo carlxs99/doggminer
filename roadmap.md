@@ -8,7 +8,7 @@
 - [x] Add TON Connect modal and chain balance reader; preserve confirmed DeDust contract and links. Wallet pairing and actual balances remain unverified without a wallet session.
 - [x] Prepare identity-verified, row-locked durable credit mining in Cloud; real jetton payouts are not enabled.
 - [x] Verify navigation, accumulating demo counter, daily bonus, arcade scoring and wallet modal. Desktop/mobile render without overflow; build OK.
-- [ ] Activate Telegram durable sessions and referral links: requires the owner's bot token and bot username.
+- [x] Referral system on t.me/Doggminerbot/miner: signed start_param, +100 per wallet-verified recruit, 10% of their mining, claim pot, friends list. Real Telegram invite flow untested until published.
 - [x] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.
 - [x] Fix 429 balance error on app open (cache + retry)
 - [x] Automatic withdrawals (payout wallet configured; real send untested)

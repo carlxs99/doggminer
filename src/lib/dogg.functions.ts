@@ -1,11 +1,11 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import { JETTON } from './dogg';
+import { JETTON, parseRef } from './dogg';
 import { autoUpgradeId } from './mining';
 
 const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional() });
 
-async function verifyTelegram(initData: string) {
+async function verifyTelegramUser(initData: string) {
   const token = process.env['TELEGRAM_BOT_TOKEN'];
   if (!token) throw new Error('El bot todavía no está configurado. El minado real no está disponible.');
   const { createHmac, timingSafeEqual } = await import('node:crypto');
@@ -19,8 +19,11 @@ async function verifyTelegram(initData: string) {
   const authDate = Number(params.get('auth_date'));
   const now = Math.floor(Date.now() / 1000);
   if (actual.length !== expected.length || !timingSafeEqual(actual, expected) || !authDate || now - authDate > 86400 || authDate > now + 30) throw new Error('Abre de nuevo la mini app desde Telegram.');
-  return z.object({ id: z.number().int().positive() }).parse(JSON.parse(params.get('user') ?? '{}')).id;
+  const user = z.object({ id: z.number().int().positive(), first_name: z.string().optional(), username: z.string().optional() }).parse(JSON.parse(params.get('user') ?? '{}'));
+  // start_param is signed inside initData, so the inviter id can't be forged by the client.
+  return { id: user.id, firstName: user.first_name ?? null, username: user.username ?? null, referrer: parseRef(params.get('start_param')) };
 }
+async function verifyTelegram(initData: string) { return (await verifyTelegramUser(initData)).id; }
 
 /** Real on-chain $DOGG balance (whole tokens) of a raw/friendly address, read server-side from TONAPI. */
 async function jettonHold(address: string) {
@@ -82,8 +85,11 @@ async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, h
 export const playerAction = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'checkin', 'select']), minerId: z.string().max(40).optional() }))
   .handler(async ({ data }) => {
-    const telegramId = await verifyTelegram(data.initData);
+    const tg = await verifyTelegramUser(data.initData);
+    const telegramId = tg.id;
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    // On open: create the player, keep its Telegram name and attach the inviter (only for brand-new accounts).
+    if (data.action === 'read') await supabaseAdmin.rpc('dogg_register', { p_telegram_id: telegramId, p_referrer: tg.referrer as number, p_first_name: tg.firstName as string, p_username: tg.username as string });
     const hold = await currentHold(supabaseAdmin, telegramId);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
@@ -169,6 +175,9 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     await supabaseAdmin.from('dogg_players').update({ wallet_address: null, wallet_verified_at: null, last_hold: null, last_hold_at: null }).eq('wallet_address', address).neq('telegram_id', telegramId);
     const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: address, wallet_verified_at: new Date().toISOString(), last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
     if (upd.error) throw new Error(upd.error.code === '23505' ? 'Esta wallet ya está vinculada a otra cuenta de Telegram.' : upd.error.message);
+    // Remember every account that verified this wallet, then qualify the recruit (+100 to its inviter) if it's its first wallet.
+    await supabaseAdmin.from('dogg_wallet_links').upsert({ wallet_address: address, telegram_id: telegramId }, { onConflict: 'wallet_address,telegram_id', ignoreDuplicates: true });
+    await supabaseAdmin.rpc('dogg_referral_qualify', { p_telegram_id: telegramId });
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     return settle(supabaseAdmin, telegramId, result.data, hold);
@@ -201,4 +210,17 @@ export const adAction = createServerFn({ method: 'POST' })
     const r = await supabaseAdmin.rpc('dogg_ad', { p_telegram_id: telegramId, p_action: data.action, ...(data.ymid ? { p_ymid: data.ymid } : {}) });
     if (r.error) throw new Error(r.error.message);
     return z.object({ adsToday: z.number(), balance: z.number(), ymid: z.string().optional(), status: z.string().optional() }).parse(r.data);
+  });
+
+
+const FriendSchema = z.object({ name: z.string(), username: z.string().nullable(), joinedAt: z.string(), qualified: z.boolean(), given: z.number() });
+/** Referrals: stats, recent recruits and claiming the pot (+100 per qualified recruit, 10% of their mining). */
+export const referralAction = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'claim']) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.rpc('dogg_referral', { p_telegram_id: telegramId, p_action: data.action });
+    if (r.error) throw new Error(r.error.message);
+    return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), friends: z.array(FriendSchema) }).parse(r.data);
   });

@@ -493,3 +493,20 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .bottom-nav{backdrop-filter:none!important;background:var(--card-deep)!important}
 .mine-stats{backdrop-filter:none!important;background:color-mix(in oklch,var(--card-deep) 94%,transparent)!important}
 .mine-coin.spinning img{animation:coin-float 4s ease-in-out infinite;will-change:transform}
+
+/* ===== Referrals (Amigos) */
+.ref-share{width:100%;height:46px;font-weight:800;font-size:14px;box-shadow:0 0 18px color-mix(in oklch,var(--primary) 35%,transparent)}
+.ref-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.ref-stats>div{border:1.5px solid var(--neon-line);background:color-mix(in oklch,var(--card-deep) 90%,transparent);box-shadow:var(--neon-shadow);border-radius:14px;padding:10px 6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0}
+.ref-stats svg{width:18px;height:18px;color:var(--primary)}
+.ref-stats strong{font-family:var(--font-display);font-size:20px;line-height:1.1;max-width:100%;overflow-wrap:anywhere}
+.ref-stats small{font-size:11px;color:var(--muted-foreground)}
+.ref-pending .row-amount{color:var(--gold);margin:2px 0}
+.ref-steps{display:flex;flex-direction:column;gap:8px;list-style:none;padding:0;margin:0}
+.ref-steps li{display:flex;gap:12px;align-items:center;border:1px solid var(--border);border-radius:14px;padding:10px 12px;background:color-mix(in oklch,var(--card-deep) 85%,transparent)}
+.ref-steps li>span{flex:none;width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-graffiti);color:var(--primary-foreground);background:var(--primary);box-shadow:0 0 12px color-mix(in oklch,var(--primary) 45%,transparent)}
+.ref-steps strong{display:block;font-size:14px}
+.ref-steps small{display:block;font-size:12px;color:var(--muted-foreground)}
+.ref-steps b{color:var(--gold);font-weight:700}
+.ref-avatar{flex:0 0 36px!important;height:36px!important;border-width:2px!important;font-size:14px}
+.vault-amount em.ok{color:var(--primary);background:color-mix(in oklch,var(--primary) 15%,transparent)}
