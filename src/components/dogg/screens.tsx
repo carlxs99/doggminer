@@ -8,7 +8,7 @@ import { useDogg } from './state';
 import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
 import coin from '@/assets/dogg-coin.webp';
-import { ScreenHero, leafArt, bustArt } from './hero';
+import { ScreenHero, leafArt } from './hero';
 import { ClubTasks } from './club-tasks';
 import { useT } from './lang';
 import { PNL_RANGES, pnlSeries, pnlToday, type PnlRange } from '@/lib/pnl';

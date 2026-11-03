@@ -716,7 +716,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @keyframes splash-breathe{0%,100%{transform:scale(.92);opacity:.45}50%{transform:scale(1.05);opacity:.7}}
 @media (prefers-reduced-motion:reduce){.splash-coin,.splash-glow{animation:none}}
 /* Mine on phones: same original design, scaled as a whole by screen height so it never looks oversized and the main button stays above the dock */
-@media (max-width:600px){.mine-screen{max-width:none}}
+@media (max-width:600px){.mine-screen{max-width:none}.mine-coin-wrap{width:min(100%,92vw)}}
 @media (max-width:600px) and (max-height:860px){.mine-screen{zoom:0.98}}
 @media (max-width:600px) and (max-height:840px){.mine-screen{zoom:0.96}}
 @media (max-width:600px) and (max-height:820px){.mine-screen{zoom:0.93}}
