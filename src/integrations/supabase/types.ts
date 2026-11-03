@@ -73,15 +73,22 @@ export type Database = {
           balance: number
           claimed_shifts: number
           created_at: string
+          first_name: string | null
           last_checkin: string | null
           last_hold: number | null
           last_hold_at: string | null
           miner_id: string
           rate_changed_at: string | null
+          ref_earned: number
+          ref_given: number
+          ref_pending: number
+          referral_qualified_at: string | null
+          referred_by: number | null
           shift_accrued: number
           shift_started_at: string | null
           streak: number
           telegram_id: number
+          username: string | null
           wallet_address: string | null
           wallet_verified_at: string | null
         }
@@ -92,15 +99,22 @@ export type Database = {
           balance?: number
           claimed_shifts?: number
           created_at?: string
+          first_name?: string | null
           last_checkin?: string | null
           last_hold?: number | null
           last_hold_at?: string | null
           miner_id?: string
           rate_changed_at?: string | null
+          ref_earned?: number
+          ref_given?: number
+          ref_pending?: number
+          referral_qualified_at?: string | null
+          referred_by?: number | null
           shift_accrued?: number
           shift_started_at?: string | null
           streak?: number
           telegram_id: number
+          username?: string | null
           wallet_address?: string | null
           wallet_verified_at?: string | null
         }
@@ -111,17 +125,63 @@ export type Database = {
           balance?: number
           claimed_shifts?: number
           created_at?: string
+          first_name?: string | null
           last_checkin?: string | null
           last_hold?: number | null
           last_hold_at?: string | null
           miner_id?: string
           rate_changed_at?: string | null
+          ref_earned?: number
+          ref_given?: number
+          ref_pending?: number
+          referral_qualified_at?: string | null
+          referred_by?: number | null
           shift_accrued?: number
           shift_started_at?: string | null
           streak?: number
           telegram_id?: number
+          username?: string | null
           wallet_address?: string | null
           wallet_verified_at?: string | null
+        }
+        Relationships: []
+      }
+      dogg_referral_wallets: {
+        Row: {
+          created_at: string
+          referrer_id: number
+          telegram_id: number
+          wallet_address: string
+        }
+        Insert: {
+          created_at?: string
+          referrer_id: number
+          telegram_id: number
+          wallet_address: string
+        }
+        Update: {
+          created_at?: string
+          referrer_id?: number
+          telegram_id?: number
+          wallet_address?: string
+        }
+        Relationships: []
+      }
+      dogg_wallet_links: {
+        Row: {
+          first_at: string
+          telegram_id: number
+          wallet_address: string
+        }
+        Insert: {
+          first_at?: string
+          telegram_id: number
+          wallet_address: string
+        }
+        Update: {
+          first_at?: string
+          telegram_id?: number
+          wallet_address?: string
         }
         Relationships: []
       }
@@ -190,6 +250,23 @@ export type Database = {
       }
       dogg_payout_acquire: { Args: never; Returns: boolean }
       dogg_payout_release: { Args: never; Returns: undefined }
+      dogg_referral: {
+        Args: { p_action: string; p_telegram_id: number }
+        Returns: Json
+      }
+      dogg_referral_qualify: {
+        Args: { p_telegram_id: number }
+        Returns: boolean
+      }
+      dogg_register: {
+        Args: {
+          p_first_name: string
+          p_referrer: number
+          p_telegram_id: number
+          p_username: string
+        }
+        Returns: undefined
+      }
       dogg_shift: {
         Args: { p_action: string; p_hold?: number; p_telegram_id: number }
         Returns: Json
