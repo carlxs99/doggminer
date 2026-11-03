@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from 'sonner';
 import { useDogg } from './state';
 import type { Player } from '@/lib/dogg';
-import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY, AD_SECONDS } from '@/lib/dogg';
+import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
@@ -48,17 +48,15 @@ export function Trabajos() {
 }
 function AdsCard() {
   const { adsToday, rewardAd, demo } = useDogg();
-  const [left, setLeft] = useState<number | null>(null);
+  const [watching, setWatching] = useState(false);
   const remaining = Math.max(0, AD_DAILY - adsToday);
-  const reward = useRef(rewardAd); reward.current = rewardAd;
-  useEffect(() => { if (left === null) return; if (left === 0) { setLeft(null); reward.current(); return; } const id = setTimeout(() => setLeft(l => (l ?? 1) - 1), 1000); return () => clearTimeout(id); }, [left]);
-  const ready = demo;
+  const watch = async () => { if (watching) return; setWatching(true); try { await rewardAd(); } finally { setWatching(false); } };
   return <section className="ads-card" aria-label="Ver anuncios">
     <div className="ads-top"><span className="ads-icon"><Tv /></span><div><h2>Ver anuncios</h2><p>+{AD_REWARD} $DOGG por anuncio · {adsToday}/{AD_DAILY} hoy</p></div></div>
     <div className="ads-bar" role="progressbar" aria-valuemin={0} aria-valuemax={AD_DAILY} aria-valuenow={adsToday}><i style={{ width: `${adsToday / AD_DAILY * 100}%` }} /></div>
-    <small>{!ready ? 'Los anuncios con recompensa llegan muy pronto.' : remaining ? `Te quedan ${remaining} hoy` : 'Vuelve mañana para ver más anuncios'}</small>
-    <Button className="ads-button" disabled={!ready || !remaining || left !== null} onClick={() => { haptic(); setLeft(AD_SECONDS); }}>{left !== null ? `Anuncio en curso… ${left}s` : !ready ? 'Próximamente' : <><Play /> Ver anuncio (+{AD_REWARD} $DOGG)</>}</Button>
-    {demo && <p className="ads-note">Modo demo: anuncio simulado, los créditos no son tokens reales.</p>}
+    <small>{remaining ? `Te quedan ${remaining} hoy · mira el anuncio completo para cobrar` : 'Vuelve mañana para ver más anuncios'}</small>
+    <Button className="ads-button" disabled={!remaining || watching} onClick={watch}>{watching ? 'Anuncio en curso…' : <><Play /> Ver anuncio (+{AD_REWARD} $DOGG)</>}</Button>
+    {demo && <p className="ads-note">Modo demo: el anuncio es real, pero los $DOGG son créditos de prueba.</p>}
   </section>;
 }
 function Task({ icon, title, subtitle, reward, children }: { icon: React.ReactNode; title: string; subtitle: string; reward: string; children: React.ReactNode }) { return <article className="task-row"><span className="task-icon">{icon}</span><div className="task-body"><div className="task-top"><h3>{title}</h3><small>{reward}</small></div><p>{subtitle}</p></div><div className="task-action">{children}</div></article>; }

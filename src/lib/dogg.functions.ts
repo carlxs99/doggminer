@@ -190,3 +190,14 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
     const player = hold === null ? null : await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
     return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: !player || player.error || hold === null ? null : await settle(supabaseAdmin, telegramId, player.data, hold) };
   });
+
+/** Rewarded ads: 'start' opens a server-side ad session before the ad shows; 'claim' pays +15 $DOGG once that session is ≥5s old (10 per day, enforced by dogg_ad under a row lock). */
+export const adAction = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim']) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.rpc('dogg_ad', { p_telegram_id: telegramId, p_action: data.action });
+    if (r.error) throw new Error(r.error.message);
+    return z.object({ adsToday: z.number(), balance: z.number() }).parse(r.data);
+  });
