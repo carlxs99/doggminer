@@ -131,13 +131,15 @@ function useReferral() {
 }
 type RefData = { total: number; qualified: number; pending: number; earned: number; walletLinked: boolean; friends: { name: string; username: string | null; joinedAt: string; qualified: boolean; given: number }[] };
 
+let refCache: RefData | null = null;
 export function Amigos() {
   const { demo, busy, applyBalance } = useDogg();
   const t = useT();
   const link = useReferral();
   const refCall = useServerFn(referralAction);
   const [copied, setCopied] = useState(false);
-  const [data, setData] = useState<RefData | null>(null);
+  const [data, setDataState] = useState<RefData | null>(refCache);
+  const setData = (d: RefData) => { refCache = d; setDataState(d); };
   const [claiming, setClaiming] = useState(false);
   const [now] = useState(() => Date.now());
   useEffect(() => {

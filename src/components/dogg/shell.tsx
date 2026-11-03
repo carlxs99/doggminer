@@ -1,11 +1,11 @@
-import { ClientOnly, Link, useLocation } from '@tanstack/react-router';
+import { ClientOnly, Link, useLocation, useRouter } from '@tanstack/react-router';
 import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { setSound, soundOn, scratch } from '@/lib/fx';
 import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume2, VolumeX, CircleHelp, Copy, ExternalLink, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
-import { Logo } from './hero';
+import { Logo, bustArt, bustCapArt, leafArt } from './hero';
 import { BuyDedustLink } from './buy';
 import { LangSwitcher, useT } from './lang';
 import { haptic, JETTON, SWAP, PRICE } from '@/lib/dogg';
@@ -22,6 +22,16 @@ const navigation = [
 ] as const satisfies readonly { to: string; name: Key; subtitle: Key; icon: unknown }[];
 export function Shell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
+  const router = useRouter();
+  // Warm every screen (code + header art) right after the app opens, so switching tabs is instant.
+  useEffect(() => {
+    const warm = () => {
+      for (const { to } of navigation) void router.preloadRoute({ to }).catch(() => undefined);
+      for (const src of [bustArt, bustCapArt, leafArt]) { const img = new Image(); img.decoding = 'async'; img.src = src; }
+    };
+    const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
+    if (w.requestIdleCallback) w.requestIdleCallback(warm, { timeout: 1500 }); else setTimeout(warm, 800);
+  }, [router]);
   const { player, demo, name, wallet, openWallet, isAdmin } = useDogg();
   const t = useT();
   const [sound, setSoundState] = useState(false);
