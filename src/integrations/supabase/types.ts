@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      dogg_ad_views: {
+        Row: {
+          created_at: string
+          estimated_price: number | null
+          event_type: string | null
+          paid_at: string | null
+          postbacks: number
+          reward_event_type: string | null
+          status: string
+          telegram_id: number
+          ymid: string
+        }
+        Insert: {
+          created_at?: string
+          estimated_price?: number | null
+          event_type?: string | null
+          paid_at?: string | null
+          postbacks?: number
+          reward_event_type?: string | null
+          status?: string
+          telegram_id: number
+          ymid?: string
+        }
+        Update: {
+          created_at?: string
+          estimated_price?: number | null
+          event_type?: string | null
+          paid_at?: string | null
+          postbacks?: number
+          reward_event_type?: string | null
+          status?: string
+          telegram_id?: number
+          ymid?: string
+        }
+        Relationships: []
+      }
       dogg_payout_lock: {
         Row: {
           id: number
@@ -134,8 +170,18 @@ export type Database = {
     }
     Functions: {
       dogg_ad: {
-        Args: { p_action: string; p_telegram_id: number }
+        Args: { p_action: string; p_telegram_id: number; p_ymid?: string }
         Returns: Json
+      }
+      dogg_ad_postback: {
+        Args: {
+          p_event: string
+          p_price: number
+          p_reward: string
+          p_telegram_id: number
+          p_ymid: string
+        }
+        Returns: string
       }
       dogg_best_miner: { Args: { p_total: number }; Returns: string }
       dogg_miner_stats: {
