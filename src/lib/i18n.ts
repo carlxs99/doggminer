@@ -70,6 +70,8 @@ const SERVER: [RegExp, Key][] = [
   [/^Primero abre la tarea/i, 'err.taskOpenFirst'],
   [/^Ya cobraste esta tarea/i, 'err.taskDone'],
   [/^Espera 10 segundos con el bot abierto/i, 'err.taskWait'],
+  [/^Ya hiciste esta tarea hoy/i, 'err.taskToday'],
+  [/^Espera 10 segundos en el canal/i, 'err.taskWaitReact'],
   [/^Aún no te vemos en el canal/i, 'err.notInChannel'],
   [/^Aún no te vemos en el grupo/i, 'err.notInGroup'],
   [/^Aún no te vemos dentro/i, 'err.notInChat'],

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
-import { Bot, Fingerprint, Megaphone, Users, RefreshCw, Pause, Play, Trash2, Pencil, Search, ArrowUpRight, Wallet, ShieldCheck, ListChecks, LayoutDashboard, Plus, Minus, Check, Undo2, Send } from 'lucide-react';
+import { Bot, Heart, Fingerprint, Megaphone, Users, RefreshCw, Pause, Play, Trash2, Pencil, Search, ArrowUpRight, Wallet, ShieldCheck, ListChecks, LayoutDashboard, Plus, Minus, Check, Undo2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -91,7 +91,7 @@ function Overview() {
 }
 
 const EMPTY = { id: undefined as string | undefined, kind: 'channel' as TaskKind, title: '', description: '', url: '', chatId: '', reward: '100', sort: '0' };
-const KIND_ICON = { channel: Megaphone, group: Users, bot: Bot } as const;
+const KIND_ICON = { channel: Megaphone, group: Users, bot: Bot, react: Heart } as const;
 
 function TasksAdmin() {
   const list = useServerFn(adminTasks);
@@ -118,8 +118,8 @@ function TasksAdmin() {
   return <>
     <form className="admin-card admin-form" onSubmit={submit}>
       <h2>{form.id ? t('admin.editTask') : t('admin.newTask')}</h2>
-      <div className="admin-kinds">{(['channel', 'group', 'bot'] as TaskKind[]).map(k => { const I = KIND_ICON[k]; return <button type="button" key={k} className={form.kind === k ? 'on' : ''} onClick={() => set('kind', k)}><I />{t(`admin.kind.${k}`)}</button>; })}</div>
-      <p className="admin-muted">{form.kind === 'bot' ? t('admin.hintBot') : form.kind === 'channel' ? t('admin.hintChannel') : t('admin.hintGroup')}</p>
+      <div className="admin-kinds">{(['channel', 'group', 'bot', 'react'] as TaskKind[]).map(k => { const I = KIND_ICON[k]; return <button type="button" key={k} className={form.kind === k ? 'on' : ''} onClick={() => set('kind', k)}><I />{t(`admin.kind.${k}`)}</button>; })}</div>
+      <p className="admin-muted">{form.kind === 'bot' ? t('admin.hintBot') : form.kind === 'react' ? t('admin.hintReact') : form.kind === 'channel' ? t('admin.hintChannel') : t('admin.hintGroup')}</p>
       <label>{t('admin.fTitle')}<Input required maxLength={80} value={form.title} onChange={e => set('title', e.target.value)} placeholder={form.kind === 'bot' ? t('admin.fTitlePhBot') : t('admin.fTitlePh')} /></label>
       <label>{t('admin.fDesc')}<Input maxLength={160} value={form.description} onChange={e => set('description', e.target.value)} placeholder={t('admin.fDescPh')} /></label>
       <label>{t('admin.fLink')}<Input required value={form.url} onChange={e => set('url', e.target.value)} placeholder={form.kind === 'bot' ? t('admin.fLinkPhBot') : t('admin.fLinkPh')} /></label>

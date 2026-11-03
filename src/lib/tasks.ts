@@ -1,7 +1,24 @@
 // Shared (browser-safe) rules for admin-created tasks.
-export type TaskKind = 'channel' | 'group' | 'bot';
+export type TaskKind = 'channel' | 'group' | 'bot' | 'react';
 export const BOT_TASK_WAIT_S = 10;
-export const TASK_KIND_LABEL: Record<TaskKind, string> = { channel: 'Canal', group: 'Grupo', bot: 'Bot' };
+export const TASK_KIND_LABEL: Record<TaskKind, string> = { channel: 'Canal', group: 'Grupo', bot: 'Bot', react: 'Reacción' };
+/** React tasks can be done again this many hours after each claim (enforced in dogg_task_start / dogg_task_claim). */
+export const REACT_REPEAT_H = 24;
+/** Kinds that wait 10 s after opening before they can be claimed. */
+export const waitsBeforeClaim = (kind: TaskKind) => kind === 'bot' || kind === 'react';
+
+/** When a claimed task opens again (null = never: one-time tasks). */
+export function taskResetAt(kind: TaskKind, claimedAt: string | null) {
+  if (kind !== 'react' || !claimedAt) return null;
+  return new Date(Date.parse(claimedAt) + REACT_REPEAT_H * 3600_000).toISOString();
+}
+
+/** A task counts as done until its reset time (forever for one-time tasks). */
+export function taskDone(kind: TaskKind, claimedAt: string | null, now: number) {
+  if (!claimedAt) return false;
+  const reset = taskResetAt(kind, claimedAt);
+  return !reset || now < Date.parse(reset);
+}
 
 /** Accepts "@name", "t.me/name", "https://t.me/name?start=x"; returns a canonical https://t.me/… link or null. */
 export function normalizeTelegramUrl(input: string) {
