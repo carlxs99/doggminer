@@ -44,7 +44,7 @@ function useOnchain(wallet: string | null, refresh: number) {
 }
 
 
-/** One-time withdrawal verification: buy 100 $DOGG with the linked wallet; once passed, withdrawals are always allowed. */
+/** One-time withdrawal verification: the linked wallet must hold 100 $DOGG; once passed, withdrawals are always allowed. */
 function WithdrawVerify() {
   const { player, demo, verifyBuy, verifying } = useDogg();
   const t = useT();
