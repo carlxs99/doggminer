@@ -59,7 +59,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       app?.ready(); app?.expand(); try { app?.setHeaderColor?.('#070b08'); (app as unknown as { setBackgroundColor?: (c: string) => void })?.setBackgroundColor?.('#070b08'); } catch { /* older clients */ }
       (app as unknown as { setHeaderTitle?: (title: string) => void } | undefined)?.setHeaderTitle?.('$DOGG MINER');
       setNow(Date.now());
-      const timer = setInterval(() => setNow(Date.now()), 100);
+      // Shared clock ticks once a second; only the live counter on Minar ticks faster, locally, so the whole app doesn't re-render 10×/s.
+      const timer = setInterval(() => setNow(Date.now()), 1000);
       if (!app?.initData) { cleanup = () => clearInterval(timer); return; }
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
       const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then(p => {
