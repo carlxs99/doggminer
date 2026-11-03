@@ -33,12 +33,12 @@ export function Splash() {
   }, []);
 
   const ready = (loaded && art && minDone) || timedOut;
+  useEffect(() => { if (ready) setPhase(p => (p === 'show' ? 'fade' : p)); }, [ready]);
   useEffect(() => {
-    if (!ready || phase !== 'show') return;
-    setPhase('fade');
+    if (phase !== 'fade') return;
     const id = setTimeout(() => setPhase('gone'), 380);
     return () => clearTimeout(id);
-  }, [ready, phase]);
+  }, [phase]);
 
   if (phase === 'gone') return null;
   const progress = (loaded ? 60 : 15) + (art ? 25 : 0) + (minDone ? 15 : 0);
