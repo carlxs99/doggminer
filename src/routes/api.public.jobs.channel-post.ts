@@ -10,7 +10,8 @@ async function backgroundRunner(request: Request): Promise<Background | null> {
   const ctx = r.runtime?.cloudflare?.context;
   if (typeof ctx?.waitUntil === 'function') return ctx.waitUntil.bind(ctx);
   try {
-    const mod = await import(/* @vite-ignore */ 'cloudflare:workers' as string) as { waitUntil?: Background };
+    const builtin = ['cloudflare', 'workers'].join(':');
+    const mod = await import(/* @vite-ignore */ builtin) as { waitUntil?: Background };
     if (typeof mod.waitUntil === 'function') return mod.waitUntil;
   } catch { /* not on Workers (local dev) */ }
   return null;
