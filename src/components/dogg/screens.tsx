@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useDogg } from './state';
+import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
@@ -61,7 +62,7 @@ function Arcade() {
   useEffect(() => { if(time===0) setPlaying(false); },[time]);
   return <div className="arcade-banner"><Gamepad2 /><div><span className="eyebrow text-gold">DOGG ARCADE</span><h2>Un break para el hustle.</h2><p>Catch the leaf · 20 segundos · sin apuestas</p></div><Dialog onOpenChange={open => { if (!open) setPlaying(false); }}><DialogTrigger asChild><Button>JUGAR <ArrowUpRight /></Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Catch the leaf 🌱</DialogTitle></DialogHeader><div className="flex justify-between text-primary"><strong>{score} hojas</strong><span>{time}s</span></div><div className="arcade-grid">{Array.from({ length:9 },(_,i)=><Button aria-label={pos===i ? 'Atrapar hoja' : 'Casilla vacía'} key={i} variant="outline" disabled={!playing} onClick={() => { if(i===pos){ haptic(); setScore(s=>s+1); setPos((pos+1+Math.floor(Math.random()*7))%9); } }}>{pos===i && <Leaf />}</Button>)}</div><Button onClick={()=>{setTime(20);setScore(0);setPlaying(true);}} disabled={playing}>{time===0 ? 'VOLVER A JUGAR' : 'INICIAR PARTIDA'}</Button><p className="text-xs text-muted-foreground">Partida de práctica. No genera tokens ni créditos.</p></DialogContent></Dialog></div>;
 }
-function HoldSummary({ player, demo, busy, current, onActivate }: { player: { balance: number; hold?: number; walletAddress?: string | null }; demo: boolean; busy: boolean; current: number; onActivate: (id: string) => void }) {
+function HoldSummary({ player, demo, busy, current, onActivate }: { player: Player; demo: boolean; busy: boolean; current: number; onActivate: (id: string) => void }) {
   const hold = demo ? 0 : player.hold ?? 0;
   const total = player.balance + hold;
   const top = bestLevel(total);
