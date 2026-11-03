@@ -15,6 +15,7 @@ import { reportLovableError } from "../lib/lovable-error-reporting";
 import { DoggProvider } from '@/components/dogg/state';
 import { Shell } from '@/components/dogg/shell';
 import { Toaster } from '@/components/ui/sonner';
+import { LangProvider } from '@/components/dogg/lang';
 
 function NotFoundComponent() {
   return (
@@ -131,7 +132,7 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <DoggProvider><Shell><Outlet /></Shell></DoggProvider>
+      <LangProvider><DoggProvider><Shell><Outlet /></Shell></DoggProvider></LangProvider>
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
