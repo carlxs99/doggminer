@@ -240,7 +240,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const shown = !demo && ledger ? ledger.entries : history;
   // The wallet linked to the account (server) counts even without a live session, so players never reconnect to mine, verify or withdraw.
   const linkedWallet = !demo && player.walletAddress ? friendlyAddress(player.walletAddress) : null;
-  const wallet = tcWallet ?? linkedWallet;
+  const wallet = (tcWallet ? friendlyAddress(tcWallet) : null) ?? linkedWallet;
   return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, synced }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
