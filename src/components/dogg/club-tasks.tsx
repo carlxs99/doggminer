@@ -19,14 +19,16 @@ function openLink(url: string) {
 }
 
 /** Tasks the admin created: join a channel/group (checked by the bot) or open a bot for 10 s. */
+let tasksCache: PlayerTask[] | null = null;
 export function ClubTasks() {
   const { demo, player, applyBalance } = useDogg();
   const t = useT();
   const list = useServerFn(listTasks);
   const start = useServerFn(startTask);
   const claim = useServerFn(claimTask);
-  const [tasks, setTasks] = useState<PlayerTask[] | null>(null);
-  const [started, setStarted] = useState<Record<string, number>>({});
+  const [tasks, setTasksState] = useState<PlayerTask[] | null>(tasksCache);
+  const setTasks = (u: PlayerTask[] | null | ((p: PlayerTask[] | null) => PlayerTask[] | null)) => setTasksState(prev => { const next = typeof u === 'function' ? u(prev) : u; tasksCache = next; return next; });
+  const [started, setStarted] = useState<Record<string, number>>(() => Object.fromEntries((tasksCache ?? []).filter(x => x.startedAt).map(x => [x.id, Date.parse(x.startedAt!)])));
   const [busyId, setBusyId] = useState<string | null>(null);
   const [now, setNow] = useState(() => Date.now());
 
@@ -37,7 +39,7 @@ export function ClubTasks() {
       if (!active) return;
       setTasks(r);
       setStarted(Object.fromEntries(r.filter(x => x.startedAt).map(x => [x.id, Date.parse(x.startedAt!)])));
-    }).catch(() => { if (active) setTasks([]); });
+    }).catch(() => { if (active && !tasksCache) setTasks([]); });
     return () => { active = false; };
   }, [demo, list]);
 
