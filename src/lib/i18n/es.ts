@@ -88,7 +88,7 @@ export const es = {
   'time.now': 'ahora', 'time.min': 'hace {n} min', 'time.h': 'hace {n} h', 'time.d': 'hace {n} d',
   'wv.ok': 'Wallet verificada para retiros', 'wv.title': 'Verifica tu wallet para retirar', 'wv.desc': 'Compra al menos {n} $DOGG en DeDust con tu wallet vinculada. Solo se hace una vez: después podrás retirar siempre.',
   'wv.s1': 'Conecta y vincula tu wallet', 'wv.s2': 'Compra {n} $DOGG o más con ella', 'wv.s3': 'Toca «Verificar compra»', 'wv.buy': 'Comprar en DeDust', 'wv.verify': 'Verificar compra', 'wv.note': 'Primero conecta tu wallet arriba y firma la vinculación.',
-  'buy.web': '¿Prefieres la web? Abrir DeDust en la web', 'buy.copied': 'Contrato de $DOGG copiado', 'buy.copiedDesc': 'En DeDust, toca el token a recibir y pega el contrato para elegir $DOGG.', 'buy.search': 'Busca $DOGG en DeDust', 'buy.searchDesc': 'Pega este contrato: {c}',
+  'buy.miniApp': '¿Prefieres la mini app de DeDust? Ábrela y pega el contrato', 'buy.copied': 'Contrato de $DOGG copiado', 'buy.copiedDesc': 'En DeDust, toca el token a recibir y pega el contrato para elegir $DOGG.', 'buy.search': 'Busca $DOGG en DeDust', 'buy.searchDesc': 'Pega este contrato: {c}',
 
   // Friends
   'friends.subtitle': 'Invita a tus homies y crece juntos', 'friends.link': 'Tu enlace de invitación', 'friends.linkTg': 'Disponible al abrir desde Telegram', 'friends.copyLink': 'Copiar enlace', 'friends.invite': 'Invitar amigos',
