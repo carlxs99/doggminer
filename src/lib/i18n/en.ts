@@ -58,7 +58,7 @@ export const en: Record<keyof typeof es, string> = {
   'boost.subtitle': 'Increase your mining speed', 'boost.packs': 'Speed packs',
   'boost.wallet': 'Wallet', 'boost.unlinked': '(not linked)', 'boost.inApp': 'Mined in the app', 'boost.total': 'Your total hold',
   'boost.unlocks': 'Unlocks up to level {n} · {name}.', 'boost.missing': ' You need {x} more $DOGG for level {n}.', 'boost.max': " You're at the max level.", 'boost.auto': ' Your miner levels up on its own when you buy and down if you sell.',
-  'boost.upNow': 'Jump to level {n} now', 'boost.pnl': "Today's PNL +{x} $DOGG", 'boost.all': 'All', 'boost.chart': '$DOGG earned over time',
+  'boost.upNow': 'Jump to level {n} now', 'boost.pnl': "Today's PNL +{x} $DOGG", 'boost.all': 'All', 'boost.noGains': 'No earnings yet. Start a shift to see your PNL.', 'boost.chart': '$DOGG earned over time',
   'boost.noticeDemo': 'Demo · requirements use test credits. Wallet balances are separate.',
   'boost.noticeLinked': 'Wallet linked · {n} $DOGG held unlock your miners.',
   'boost.noticeConnect': 'Connect your wallet in Profile so your $DOGG unlocks miners.',

@@ -652,3 +652,41 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .multi-review{font-size:12px;font-weight:700;color:var(--primary)}
 .multi-review.flagged{color:var(--gold)}
 .multi-actions{display:flex;flex-wrap:wrap;gap:6px}
+
+/* ===== Boost: compact PNL card */
+.pnl-card{padding:12px!important;margin-bottom:14px!important;display:flex;flex-direction:column;gap:10px}
+.pnl-top{display:grid;grid-template-columns:auto 1fr;align-items:center;gap:2px 8px}
+.pnl-top strong{font-family:var(--font-display);font-size:20px;line-height:1}
+.pnl-top em{justify-self:end;font-style:normal;font-size:11px;font-weight:700;color:var(--primary);background:var(--accent);padding:4px 10px;border-radius:999px;white-space:nowrap}
+.pnl-top span{grid-column:1/-1;font-size:12px;color:var(--primary)}
+.pnl-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.pnl-strip>div{display:flex;flex-direction:column;justify-content:space-between;gap:3px;padding:7px 8px;border-radius:10px;background:color-mix(in oklch,var(--muted) 55%,transparent);min-width:0}
+.pnl-strip small{font-size:10px;line-height:1.2;color:var(--muted-foreground)}
+.pnl-strip b{font-size:13px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.pnl-strip .total{background:color-mix(in oklch,var(--primary) 14%,transparent)}
+.pnl-strip .total b{color:var(--primary)}
+.pnl-hint{font-size:11px;line-height:1.4;color:var(--muted-foreground);margin:0}
+.pnl-chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--border);padding-top:10px}
+.pnl-chart-head>b{font-size:13px;color:var(--primary);font-variant-numeric:tabular-nums;white-space:nowrap}
+.pnl-ranges{display:flex;gap:2px;background:var(--muted);border-radius:9px;padding:2px}
+.pnl-ranges button{height:30px;min-width:38px;padding:0 6px;border-radius:7px;font-size:11px;font-weight:700;color:var(--muted-foreground)}
+.pnl-ranges button.active{background:var(--background);color:var(--foreground)}
+.pnl-chart{width:100%;height:64px;display:block}
+.pnl-chart polyline{fill:none;stroke:var(--primary);stroke-width:1.2;vector-effect:non-scaling-stroke}
+.pnl-chart polygon{fill:color-mix(in oklch,var(--primary) 22%,transparent)}
+.pnl-empty{font-size:11px;color:var(--muted-foreground);text-align:center;padding:6px 0;margin:0}
+
+/* ===== Phones: tighter task and ad cards */
+@media(max-width:480px){
+  .task-list{gap:10px}
+  .task-row{padding:12px!important;gap:2px 10px!important}
+  .task-action{grid-column:2;margin-top:8px}
+  .task-action>*{height:34px!important;font-size:12px}
+  .ads-card{padding:12px!important;gap:8px!important}
+  .ads-icon{width:38px;height:38px}
+  .ads-top h2{font-size:15px}
+  .ads-top p{font-size:12px}
+  .ref-steps li{padding:8px 10px}
+  .ref-steps strong{font-size:13px}
+  .ref-steps small{font-size:11px}
+}
