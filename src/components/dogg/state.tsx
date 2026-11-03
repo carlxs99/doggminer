@@ -183,15 +183,18 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       await showRewardedAd(ymid);
       // Wait for Monetag's server confirmation (usually a few seconds).
       const end = Date.now() + 25000;
+      let last = 'pending';
       while (Date.now() < end) {
         await new Promise(r => setTimeout(r, 2000));
         const r = await adCall({ data: { initData, action: 'status', ymid } }).catch(() => null);
         if (!r) continue;
+        last = r.status ?? 'pending';
         if (r.status === 'paid') { setAds({ day, count: r.adsToday }); setPlayer(p => ({ ...p, balance: r.balance })); paidAd(); return; }
         if (r.status === 'capped') { setAds({ day, count: r.adsToday }); toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
         if (r.status !== 'pending' && r.status !== 'not_valued') { toast.error('Monetag no validó este anuncio, así que no suma $DOGG.'); return; }
       }
-      toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
+      if (last === 'not_valued') toast.error('Monetag no contó este anuncio como válido, así que no suma $DOGG. Prueba con otro.');
+      else toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
     } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
   };
   return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd }}>{children}</Context.Provider>;
