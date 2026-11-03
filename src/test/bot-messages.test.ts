@@ -17,7 +17,7 @@ describe('bot chat messages', () => {
     expect(withdrawalReturnedMessage({ amount: 1000, fee: 70 }).text).toContain('1,070 $DOGG');
   });
   it('links base64 and hex transaction hashes to Tonviewer', () => {
-    const hex = 'd2b811dfde8ce710a8c15cf75f433369a950335e91b2e1b18f2c6b2bf0a4cdde';
+    const hex = 'd2b811dfde8ce710a8c15cf75f43337da950335e91b2e1b1be3eb1872c2b4cde';
     expect(txLink(hex, 'x')).toBe(`https://tonviewer.com/transaction/${hex}`);
     expect(txLink('0rgR396M5xCowVz3X0MzfalQM16RsuGxvj6xhywrTN4=', 'x')).toBe(`https://tonviewer.com/transaction/${hex}`);
     expect(txLink(null, 'UQabc')).toBe('https://tonviewer.com/UQabc');
