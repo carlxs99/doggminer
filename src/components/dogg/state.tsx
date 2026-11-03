@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { adAction, ledgerAction, playerAction, requestWithdraw, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
 import { showRewardedAd } from '@/lib/ads';
+import { deviceSignals } from '@/lib/fingerprint';
 import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
 import { t } from '@/lib/i18n';
@@ -71,7 +72,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       const timer = setInterval(() => setNow(Date.now()), 1000);
       if (!app?.initData) { cleanup = () => clearInterval(timer); return; }
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
-      const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then(p => {
+      const read = (silent: boolean) => deviceSignals().then(device => call({ data: { initData: app.initData!, action: 'read', ...(device ? { device } : {}) } })).then(p => {
         setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); setSynced(true);
       }).catch(e => { if (!silent) toast.error(friendlyError(e)); });
       read(false);
