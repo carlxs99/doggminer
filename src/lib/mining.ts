@@ -24,3 +24,9 @@ export function shiftTotal(state: MiningState, now: number): number {
 export function switchMiner<T extends MiningState>(state: T, minerId: string, now: number): T {
   return { ...state, shiftAccrued: shiftTotal(state, now), rateChangedAt: state.shiftStartedAt ? new Date(Math.min(now, Date.parse(state.shiftStartedAt) + SHIFT_MS)).toISOString() : null, minerId };
 }
+/** Highest miner level a total of $DOGG (wallet hold + app balance) unlocks — mirrors public.dogg_best_miner. */
+export function bestLevel(total: number): number {
+  let n = 1;
+  for (const m of MINERS) { if (m.hold <= total) n = m.level; else break; }
+  return n;
+}

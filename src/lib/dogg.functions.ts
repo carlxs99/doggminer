@@ -174,6 +174,8 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
     const { processPayouts } = await import('./payout.server');
     await processPayouts(supabaseAdmin);
     const row = await supabaseAdmin.from('dogg_withdrawals').select('status, error').eq('id', w.data).single();
-    const player = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: await currentHold(supabaseAdmin, telegramId) });
-    return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: player.error ? null : PlayerSchema.parse(player.data) };
+    // If the hold can't be read right now, skip the refresh rather than reading with 0 (which would downgrade).
+    const hold = await currentHold(supabaseAdmin, telegramId).catch(() => null);
+    const player = hold === null ? null : await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
+    return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: !player || player.error ? null : PlayerSchema.parse(player.data) };
   });

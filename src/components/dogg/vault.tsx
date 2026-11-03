@@ -6,13 +6,13 @@ import { Input } from '@/components/ui/input';
 import { useDogg, WITHDRAW_FEE, WITHDRAW_MIN, type Entry } from './state';
 import { Title } from './screens';
 import { JETTON, SWAP, PRICE, formatDogg, haptic } from '@/lib/dogg';
-import { MINERS, getMiner } from '@/lib/mining';
+import { bestLevel, getMiner } from '@/lib/mining';
 import coin from '@/assets/dogg-coin.png';
 import mascot from '@/assets/dogg-mascot.jpg';
 
 const Coin = ({ size = 16 }: { size?: number }) => <img src={coin} width={size} height={size} alt="" className="inline-coin" />;
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
-const levelFor = (total: number) => MINERS.reduce((lvl, m) => (m.hold <= total ? m.level : lvl), 1);
+const levelFor = bestLevel;
 function ago(at: number, now: number) { const m = Math.max(0, Math.floor((now - at) / 60000)); return m < 1 ? 'ahora' : m < 60 ? `hace ${m} min` : m < 1440 ? `hace ${Math.floor(m / 60)} h` : `hace ${Math.floor(m / 1440)} d`; }
 
 function useOnchain(wallet: string | null, refresh: number) {
