@@ -192,7 +192,7 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
     const w = await supabaseAdmin.rpc('dogg_withdraw', { p_telegram_id: telegramId, p_amount: data.amount });
     if (w.error) throw new Error(w.error.message);
     const { processPayouts } = await import('./payout.server');
-    await processPayouts(supabaseAdmin);
+    await processPayouts(supabaseAdmin, 20_000);
     const row = await supabaseAdmin.from('dogg_withdrawals').select('status, error').eq('id', w.data).single();
     // If the hold can't be read right now, skip the refresh rather than reading with 0 (which would downgrade).
     const hold = await currentHold(supabaseAdmin, telegramId).catch(() => null);

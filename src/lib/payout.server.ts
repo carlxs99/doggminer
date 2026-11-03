@@ -134,7 +134,6 @@ export async function processPayouts(admin: Admin, budgetMs = 45_000) {
       // Record the attempt BEFORE sending: if anything breaks after the send, reconcile still knows about it.
       const claimed = await admin.from('dogg_withdrawals').update({ status: 'sending', seqno, query_id: queryId, attempted_at: new Date().toISOString(), error: null }).eq('id', w.id).eq('status', 'pending').select('id');
       if (!claimed.data?.length) continue;
-      await admin.rpc('dogg_payout_acquire'); // no-op if held; the lock window covers this send
       try { await sendOne(ctx, w, seqno, queryId); } catch (e) { console.error('payout send', e); }
       let executed = false;
       for (let t = 0; t < 16 && !executed; t++) { await sleep(2500); try { executed = (await ctx.opened.getSeqno()) > seqno; } catch { /* retry */ } }
