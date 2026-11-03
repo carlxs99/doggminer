@@ -118,8 +118,9 @@ async function sendOne(ctx: Ctx, w: Row, seqno: number, queryId: string) {
   const units = jettonUnits(Number(w.amount), ctx.decimals);
   const body = beginCell().storeUint(0xf8a7ea5, 32).storeUint(BigInt(queryId), 64).storeCoins(units)
     .storeAddress(Address.parse(w.address)).storeAddress(ctx.wallet.address).storeBit(0).storeCoins(1n).storeBit(0).endCell();
-  const transfer = ctx.wallet.createTransfer({ seqno, secretKey: ctx.key.secretKey, sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS, messages: [internal({ to: ctx.jettonWallet, value: MSG_VALUE, bounce: true, body })] });
-  const ext = external({ to: ctx.wallet.address, body: await transfer });
+  const args = { seqno, secretKey: ctx.key.secretKey, sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS, messages: [internal({ to: ctx.jettonWallet, value: MSG_VALUE, bounce: true, body })] };
+  const transfer: Cell = ctx.wallet instanceof WalletContractV5R1 ? ctx.wallet.createTransfer(args) : ctx.wallet.createTransfer(args);
+  const ext = external({ to: ctx.wallet.address, body: transfer });
   await ctx.tc.sendBoc(beginCell().store(storeMessage(ext)).endCell().toBoc().toString('base64'));
 }
 
