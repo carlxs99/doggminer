@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
 import { Logo, bustArt, bustCapArt, leafArt } from './hero';
+import { Splash } from './splash';
 import { BuyDedustLink } from './buy';
 import { LangSwitcher, useT } from './lang';
 import { haptic, JETTON, SWAP, PRICE } from '@/lib/dogg';
@@ -42,6 +43,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const toggleSound = () => { const next = !sound; setSound(next); setSoundState(next); if (next) scratch(); haptic(); };
   const crumb = pathname === '/admin' ? t('nav.admin') : (() => { const n = navigation.find(x => x.to === pathname); return n ? t(n.name).toUpperCase() : ''; })();
   return <div className={`app-layout ${player.shiftStartedAt ? "shift-on" : ""}`}>
+    <Splash />
     <div className="smoke-layer" aria-hidden="true"><i /><i /><i /></div>
     <ClientOnly><Suspense fallback={null}><TonWallet /></Suspense></ClientOnly>
     <aside className="sidebar">
