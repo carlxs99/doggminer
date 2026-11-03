@@ -5,10 +5,11 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useDogg } from './state';
+import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
-import { MINERS, MINER_TIERS, getMiner, shiftTotal } from '@/lib/mining';
+import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/*.mp4.asset.json', { eager: true, import: 'default' });
 const TIER_CLIP = Array.from({ length: 10 }, (_, index) => {
   const level = index + 1;
@@ -61,9 +62,23 @@ function Arcade() {
   useEffect(() => { if(time===0) setPlaying(false); },[time]);
   return <div className="arcade-banner"><Gamepad2 /><div><span className="eyebrow text-gold">DOGG ARCADE</span><h2>Un break para el hustle.</h2><p>Catch the leaf · 20 segundos · sin apuestas</p></div><Dialog onOpenChange={open => { if (!open) setPlaying(false); }}><DialogTrigger asChild><Button>JUGAR <ArrowUpRight /></Button></DialogTrigger><DialogContent><DialogHeader><DialogTitle>Catch the leaf 🌱</DialogTitle></DialogHeader><div className="flex justify-between text-primary"><strong>{score} hojas</strong><span>{time}s</span></div><div className="arcade-grid">{Array.from({ length:9 },(_,i)=><Button aria-label={pos===i ? 'Atrapar hoja' : 'Casilla vacía'} key={i} variant="outline" disabled={!playing} onClick={() => { if(i===pos){ haptic(); setScore(s=>s+1); setPos((pos+1+Math.floor(Math.random()*7))%9); } }}>{pos===i && <Leaf />}</Button>)}</div><Button onClick={()=>{setTime(20);setScore(0);setPlaying(true);}} disabled={playing}>{time===0 ? 'VOLVER A JUGAR' : 'INICIAR PARTIDA'}</Button><p className="text-xs text-muted-foreground">Partida de práctica. No genera tokens ni créditos.</p></DialogContent></Dialog></div>;
 }
+function HoldSummary({ player, demo, busy, current, onActivate }: { player: Player; demo: boolean; busy: boolean; current: number; onActivate: (id: string) => void }) {
+  const hold = demo ? 0 : player.hold ?? 0;
+  const total = player.balance + hold;
+  const top = bestLevel(total);
+  const next = top < 500 ? minerAt(top + 1) : null;
+  const best = minerAt(top);
+  return <div className="hold-summary">
+    <div className="hold-sum-row"><span>Wallet {player.walletAddress || demo ? '' : '(sin vincular)'}</span><b>{formatDogg(hold)}</b></div>
+    <div className="hold-sum-row"><span>Minado en la app</span><b>{formatDogg(player.balance)}</b></div>
+    <div className="hold-sum-row total"><span>Tu hold total</span><b>{formatDogg(total)} $DOGG</b></div>
+    <p>Desbloquea hasta el <strong>nivel {top}</strong> · {best.name}.{next ? ` Te faltan ${formatDogg(Math.max(0, next.hold - total))} $DOGG para el nivel ${next.level}.` : ' Tienes el nivel máximo.'} Si vendes, bajas al nivel que cubra tu hold.</p>
+    {top > current && <Button className="w-full" disabled={busy} onClick={() => onActivate(best.id)}><Zap /> Activar nivel {top}</Button>}
+  </div>;
+}
 const RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
 function PnlChart() {
-  const { history, now, player } = useDogg();
+  const { history, now, player, demo, busy, activateMiner } = useDogg();
   const [range, setRange] = useState<keyof typeof RANGES>('7d');
   const from = now - RANGES[range];
   const gains = history.filter(e => e.amount > 0).sort((a, b) => a.at - b.at);
@@ -77,6 +92,7 @@ function PnlChart() {
   const miner = getMiner(player.minerId);
   return <section className="boost-head">
     <div className="boost-level"><div><strong>Nivel {miner.level || 1}</strong><span>PNL de hoy +{today.toLocaleString('de-DE', { maximumFractionDigits: 2 })} $DOGG</span></div><em>{miner.category}</em></div>
+    <HoldSummary player={player} demo={demo} busy={busy} current={miner.level || 1} onActivate={id => void activateMiner(id)} />
     <div className="boost-ranges" role="tablist">{(Object.keys(RANGES) as (keyof typeof RANGES)[]).map(r => <button key={r} role="tab" aria-selected={range === r} className={range === r ? 'active' : ''} onClick={() => { haptic(); setRange(r); }}>{r === 'All' ? 'Todo' : r}</button>)}</div>
     <svg className="boost-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Progreso de $DOGG ganado"><polygon points={`0,40 ${line} 100,40`} /><polyline points={line} /></svg>
   </section>;

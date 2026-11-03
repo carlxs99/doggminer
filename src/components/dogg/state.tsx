@@ -118,7 +118,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         setBusy(true);
         try {
           const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
-          if (r.player) setPlayer(p => ({ ...r.player!, hold: p.hold, walletAddress: p.walletAddress }));
+          if (r.player) setPlayer(r.player); else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
           if (r.status === 'failed') throw new Error('El envío falló y se te devolvió el saldo. Inténtalo más tarde.');
           log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
           coinRain(coinImg); bass(); strongHaptic();
