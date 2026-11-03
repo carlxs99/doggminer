@@ -31,7 +31,7 @@ export const adminOverview = createServerFn({ method: 'POST' })
   });
 
 // ---------- Tasks ----------
-const TaskRow = z.object({ id: z.string(), kind: z.enum(['channel', 'group', 'bot']), title: z.string(), description: z.string().nullable(), url: z.string(), chat_id: z.string().nullable(), reward: z.coerce.number(), active: z.boolean(), sort: z.number(), claims: z.number(), created_at: z.string() });
+const TaskRow = z.object({ id: z.string(), kind: z.enum(['channel', 'group', 'bot', 'react']), title: z.string(), description: z.string().nullable(), url: z.string(), chat_id: z.string().nullable(), reward: z.coerce.number(), active: z.boolean(), sort: z.number(), claims: z.number(), created_at: z.string() });
 export type AdminTask = z.infer<typeof TaskRow>;
 
 export const adminTasks = createServerFn({ method: 'POST' })
@@ -46,7 +46,7 @@ export const adminTasks = createServerFn({ method: 'POST' })
 export const adminSaveTask = createServerFn({ method: 'POST' })
   .inputValidator(Init.extend({
     id: z.string().uuid().optional(),
-    kind: z.enum(['channel', 'group', 'bot']),
+    kind: z.enum(['channel', 'group', 'bot', 'react']),
     title: z.string().trim().min(2).max(80),
     description: z.string().trim().max(160).optional(),
     url: z.string().trim().min(2).max(300),
@@ -69,7 +69,7 @@ export const adminSaveTask = createServerFn({ method: 'POST' })
       const me = await botApi<{ id: number }>('getMe', {});
       const role = await botApi<{ status: string }>('getChatMember', { chat_id: chat.id, user_id: me.id }).catch(() => ({ status: 'left' }));
       if (role.status !== 'administrator' && role.status !== 'creator') throw new Error('El bot tiene que ser administrador de ese canal o grupo para verificar a los usuarios.');
-      if (data.kind === 'channel' && chat.type !== 'channel') throw new Error('Ese chat es un grupo, no un canal. Elige «Grupo».');
+      if ((data.kind === 'channel' || data.kind === 'react') && chat.type !== 'channel') throw new Error('Ese chat es un grupo, no un canal. Elige «Grupo».');
       if (data.kind === 'group' && chat.type === 'channel') throw new Error('Ese chat es un canal, no un grupo. Elige «Canal».');
       chatId = String(chat.id);
     } else if (!/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}bot(\?.*)?$/i.test(url)) {
