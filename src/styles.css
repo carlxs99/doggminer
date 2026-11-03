@@ -253,7 +253,7 @@ body{background-color:var(--background);background-image:
 .smoke-layer i:nth-child(3){left:20%;bottom:-40vmax;animation-duration:44s}
 @keyframes smoke{0%{transform:translate(0,0) scale(1)}50%{transform:translate(8vw,-6vh) scale(1.15)}100%{transform:translate(-6vw,4vh) scale(.95)}}
 @media (prefers-reduced-motion:reduce){.smoke-layer i{animation:none}}
-.app-layout>*:not(.smoke-layer):not(.splash){position:relative;z-index:1}
+.app-layout>*:not(.smoke-layer):not(:where(.splash)){position:relative;z-index:1}
 .app-layout>.sidebar{position:fixed}.app-layout>.bottom-nav{position:fixed;z-index:20}
 /* Typography: graffiti titles, chicano numbers */
 .page-heading h1,.section-heading h2,.brand,.mobile-brand{font-family:var(--font-graffiti);font-weight:400;letter-spacing:.01em}
