@@ -2,7 +2,6 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { JETTON } from './dogg';
 import { autoUpgradeId } from './mining';
-import { purchasedDogg, purchasedFromTransfers, type TonapiEvent, type ToncenterTransfer } from './purchase';
 
 const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional() });
 
@@ -217,59 +216,7 @@ export const referralAction = createServerFn({ method: 'POST' })
     return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), friends: z.array(FriendSchema) }).parse(r.data);
   });
 
-const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
-
-/** Primary source: toncenter (keyed, so it isn't throttled like anonymous TONAPI). Incoming $DOGG transfers, up to 2,000. */
-async function boughtViaToncenter(address: string) {
-  const key = process.env['TONCENTER_API_KEY'];
-  const transfers: ToncenterTransfer[] = [];
-  for (let page = 0; page < 4; page++) {
-    let res: Response | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      res = await fetch(`https://toncenter.com/api/v3/jetton/transfers?owner_address=${encodeURIComponent(address)}&jetton_master=${JETTON}&direction=in&limit=500&offset=${page * 500}&sort=desc`, key ? { headers: { 'X-API-Key': key } } : undefined);
-      if (res.ok) break;
-      await wait(800 + attempt * 800);
-    }
-    if (!res?.ok) throw new Error(`toncenter ${res?.status ?? 0}`);
-    const j = await res.json() as { jetton_transfers?: ToncenterTransfer[] };
-    const list = j.jetton_transfers ?? [];
-    transfers.push(...list);
-    if (list.length < 500) break;
-  }
-  return purchasedFromTransfers(transfers, address);
-}
-
-/** Backup source: TONAPI jetton history (up to 500 events). */
-async function boughtViaTonapi(address: string) {
-  const key = process.env['TONAPI_KEY'];
-  const events: TonapiEvent[] = [];
-  let before = '';
-  for (let page = 0; page < 5; page++) {
-    let res: Response | null = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}/history?limit=100${before ? `&before_lt=${before}` : ''}`, key ? { headers: { Authorization: `Bearer ${key}` } } : undefined);
-      if (res.ok || res.status === 404) break;
-      await wait(900 + attempt * 900);
-    }
-    if (!res || res.status === 404) break;
-    if (!res.ok) throw new Error(`tonapi ${res.status}`);
-    const j = await res.json() as { events?: TonapiEvent[]; next_from?: number };
-    events.push(...(j.events ?? []));
-    if (!j.next_from || !j.events?.length) break;
-    before = String(j.next_from);
-  }
-  return purchasedDogg(events, address);
-}
-
-/** $DOGG the wallet has bought on a DEX, read server-side from its on-chain history (toncenter, then TONAPI). */
-async function boughtDogg(address: string) {
-  try { return await boughtViaToncenter(address); } catch (e) { console.error('purchase check: toncenter failed', e); }
-  try { return await boughtViaTonapi(address); } catch (e) { console.error('purchase check: tonapi failed', e); }
-  // No status code in the message: it must read as "couldn't check", not as a traffic error.
-  throw new Error('No se pudo comprobar tu compra ahora mismo. Inténtalo en un minuto.');
-}
-
-/** One-time withdrawal verification: the linked wallet must have bought >= 100 $DOGG. Once passed, it's permanent. */
+/** One-time withdrawal verification: the linked wallet must hold >= 100 $DOGG on-chain (read server-side). Once passed, it's permanent. */
 export const verifyPurchase = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
   .handler(async ({ data }) => {
@@ -279,8 +226,10 @@ export const verifyPurchase = createServerFn({ method: 'POST' })
     const wallet = row.data?.wallet_address;
     if (!wallet) throw new Error('Conecta y vincula tu wallet TON primero.');
     if (!row.data?.withdraw_verified_at) {
-      const bought = await boughtDogg(wallet);
-      const v = await supabaseAdmin.rpc('dogg_verify_withdraw', { p_telegram_id: telegramId, p_wallet: wallet, p_bought: bought });
+      // Fresh read (not the 45 s cache): the player may have just bought.
+      const onChain = await jettonHold(wallet);
+      await supabaseAdmin.from('dogg_players').update({ last_hold: onChain, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
+      const v = await supabaseAdmin.rpc('dogg_verify_withdraw', { p_telegram_id: telegramId, p_wallet: wallet, p_bought: onChain });
       if (v.error) throw new Error(v.error.message);
     }
     const hold = await currentHold(supabaseAdmin, telegramId);
