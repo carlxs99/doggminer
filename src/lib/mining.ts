@@ -30,3 +30,9 @@ export function bestLevel(total: number): number {
   for (const m of MINERS) { if (m.hold <= total) n = m.level; else break; }
   return n;
 }
+
+/** Miner the player should auto-upgrade to (best one their wallet hold + app balance covers), or null if already there or better. */
+export function autoUpgradeId(minerId: string, balance: number, hold: number): string | null {
+  const best = minerAt(bestLevel(balance + hold));
+  return best.daily > getMiner(minerId).daily ? best.id : null;
+}

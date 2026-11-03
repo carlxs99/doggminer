@@ -4,7 +4,12 @@ import { toast } from 'sonner';
 import { playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { haptic, SHIFT_MS, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
-import { getMiner, shiftTotal, switchMiner } from '@/lib/mining';
+import { autoUpgradeId, getMiner, shiftTotal, switchMiner } from '@/lib/mining';
+type ServerPlayer = Player & { downgraded?: string | null | undefined; upgraded?: string | null | undefined };
+function notifyLevel(p: ServerPlayer) {
+  if (p.upgraded) { toast.success(`¡Tu hold subió! Ahora minas con ${getMiner(p.upgraded).name}`); strongHaptic(); }
+  else if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
+}
 import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
 import coinImg from '@/assets/dogg-coin.png';
 
@@ -38,28 +43,43 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const verifyProof = useCallback(async (v: WalletProof) => {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
-    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold`); }
+    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); notifyLevel(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold`); }
     catch (e) { toast.error(friendlyError(e, 'No se pudo vincular la wallet')); }
   }, [verifyCall]);
   useEffect(() => {
-    const app = window.Telegram?.WebApp;
-    app?.ready(); app?.expand(); try { app?.setHeaderColor?.('#070b08'); (app as unknown as { setBackgroundColor?: (c: string) => void })?.setBackgroundColor?.('#070b08'); } catch { /* older clients */ }
-    (app as unknown as { setHeaderTitle?: (title: string) => void } | undefined)?.setHeaderTitle?.('$DOGG MINER');
-    setNow(Date.now());
-    if (app?.initData) {
-      setDemo(false); setName(app.initDataUnsafe?.user?.first_name ?? 'Homie');
-      const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then((p: Player & { downgraded?: string | null }) => {
-        setPlayer(p);
-        if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
+    let cleanup = () => {};
+    let tries = 0;
+    // The Telegram script can finish loading after hydration: wait for it (up to ~5s) before falling back to demo.
+    const boot = () => {
+      const app = window.Telegram?.WebApp;
+      const inTelegram = Boolean(app?.initData) || /tgWebAppData=/.test(window.location.hash);
+      if (!app && tries++ < 25) { retry = setTimeout(boot, 200); return; }
+      if (!app?.initData && inTelegram && tries++ < 25) { retry = setTimeout(boot, 200); return; }
+      app?.ready(); app?.expand(); try { app?.setHeaderColor?.('#070b08'); (app as unknown as { setBackgroundColor?: (c: string) => void })?.setBackgroundColor?.('#070b08'); } catch { /* older clients */ }
+      (app as unknown as { setHeaderTitle?: (title: string) => void } | undefined)?.setHeaderTitle?.('$DOGG MINER');
+      setNow(Date.now());
+      const timer = setInterval(() => setNow(Date.now()), 100);
+      if (!app?.initData) { cleanup = () => clearInterval(timer); return; }
+      setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
+      const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then(p => {
+        setPlayer(p); notifyLevel(p);
       }).catch(e => { if (!silent) toast.error(friendlyError(e)); });
       read(false);
       const holdTimer = setInterval(() => read(true), 60000);
-      const timer = setInterval(() => setNow(Date.now()), 100);
-      return () => { clearInterval(timer); clearInterval(holdTimer); };
-    }
-    const timer = setInterval(() => setNow(Date.now()), 100);
-    return () => clearInterval(timer);
+      const onVisible = () => { if (document.visibilityState === 'visible') read(true); };
+      document.addEventListener('visibilitychange', onVisible);
+      cleanup = () => { clearInterval(timer); clearInterval(holdTimer); document.removeEventListener('visibilitychange', onVisible); };
+    };
+    let retry: ReturnType<typeof setTimeout> | undefined;
+    boot();
+    return () => { clearTimeout(retry); cleanup(); };
   }, [call]);
+  // Demo: the miner also rises on its own when demo credits cover a better one.
+  useEffect(() => {
+    if (!demo) return;
+    const up = autoUpgradeId(player.minerId, player.balance, 0);
+    if (up) { setPlayer(p => switchMiner(p, up, Date.now())); toast.success(`¡Subiste a ${getMiner(up).name}!`); }
+  }, [demo, player.balance, player.minerId]);
   const action = async (kind: 'start' | 'claim' | 'checkin') => {
     if (busy) return;
     haptic(); setBusy(true);
@@ -67,7 +87,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!demo) {
         const initData = window.Telegram?.WebApp?.initData;
         if (!initData) throw new Error('Abre la app desde Telegram.');
-        setPlayer(await call({ data: { initData, action: kind } }));
+        { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
       } else {
         const today = new Date().toISOString().slice(0, 10);
         if (kind === 'start') {
@@ -118,7 +138,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         setBusy(true);
         try {
           const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
-          if (r.player) setPlayer(r.player); else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
+          if (r.player) { setPlayer(r.player); notifyLevel(r.player); } else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
           if (r.status === 'failed') throw new Error('El envío falló y se te devolvió el saldo. Inténtalo más tarde.');
           log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
           coinRain(coinImg); bass(); strongHaptic();
