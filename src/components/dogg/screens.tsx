@@ -97,24 +97,39 @@ function PnlChart() {
     <svg className="boost-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label="Progreso de $DOGG ganado"><polygon points={`0,40 ${line} 100,40`} /><polyline points={line} /></svg>
   </section>;
 }
+const PAGE = 10;
 export function GrowOps() {
   const { player, demo, busy, activateMiner } = useDogg();
-  const current = getMiner(player.minerId).category;
+  const currentMiner = getMiner(player.minerId);
+  const current = currentMiner.category;
   const [tier, setTier] = useState<string>(MINER_TIERS.includes(current as never) ? current : MINER_TIERS[0]);
+  const inTier = MINERS.filter(m => m.category === tier);
+  const activeIndex = inTier.findIndex(m => m.id === player.minerId);
+  const [page, setPage] = useState(activeIndex >= 0 ? Math.floor(activeIndex / PAGE) : 0);
+  const pages = Math.max(1, Math.ceil(inTier.length / PAGE));
+  const tierIndex = MINER_TIERS.indexOf(tier as never);
+  const shown = inTier.slice(page * PAGE, page * PAGE + PAGE);
+  const pickTier = (t: string) => { haptic(); setTier(t); const i = MINERS.filter(m => m.category === t).findIndex(m => m.id === player.minerId); setPage(i >= 0 ? Math.floor(i / PAGE) : 0); };
+  const go = (d: number) => { haptic(); setPage(p => Math.min(pages - 1, Math.max(0, p + d))); };
   return <><div className="screen-head"><h1>Aumentar velocidad de minería</h1><p>Tu rango sigue al $DOGG minado en la app más tu hold on-chain.</p></div><PnlChart /><h2 className="vault-h">Paquetes de velocidad</h2>
-    <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : player.walletAddress ? `Wallet vinculada · ${(player.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold desbloquean tus mineros.` : 'Conecta tu wallet en Billetera para que tu $DOGG desbloquee mineros.'}</span></div>
-    <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={`rank-${i + 1} ${tier === t ? 'active' : ''}`} onClick={() => { haptic(); setTier(t); }}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div><p className="tier-count">{MINERS.length} mineros · 10 rangos</p>
-    {[tier].map(category => <section key={category} className="miner-category"><div className="section-heading"><h2>{category}</h2><span className="text-gold">WEST COAST 420</span></div><div className="grow-grid">{MINERS.filter(m => m.category === category).map(miner => {
-      const active = player.minerId === miner.id;
-      const eligible = miner.hold === 0 || player.balance + (demo ? 0 : player.hold ?? 0) >= miner.hold;
-      return <article key={miner.id} className={`grow-card rank-${MINER_TIERS.indexOf(category as never) + 1} ${active ? 'owned' : ''}`} aria-label={miner.name}>
-        <div className="flex justify-between"><span className="eyebrow">{category.toUpperCase()}</span>{active ? <Check className="text-primary" size={16} /> : !eligible ? <LockKeyhole className="text-muted-foreground" size={16} /> : <Sprout className="text-primary" size={16} />}</div>
-        <div className={`grow-art tier-art ${active ? 'live' : 'idle'}`}>{active ? <video src={TIER_CLIP[MINER_TIERS.indexOf(category as never)]} poster={TIER_ART[MINER_TIERS.indexOf(category as never)]} autoPlay muted loop playsInline preload="auto" aria-label={`${category}: DOGG regando su planta`} /> : <img src={TIER_ART[MINER_TIERS.indexOf(category as never)] ?? TIER_ART[0]} alt={`${category}: DOGG regando su planta`} loading="lazy" />}</div>
-        <h2>{miner.name}</h2><div className="grow-stats"><div><span>Potencia</span><strong><Zap size={15} /> {miner.power} <small>TH/s</small></strong></div><div><span>Producción diaria</span><strong>{miner.daily} <small>$DOGG/d</small></strong></div></div>
-        <div className="hold-requirement"><Wallet />{miner.hold === 0 ? 'Disponible para todos' : `Hold: ${miner.hold.toLocaleString('de-DE')} $DOGG`}</div>
-        <Button variant={active ? 'default' : 'outline'} className="miner-state-button w-full" disabled={busy || active || !eligible || miner.daily < getMiner(player.minerId).daily} onClick={() => void activateMiner(miner.id)}>{active ? <><Check /> MINANDO AHORA</> : eligible ? (miner.daily < getMiner(player.minerId).daily ? 'ALCANZADO' : 'MINAR') : `MANTÉN ${miner.hold.toLocaleString('de-DE')} $DOGG`}</Button>
-      </article>;
-    })}</div></section>)}
+    <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : player.walletAddress ? `Wallet vinculada · ${(player.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold desbloquean tus mineros.` : 'Conecta tu wallet en Perfil para que tu $DOGG desbloquee mineros.'}</span></div>
+    <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={`rank-${i + 1} ${tier === t ? 'active' : ''}`} onClick={() => pickTier(t)}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div>
+    <section className="miner-category">
+      <div className="miner-pager"><Button size="sm" onClick={() => go(-1)} disabled={page === 0}>Anterior</Button><span><b>{tier}</b>Nivel {tierIndex * 50 + page * PAGE + 1}–{tierIndex * 50 + Math.min(inTier.length, page * PAGE + PAGE)}</span><Button size="sm" onClick={() => go(1)} disabled={page >= pages - 1}>Siguiente</Button></div>
+      <div className="grow-grid">{shown.map(miner => {
+        const active = player.minerId === miner.id;
+        const eligible = miner.hold === 0 || player.balance + (demo ? 0 : player.hold ?? 0) >= miner.hold;
+        const reached = miner.daily < currentMiner.daily;
+        return <article key={miner.id} className={`grow-card rank-${tierIndex + 1} ${active ? 'owned' : ''}`} aria-label={miner.name}>
+          <div className={`grow-art tier-art ${active ? 'live' : 'idle'}`}>{active ? <video src={TIER_CLIP[tierIndex]} poster={TIER_ART[tierIndex]} autoPlay muted loop playsInline preload="auto" aria-label={`${tier}: DOGG regando su planta`} /> : <img src={TIER_ART[tierIndex] ?? TIER_ART[0]} alt={`${tier}: DOGG regando su planta`} loading="lazy" />}<span className="grow-badge">{active ? <Check size={13} /> : !eligible ? <LockKeyhole size={13} /> : <Sprout size={13} />}</span></div>
+          <h2>{miner.name}</h2>
+          <div className="grow-stats"><strong><Zap size={13} /> +{miner.power} <small>TH/s</small></strong><span>{miner.daily} $DOGG/d</span></div>
+          {!eligible && <div className="hold-requirement"><Wallet />Hold {miner.hold.toLocaleString('de-DE')}</div>}
+          <Button variant={active ? 'default' : eligible && !reached ? 'default' : 'secondary'} className="miner-state-button w-full" disabled={busy || active || !eligible || reached} onClick={() => void activateMiner(miner.id)}>{active ? <><Check /> MINANDO</> : eligible ? (reached ? 'ALCANZADO' : 'MINAR') : `MANTÉN ${miner.hold.toLocaleString('de-DE')}`}</Button>
+        </article>;
+      })}</div>
+      <p className="tier-count">{MINERS.length} mineros · 10 rangos · página {page + 1} de {pages}</p>
+    </section>
   </>;
 }
 
