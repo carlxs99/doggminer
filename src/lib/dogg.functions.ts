@@ -191,13 +191,14 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
     return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: !player || player.error || hold === null ? null : await settle(supabaseAdmin, telegramId, player.data, hold) };
   });
 
-/** Rewarded ads: 'start' opens a server-side ad session before the ad shows; 'claim' pays +15 $DOGG once that session is ≥5s old (10 per day, enforced by dogg_ad under a row lock). */
+/** Rewarded ads: 'start' opens an ad view and returns its unique ymid for the Monetag SDK; 'status' reads it.
+ *  The +15 $DOGG is paid only by the Monetag postback (/api/public/monetag-postback), never by the app. */
 export const adAction = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim']) }))
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'status']), ymid: z.string().uuid().optional() }))
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const r = await supabaseAdmin.rpc('dogg_ad', { p_telegram_id: telegramId, p_action: data.action });
+    const r = await supabaseAdmin.rpc('dogg_ad', { p_telegram_id: telegramId, p_action: data.action, ...(data.ymid ? { p_ymid: data.ymid } : {}) });
     if (r.error) throw new Error(r.error.message);
-    return z.object({ adsToday: z.number(), balance: z.number() }).parse(r.data);
+    return z.object({ adsToday: z.number(), balance: z.number(), ymid: z.string().optional(), status: z.string().optional() }).parse(r.data);
   });
