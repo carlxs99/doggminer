@@ -17,3 +17,4 @@
 - [x] Monetag rewarded ads (+15, 10/day) with server-side session + daily cap; Lovable badge hidden.
 - [x] Withdrawal verification: buy 100 $DOGG with the linked wallet once, then withdraw forever. Real purchase detection untested (no DeDust buys of $DOGG on-chain yet).
 - [x] Automatic payouts: on-chain confirmation by query_id, scheduled retry every 2 min, funds check. Needs TONCENTER_API_KEY and more TON in the payout wallet; real send untested.
+- [x] Admin panel (/admin, admin-only header shield): summary + payout wallet, tasks (channel/group verified by bot, bot 10 s), users (search, balance adjust), withdrawals (send now, refund, mark sent). Real channel verification untested (no channel with the bot as admin).
