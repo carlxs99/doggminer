@@ -18,7 +18,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; synced: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -30,6 +30,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [name, setName] = useState('Homie');
   const [busy, setBusy] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
+  // True once the server has told us which wallet (if any) is already linked to this Telegram account.
+  const [synced, setSynced] = useState(false);
   const [history, setHistory] = useState<Entry[]>([]);
   const log = (e: Omit<Entry, 'at'>) => setHistory(h => [{ ...e, at: Date.now() }, ...h]);
   const applyBalance = useCallback((balance: number, entry?: Omit<Entry, 'at'>) => { setPlayer(p => ({ ...p, balance })); if (entry) setHistory(h => [{ ...entry, at: Date.now() }, ...h]); }, []);
@@ -68,7 +70,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!app?.initData) { cleanup = () => clearInterval(timer); return; }
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
       const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then(p => {
-        setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin));
+        setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); setSynced(true);
       }).catch(e => { if (!silent) toast.error(friendlyError(e)); });
       read(false);
       const holdTimer = setInterval(() => read(true), 60000);
@@ -216,7 +218,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       else toast.message(t('toast.adPending'), { description: t('toast.adPendingDesc', { r: AD_REWARD }) });
     } catch (e) { toast.error(friendlyError(e, t('toast.adFail'))); }
   };
-  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, synced }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.
