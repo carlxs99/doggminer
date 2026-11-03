@@ -3,7 +3,7 @@
 //  1. Reconcile 'sending' rows against the chain: confirmed → 'sent'; bounced → refund; expired unsent → back to 'pending'.
 //  2. Send 'pending' rows one at a time, each only after the previous message has been executed.
 // Unconfirmed sends whose seqno was used stay 'sending' for manual review (never auto-refunded: that could double-pay).
-import { Address, beginCell, internal, SendMode, toNano, TonClient, WalletContractV4, WalletContractV5R1 } from '@ton/ton';
+import { Address, beginCell, Cell, external, internal, SendMode, storeMessage, toNano, WalletContractV4, WalletContractV5R1 } from '@ton/ton';
 import { mnemonicToPrivateKey } from '@ton/crypto';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
@@ -21,8 +21,33 @@ const REVIEW_MS = 15 * 60_000;
 
 async function retry<T>(fn: () => Promise<T>, tries = 4): Promise<T> {
   let last: unknown;
-  for (let i = 0; i < tries; i++) { try { return await fn(); } catch (e) { last = e; await sleep(800 * (i + 1)); } }
+  for (let i = 0; i < tries; i++) { try { return await fn(); } catch (e) { last = e; await sleep(1100 * (i + 1)); } }
   throw last;
+}
+
+/** Minimal fetch-based toncenter v2 client (no axios, so it runs on the edge runtime). */
+function toncenter(apiKey: string | undefined) {
+  const rpc = <T>(method: string, params: Record<string, unknown>) => retry(async () => {
+    const r = await fetch('https://toncenter.com/api/v2/jsonRPC', { method: 'POST', headers: { 'Content-Type': 'application/json', ...(apiKey ? { 'X-API-Key': apiKey } : {}) }, body: JSON.stringify({ id: 1, jsonrpc: '2.0', method, params }) });
+    const j = await r.json().catch(() => null) as { ok?: boolean; result?: T; error?: string } | null;
+    if (!r.ok || !j?.ok) throw new Error(`toncenter ${method} ${r.status}: ${j?.error ?? ''}`);
+    return j.result as T;
+  });
+  type Stack = [string, unknown][];
+  const runGet = async (address: Address, method: string, stack: Stack = []) => {
+    const res = await rpc<{ exit_code: number; stack: Stack }>('runGetMethod', { address: address.toString(), method, stack });
+    if (res.exit_code !== 0 && res.exit_code !== 1) throw new Error(`${method} exit ${res.exit_code}`);
+    return res.stack;
+  };
+  const num = (item: [string, unknown] | undefined) => BigInt(String(item?.[1] ?? '0'));
+  const cell = (item: [string, unknown] | undefined) => Cell.fromBase64((item?.[1] as { bytes: string }).bytes);
+  return {
+    state: (a: Address) => rpc<{ balance: string; state: string }>('getAddressInformation', { address: a.toString() }).then(r => ({ balance: BigInt(r.balance), state: r.state })),
+    seqno: async (a: Address) => { try { return Number(num((await runGet(a, 'seqno'))[0])); } catch { return 0; } },
+    jettonWallet: async (owner: Address) => cell((await runGet(Address.parse(JETTON), 'get_wallet_address', [['tvm.Slice', beginCell().storeAddress(owner).endCell().toBoc().toString('base64')]]))[0]).beginParse().loadAddress(),
+    jettonBalance: async (jw: Address) => { try { return num((await runGet(jw, 'get_wallet_data'))[0]); } catch { return 0n; } },
+    sendBoc: (boc: string) => rpc('sendBoc', { boc }),
+  };
 }
 
 async function setup() {
@@ -30,23 +55,20 @@ async function setup() {
   if (!words || words.length < 12) throw new Error('Wallet de pagos no configurada');
   const key = await mnemonicToPrivateKey(words);
   const apiKey = process.env['TONCENTER_API_KEY'];
-  const client = new TonClient({ endpoint: 'https://toncenter.com/api/v2/jsonRPC', ...(apiKey ? { apiKey } : {}) });
+  const tc = toncenter(apiKey);
   const v5 = WalletContractV5R1.create({ workchain: 0, publicKey: key.publicKey });
   const v4 = WalletContractV4.create({ workchain: 0, publicKey: key.publicKey });
   // Use the deployed wallet version that holds the funds (Tonkeeper creates W5 by default, older wallets are v4).
-  const [s5, s4] = [await retry(() => client.getContractState(v5.address)), await retry(() => client.getContractState(v4.address))];
+  const s5 = await tc.state(v5.address); const s4 = await tc.state(v4.address);
   const wallet = s5.state === 'active' && (s4.state !== 'active' || s5.balance >= s4.balance) ? v5 : v4;
-  const opened = client.open(wallet);
-  const jw = await retry(() => client.runMethod(Address.parse(JETTON), 'get_wallet_address', [{ type: 'slice', cell: beginCell().storeAddress(wallet.address).endCell() }]));
-  const jettonWallet = jw.stack.readAddress();
+  const jettonWallet = await tc.jettonWallet(wallet.address);
   const decimals = 9; // $DOGG metadata: 9 decimals
-  return { client, opened, wallet, key, jettonWallet, decimals, apiKey };
+  return { tc, wallet, key, jettonWallet, decimals, apiKey, seqno: () => tc.seqno(wallet.address) };
 }
 
 async function funds(ctx: Ctx) {
-  const ton = await retry(() => ctx.client.getBalance(ctx.wallet.address));
-  let dogg = 0n;
-  try { dogg = (await retry(() => ctx.client.runMethod(ctx.jettonWallet, 'get_wallet_data'), 2)).stack.readBigNumber(); } catch { dogg = 0n; }
+  const ton = (await ctx.tc.state(ctx.wallet.address)).balance;
+  const dogg = await ctx.tc.jettonBalance(ctx.jettonWallet);
   return { ton, dogg };
 }
 
@@ -96,7 +118,9 @@ async function sendOne(ctx: Ctx, w: Row, seqno: number, queryId: string) {
   const units = jettonUnits(Number(w.amount), ctx.decimals);
   const body = beginCell().storeUint(0xf8a7ea5, 32).storeUint(BigInt(queryId), 64).storeCoins(units)
     .storeAddress(Address.parse(w.address)).storeAddress(ctx.wallet.address).storeBit(0).storeCoins(1n).storeBit(0).endCell();
-  await ctx.opened.sendTransfer({ seqno, secretKey: ctx.key.secretKey, sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS, messages: [internal({ to: ctx.jettonWallet, value: MSG_VALUE, bounce: true, body })] });
+  const transfer = ctx.wallet.createTransfer({ seqno, secretKey: ctx.key.secretKey, sendMode: SendMode.PAY_GAS_SEPARATELY | SendMode.IGNORE_ERRORS, messages: [internal({ to: ctx.jettonWallet, value: MSG_VALUE, bounce: true, body })] });
+  const ext = external({ to: ctx.wallet.address, body: await transfer });
+  await ctx.tc.sendBoc(beginCell().store(storeMessage(ext)).endCell().toBoc().toString('base64'));
 }
 
 /** Pays queued withdrawals automatically. Safe to call often (from requests and the scheduled job). */
@@ -111,7 +135,7 @@ export async function processPayouts(admin: Admin, budgetMs = 45_000) {
     const since = new Date(Date.now() - 24 * 3600_000).toISOString();
     const { data: sending } = await admin.from('dogg_withdrawals').select('id, address, amount, seqno, query_id, attempted_at').eq('status', 'sending').gte('created_at', since);
     if (sending?.length) {
-      const seqnoNow = await retry(() => ctx.opened.getSeqno());
+      const seqnoNow = await ctx.seqno();
       const oldest = Math.min(...sending.map(w => (w.attempted_at ? Date.parse(w.attempted_at) : Date.now()) / 1000));
       const list = await outgoing(ctx, Math.floor(oldest) - 300).catch(() => null);
       if (!list) { summary.waiting = true; return summary; }
@@ -129,14 +153,14 @@ export async function processPayouts(admin: Admin, budgetMs = 45_000) {
         summary.error = 'payout wallet needs funds';
         break;
       }
-      const seqno = await retry(() => ctx.opened.getSeqno());
+      const seqno = await ctx.seqno();
       const queryId = queryIdFor(w.id);
       // Record the attempt BEFORE sending: if anything breaks after the send, reconcile still knows about it.
       const claimed = await admin.from('dogg_withdrawals').update({ status: 'sending', seqno, query_id: queryId, attempted_at: new Date().toISOString(), error: null }).eq('id', w.id).eq('status', 'pending').select('id');
       if (!claimed.data?.length) continue;
       try { await sendOne(ctx, w, seqno, queryId); } catch (e) { console.error('payout send', e); }
       let executed = false;
-      for (let t = 0; t < 16 && !executed; t++) { await sleep(2500); try { executed = (await ctx.opened.getSeqno()) > seqno; } catch { /* retry */ } }
+      for (let t = 0; t < 16 && !executed; t++) { await sleep(2500); executed = (await ctx.seqno()) > seqno; }
       if (!executed) { summary.waiting = true; break; } // resolved by a later run
       for (let t = 0; t < 6; t++) {
         await sleep(3000);
@@ -158,5 +182,5 @@ export async function payoutStatus() {
   const ctx = await setup();
   const f = await funds(ctx);
   const recent = await outgoing(ctx, Math.floor(Date.now() / 1000) - 30 * 86400).catch(() => null);
-  return { address: ctx.wallet.address.toString({ bounceable: false }), version: ctx.wallet instanceof WalletContractV5R1 ? 'W5' : 'v4', ton: Number(f.ton) / 1e9, dogg: Number(f.dogg) / 10 ** ctx.decimals, jettonWallet: ctx.jettonWallet.toString(), seqno: await ctx.opened.getSeqno(), indexerOk: recent !== null, recentOut: recent?.length ?? 0 };
+  return { address: ctx.wallet.address.toString({ bounceable: false }), version: ctx.wallet instanceof WalletContractV5R1 ? 'W5' : 'v4', ton: Number(f.ton) / 1e9, dogg: Number(f.dogg) / 10 ** ctx.decimals, jettonWallet: ctx.jettonWallet.toString(), seqno: await ctx.seqno(), indexerOk: recent !== null, recentOut: recent?.length ?? 0 };
 }
