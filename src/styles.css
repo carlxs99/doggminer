@@ -669,7 +669,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .pnl-chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--border);padding-top:10px}
 .pnl-chart-head>b{font-size:13px;color:var(--primary);font-variant-numeric:tabular-nums;white-space:nowrap}
 .pnl-ranges{display:flex;gap:2px;background:var(--muted);border-radius:9px;padding:2px}
-.pnl-ranges button{height:26px;min-width:34px;padding:0 6px;border-radius:7px;font-size:11px;font-weight:700;color:var(--muted-foreground)}
+.pnl-ranges button{height:30px;min-width:38px;padding:0 6px;border-radius:7px;font-size:11px;font-weight:700;color:var(--muted-foreground)}
 .pnl-ranges button.active{background:var(--background);color:var(--foreground)}
 .pnl-chart{width:100%;height:64px;display:block}
 .pnl-chart polyline{fill:none;stroke:var(--primary);stroke-width:1.2;vector-effect:non-scaling-stroke}
