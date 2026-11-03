@@ -413,3 +413,5 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .row-icon{width:40px;height:40px}
 .wallet-connect{max-width:150px}
 }
+.topbar{gap:8px}.mobile-brand{min-width:0;white-space:nowrap}.header-actions{flex-shrink:0;min-width:0}
+@media(max-width:400px){.demo-tag{display:none}.wallet-connect{max-width:140px}}
