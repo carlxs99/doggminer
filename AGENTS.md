@@ -19,3 +19,4 @@
 - Withdrawals: DB function deducts balance and queues atomically; server sends jetton transfers from the PAYOUT_MNEMONIC hot wallet under a single DB lock (seqno safety) and refunds on send failure; unconfirmed sends stay 'sending' for manual review rather than auto-refunding.
 - Miner tier art is square: each sq-tier-N clip starts and ends on its sq-N still, which doubles as the poster, so playback never jumps or crops.
 - Rewarded ads: the server opens an ad session (dogg_ad 'start') before showing the Monetag ad and pays only on 'claim' ≥5s later under a row lock with a daily cap, because the client cannot be trusted to report views.
+- Screen headers use the shared ScreenHero/Logo components (src/components/dogg/hero.tsx) and the neon theme block at the end of src/styles.css, so all five screens keep one visual style.
