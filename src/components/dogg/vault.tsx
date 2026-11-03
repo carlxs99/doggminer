@@ -149,13 +149,13 @@ export function Amigos() {
         <div><ShieldCheck /><strong>{d.qualified}</strong><small>Minando</small></div>
         <div><Coin size={18} /><strong>{formatDogg(d.earned).replace(/,000$/, '')}</strong><small>Ganado</small></div>
       </section>
-      <section className="info-row ref-pending"><span className="row-icon gold"><Gift /></span><div><strong>Por reclamar</strong><b className="row-amount">{formatDogg(d.pending)} <Coin /></b><small>+{REF_BONUS} cuando tu homie inicia su primer turno · {REF_SHARE * 100} % de lo que mine</small></div><Button size="sm" onClick={() => void claim()} disabled={claiming || busy || d.pending <= 0}>{claiming ? <RefreshCw className="animate-spin" /> : 'Reclamar'}</Button></section>
+      <section className="info-row ref-pending"><span className="row-icon gold"><Gift /></span><div><strong>Por reclamar</strong><b className="row-amount">{formatDogg(d.pending)} <Coin /></b><small>+{REF_BONUS} cuando tu homie inicia su primer turno · {REF_SHARE * 100} % de por vida de lo que mine</small></div><Button size="sm" onClick={() => void claim()} disabled={claiming || busy || d.pending <= 0}>{claiming ? <RefreshCw className="animate-spin" /> : 'Reclamar'}</Button></section>
     </div>
     <h2 className="vault-h center">Cómo funciona</h2>
     <ol className="ref-steps">
       <li><span>1</span><div><strong>Comparte tu enlace</strong><small>Tu homie abre $DOGG MINER desde él.</small></div></li>
       <li><span>2</span><div><strong>Inicia la minería</strong><small>Ganas <b>+{REF_BONUS} $DOGG</b> solo cuando tu homie prende su primer turno de minería. No necesita wallet.</small></div></li>
-      <li><span>3</span><div><strong>Gana para siempre</strong><small>Recibes el <b>{REF_SHARE * 100} %</b> de cada turno que cobre. Él no pierde nada.</small></div></li>
+      <li><span>3</span><div><strong>Gana de por vida</strong><small>Recibes el <b>{REF_SHARE * 100} %</b> de cada turno que cobre, para siempre y sin caducidad. Él no pierde nada.</small></div></li>
     </ol>
     <h2 className="vault-h center">Últimos amigos invitados</h2>
     {d.friends.length === 0
