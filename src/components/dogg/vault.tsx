@@ -6,7 +6,10 @@ import { Input } from '@/components/ui/input';
 import { useDogg, WITHDRAW_FEE, WITHDRAW_MIN, type Entry } from './state';
 import { Title } from './screens';
 import { ScreenHero } from './hero';
-import { JETTON, SWAP, PRICE, formatDogg, haptic } from '@/lib/dogg';
+import { JETTON, SWAP, PRICE, REF_BONUS, REF_SHARE, formatDogg, friendlyError, haptic, referralLink } from '@/lib/dogg';
+import { referralAction } from '@/lib/dogg.functions';
+import { coinRain, strongHaptic } from '@/lib/fx';
+import { useServerFn } from '@tanstack/react-start';
 import { bestLevel, getMiner } from '@/lib/mining';
 import coin from '@/assets/dogg-coin.webp';
 import mascot from '@/assets/dogg-mascot.webp';
@@ -100,26 +103,64 @@ export function Billetera() {
 }
 
 function useReferral() {
-  const id = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user?.id : undefined;
-  const bot = (import.meta.env['VITE_TELEGRAM_BOT_USERNAME'] as string | undefined) ?? 'Doggminerbot';
-  return id ? `https://t.me/${bot}?startapp=ref_${id}` : null;
+  const [id, setId] = useState<number | null>(null);
+  useEffect(() => { setId(window.Telegram?.WebApp?.initDataUnsafe?.user?.id ?? null); }, []);
+  return id ? referralLink(id) : null;
 }
+type RefData = { total: number; qualified: number; pending: number; earned: number; walletLinked: boolean; friends: { name: string; username: string | null; joinedAt: string; qualified: boolean; given: number }[] };
 
 export function Amigos() {
+  const { demo, busy, applyBalance } = useDogg();
   const link = useReferral();
+  const refCall = useServerFn(referralAction);
   const [copied, setCopied] = useState(false);
-  async function copy() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
-  function share() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en $DOGG MINER 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
+  const [data, setData] = useState<RefData | null>(null);
+  const [claiming, setClaiming] = useState(false);
+  const [now] = useState(() => Date.now());
+  useEffect(() => {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (demo || !initData) return;
+    let active = true;
+    refCall({ data: { initData, action: 'read' } }).then(r => { if (active) setData(r); }).catch(e => { if (active) toast.error(friendlyError(e, 'No se pudieron cargar tus referidos')); });
+    return () => { active = false; };
+  }, [demo, refCall]);
+  async function copy() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 2000); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
+  function share() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('🐶👑 Únete a mi crew en $DOGG MINER: mina $DOGG gratis cada día en Telegram 🌿')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
+  async function claim() {
+    haptic();
+    const initData = window.Telegram?.WebApp?.initData;
+    if (demo || !initData) { toast.info('Abre la app desde Telegram para reclamar tus recompensas.'); return; }
+    setClaiming(true);
+    try {
+      const r = await refCall({ data: { initData, action: 'claim' } });
+      setData(r); applyBalance(r.balance, { kind: 'team', label: 'Recompensa de referidos', amount: r.claimed });
+      coinRain(coin); strongHaptic(); toast.success(`+${formatDogg(r.claimed)} $DOGG de tu crew`);
+    } catch (e) { toast.error(friendlyError(e, 'No se pudo reclamar')); }
+    finally { setClaiming(false); }
+  }
+  const d = data ?? { total: 0, qualified: 0, pending: 0, earned: 0, walletLinked: false, friends: [] };
   return <>
     <ScreenHero title="Amigos" art="cap" subtitle="Invita a tus homies y crece juntos" />
     <div className="row-list">
-      <section className="info-row"><span className="row-icon"><Link2 /></span><div><strong>Tu enlace de invitación</strong><small className="break">{link ?? 'Disponible al abrir desde Telegram'}</small></div><Button size="sm" onClick={() => void copy()}>{copied ? <Check /> : 'Copiar'}</Button></section>
-      <section className="info-row"><span className="row-icon"><Users /></span><div><strong>Tus referidos</strong><small>0 calificados · 0 en total</small></div></section>
-      <section className="info-row"><span className="row-icon gold"><Gift /></span><div><strong>Recompensa por recluta</strong><small>0 disponibles · +100 $DOGG c/u</small></div><Button size="sm" variant="secondary" disabled>Reclamar</Button></section>
-      <section className="info-row"><span className="row-icon gold"><Percent /></span><div><strong>Billetera del crew</strong><small>10 % de lo que minen tus reclutas, para siempre</small></div><Button size="sm" onClick={share}><Share2 /> Compartir</Button></section>
+      <section className="info-row"><span className="row-icon"><Link2 /></span><div><strong>Tu enlace de invitación</strong><small className="break">{link ?? 'Disponible al abrir desde Telegram'}</small></div><Button size="sm" onClick={() => void copy()} aria-label="Copiar enlace">{copied ? <Check /> : <Copy />}</Button></section>
+      <Button className="ref-share" onClick={share}><Share2 /> Invitar amigos</Button>
+      <section className="ref-stats" aria-label="Tus referidos">
+        <div><Users /><strong>{d.total}</strong><small>Invitados</small></div>
+        <div><ShieldCheck /><strong>{d.qualified}</strong><small>Calificados</small></div>
+        <div><Coin size={18} /><strong>{formatDogg(d.earned).replace(/,000$/, '')}</strong><small>Ganado</small></div>
+      </section>
+      <section className="info-row ref-pending"><span className="row-icon gold"><Gift /></span><div><strong>Por reclamar</strong><b className="row-amount">{formatDogg(d.pending)} <Coin /></b><small>{d.walletLinked || demo ? `+${REF_BONUS} por recluta · ${REF_SHARE * 100} % de lo que minen` : 'Vincula tu wallet en Perfil para poder reclamar'}</small></div><Button size="sm" onClick={() => void claim()} disabled={claiming || busy || d.pending <= 0}>{claiming ? <RefreshCw className="animate-spin" /> : 'Reclamar'}</Button></section>
     </div>
+    <h2 className="vault-h center">Cómo funciona</h2>
+    <ol className="ref-steps">
+      <li><span>1</span><div><strong>Comparte tu enlace</strong><small>Tu homie abre $DOGG MINER desde él.</small></div></li>
+      <li><span>2</span><div><strong>Conecta su wallet</strong><small>Cuando vincula su wallet TON, ganas <b>+{REF_BONUS} $DOGG</b>.</small></div></li>
+      <li><span>3</span><div><strong>Gana para siempre</strong><small>Recibes el <b>{REF_SHARE * 100} %</b> de cada turno que cobre. Él no pierde nada.</small></div></li>
+    </ol>
     <h2 className="vault-h center">Últimos amigos invitados</h2>
-    <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace: cada homie cuenta cuando conecta su wallet.</p></section>
+    {d.friends.length === 0
+      ? <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace: cada homie cuenta cuando conecta su wallet.</p></section>
+      : <section className="vault-list">{d.friends.map((f, i) => <div key={f.joinedAt + i} className="vault-item"><span className="credential-avatar ref-avatar">{f.name.slice(0, 1).toUpperCase()}</span><div><strong>{f.name}</strong><small>{f.username ? `@${f.username} · ` : ''}{ago(Date.parse(f.joinedAt), now)}</small></div><div className="vault-amount">{f.qualified ? <strong>+{formatDogg(f.given + REF_BONUS)} <Coin size={12} /></strong> : null}<em className={f.qualified ? 'ok' : ''}>{f.qualified ? 'Calificado' : 'Falta wallet'}</em></div></div>)}</section>}
   </>;
 }
 

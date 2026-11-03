@@ -16,7 +16,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void> };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -29,6 +29,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [busy, setBusy] = useState(false);
   const [history, setHistory] = useState<Entry[]>([]);
   const log = (e: Omit<Entry, 'at'>) => setHistory(h => [{ ...e, at: Date.now() }, ...h]);
+  const applyBalance = useCallback((balance: number, entry?: Omit<Entry, 'at'>) => { setPlayer(p => ({ ...p, balance })); if (entry) setHistory(h => [{ ...entry, at: Date.now() }, ...h]); }, []);
   const [wallet, setWallet] = useState<string | null>(null);
   const [openWallet, storeOpenWallet] = useState<(() => void) | null>(null);
   const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
@@ -198,7 +199,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       else toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
     } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
   };
-  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.
