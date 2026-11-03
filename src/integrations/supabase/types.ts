@@ -481,6 +481,7 @@ export type Database = {
           amount: number
           attempted_at: string | null
           attempts: number
+          channel_notified_at: string | null
           created_at: string
           error: string | null
           fee: number
@@ -498,6 +499,7 @@ export type Database = {
           amount: number
           attempted_at?: string | null
           attempts?: number
+          channel_notified_at?: string | null
           created_at?: string
           error?: string | null
           fee?: number
@@ -515,6 +517,7 @@ export type Database = {
           amount?: number
           attempted_at?: string | null
           attempts?: number
+          channel_notified_at?: string | null
           created_at?: string
           error?: string | null
           fee?: number

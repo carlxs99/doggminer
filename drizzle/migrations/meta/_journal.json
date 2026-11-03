@@ -162,6 +162,13 @@
       "when": 1793745800598,
       "tag": "0022_channel_posts_ai",
       "breakpoints": true
+    },
+    {
+      "idx": 23,
+      "version": "7",
+      "when": 1793746400446,
+      "tag": "0023_payout_channel_notified",
+      "breakpoints": true
     }
   ]
 }
