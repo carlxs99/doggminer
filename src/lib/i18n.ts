@@ -29,13 +29,20 @@ export const t = (key: Key, vars?: Vars) => translate(current, key, vars);
 /** Translates a stored label if it is a dictionary key; otherwise returns it as written (e.g. a task title). */
 export const tLabel = (label: string, lang: Lang = current) => isKey(label) ? translate(lang, label) : label;
 
-/** Best initial language: saved choice, then the Telegram/device language. */
+/** Language used when the player's language is unknown or not one we translate. */
+export const FALLBACK_LANG: Lang = 'en';
+/** Maps a Telegram/device language code to an app language; anything unknown falls back to English. */
+export function langFromCode(code: string | null | undefined): Lang {
+  const c = (code ?? '').trim().toLowerCase();
+  if (/^(ru|uk|be|kk)\b/.test(c)) return 'ru';
+  if (/^es\b/.test(c)) return 'es';
+  return FALLBACK_LANG;
+}
+/** Best initial language: saved choice, then the Telegram language, then the device language, else English. */
 export function detectLang(): Lang {
   try { const saved = localStorage.getItem('dogg-lang'); if (saved === 'es' || saved === 'en' || saved === 'ru') return saved; } catch { /* storage blocked */ }
-  const code = ((window.Telegram?.WebApp?.initDataUnsafe?.user as { language_code?: string } | undefined)?.language_code ?? navigator.language ?? 'es').toLowerCase();
-  if (code.startsWith('ru') || code.startsWith('uk') || code.startsWith('be') || code.startsWith('kk')) return 'ru';
-  if (code.startsWith('es')) return 'es';
-  return code.startsWith('en') ? 'en' : 'es';
+  const tg = (window.Telegram?.WebApp?.initDataUnsafe?.user as { language_code?: string } | undefined)?.language_code;
+  return langFromCode(tg || navigator.language);
 }
 
 // Server messages are written in Spanish; map the known ones to dictionary keys (capture groups become {n}).
