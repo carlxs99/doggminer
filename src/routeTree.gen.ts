@@ -17,6 +17,7 @@ import { Route as GrowOpsRouteImport } from './routes/grow-ops'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
+import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api.public.telegram-webhook'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
 import { Route as ApiPublicJobsPayoutsRouteImport } from './routes/api.public.jobs.payouts'
 
@@ -61,6 +62,12 @@ const ApiPublicMonetagPostbackRoute =
     path: '/api/public/monetag-postback',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicTelegramWebhookRoute =
+  ApiPublicTelegramWebhookRouteImport.update({
+    id: '/api/public/telegram-webhook',
+    path: '/api/public/telegram-webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
   id: '/api/public/ton-manifest',
   path: '/api/public/ton-manifest',
@@ -81,6 +88,7 @@ export interface FileRoutesByFullPath {
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
+  '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
@@ -93,6 +101,7 @@ export interface FileRoutesByTo {
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
+  '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
@@ -106,6 +115,7 @@ export interface FileRoutesById {
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
+  '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
@@ -120,6 +130,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/trabajos'
     | '/api/public/monetag-postback'
+    | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/payouts'
   fileRoutesByTo: FileRoutesByTo
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/trabajos'
     | '/api/public/monetag-postback'
+    | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/payouts'
   id:
@@ -144,6 +156,7 @@ export interface FileRouteTypes {
     | '/perfil'
     | '/trabajos'
     | '/api/public/monetag-postback'
+    | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/payouts'
   fileRoutesById: FileRoutesById
@@ -157,6 +170,7 @@ export interface RootRouteChildren {
   PerfilRoute: typeof PerfilRoute
   TrabajosRoute: typeof TrabajosRoute
   ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
+  ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
   ApiPublicJobsPayoutsRoute: typeof ApiPublicJobsPayoutsRoute
 }
@@ -219,6 +233,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicMonetagPostbackRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/telegram-webhook': {
+      id: '/api/public/telegram-webhook'
+      path: '/api/public/telegram-webhook'
+      fullPath: '/api/public/telegram-webhook'
+      preLoaderRoute: typeof ApiPublicTelegramWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/ton-manifest': {
       id: '/api/public/ton-manifest'
       path: '/api/public/ton-manifest'
@@ -245,6 +266,7 @@ const rootRouteChildren: RootRouteChildren = {
   PerfilRoute: PerfilRoute,
   TrabajosRoute: TrabajosRoute,
   ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,
+  ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
   ApiPublicJobsPayoutsRoute: ApiPublicJobsPayoutsRoute,
 }

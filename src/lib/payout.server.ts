@@ -9,6 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import { JETTON } from './dogg';
 import { jettonUnits, matchTransfer, queryIdFor, type ChainTransfer } from './payout-match';
+import { notifyWithdrawal } from './notify.server';
 
 type Admin = SupabaseClient<Database>;
 type Ctx = Awaited<ReturnType<typeof setup>>;

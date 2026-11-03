@@ -10,8 +10,11 @@ export const Route = createFileRoute('/api/public/jobs/payouts')({
         if (authFailure) return authFailure;
         const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
         const { processPayouts } = await import('@/lib/payout.server');
-        const summary = await processPayouts(supabaseAdmin, 40_000);
-        return Response.json({ ok: true, ...summary });
+        // Keeps the bot chat (/start welcome) pointed at the published app.
+        const { ensureWebhook } = await import('@/lib/notify.server');
+        const webhook = await ensureWebhook().catch(e => { console.error('ensureWebhook', e); return null; });
+        const summary = await processPayouts(supabaseAdmin, 38_000);
+        return Response.json({ ok: true, webhook, ...summary });
       },
     },
   },
