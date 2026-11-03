@@ -20,7 +20,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; synced: boolean; earnedBefore: number };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -34,6 +34,10 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   // True once the server has told us which wallet (if any) is already linked to this Telegram account.
   const [synced, setSynced] = useState(false);
+  // Loading screen: stays until the account, its earnings history and today's ads are loaded (or loading failed).
+  const [readDone, setReadDone] = useState(false);
+  const [ledgerDone, setLedgerDone] = useState(false);
+  const [adsDone, setAdsDone] = useState(false);
   const [history, setHistory] = useState<Entry[]>([]);
   // Real players: history and PnL come from the server ledger (every balance movement), refreshed when the balance changes.
   const [ledger, setLedger] = useState<{ entries: Entry[]; earnedBefore: number } | null>(null);
@@ -72,11 +76,11 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       setNow(Date.now());
       // Shared clock ticks once a second; only the live counter on Minar ticks faster, locally, so the whole app doesn't re-render 10×/s.
       const timer = setInterval(() => setNow(Date.now()), 1000);
-      if (!app?.initData) { cleanup = () => clearInterval(timer); return; }
+      if (!app?.initData) { setReadDone(true); cleanup = () => clearInterval(timer); return; }
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
       const read = (silent: boolean) => deviceSignals().then(device => call({ data: { initData: app.initData!, action: 'read', ...(device ? { device } : {}) } })).then(p => {
         setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); setSynced(true);
-      }).catch(e => { if (!silent) toast.error(friendlyError(e)); });
+      }).catch(e => { if (!silent) toast.error(friendlyError(e)); }).finally(() => setReadDone(true));
       read(false);
       // Ask once for permission to message the player (withdrawal and referral notices from the bot).
       const askWrite = setTimeout(() => {
@@ -96,8 +100,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     const initData = window.Telegram?.WebApp?.initData;
     if (demo || !synced || !initData) return;
     let alive = true;
-    const load = () => ledgerCall({ data: { initData } }).then(r => { if (alive) setLedger(r); }).catch(() => { /* keep the last copy */ });
-    const first = setTimeout(load, 600); // let the balance settle after an action
+    const load = () => ledgerCall({ data: { initData } }).then(r => { if (alive) setLedger(r); }).catch(() => { /* keep the last copy */ }).finally(() => { if (alive) setLedgerDone(true); });
+    const first = setTimeout(load, ledgerDone ? 600 : 0); // first load at once (loading screen); later ones let the balance settle after an action
     const poll = setInterval(load, 120_000); // withdrawal statuses change without a balance change
     return () => { alive = false; clearTimeout(first); clearInterval(poll); };
   }, [demo, synced, player.balance, ledgerCall]);
@@ -167,7 +171,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const initData = window.Telegram?.WebApp?.initData;
     if (demo || !initData) return;
-    adCall({ data: { initData, action: 'read' } }).then(r => setAds({ day: new Date().toISOString().slice(0, 10), count: r.adsToday })).catch(() => {});
+    adCall({ data: { initData, action: 'read' } }).then(r => setAds({ day: new Date().toISOString().slice(0, 10), count: r.adsToday })).catch(() => {}).finally(() => setAdsDone(true));
   }, [demo, adCall]);
   const paidAd = () => { log({ kind: 'task', label: 'hist.ad', amount: AD_REWARD }); scratch(); strongHaptic(); toast.success(t('toast.adPaid', { r: AD_REWARD })); };
   const rewardAd = async () => {
@@ -196,11 +200,12 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       else toast.message(t('toast.adPending'), { description: t('toast.adPendingDesc', { r: AD_REWARD }) });
     } catch (e) { toast.error(friendlyError(e, t('toast.adFail'))); }
   };
+  const loaded = readDone && (demo || !synced || (ledgerDone && adsDone));
   const shown = !demo && ledger ? ledger.entries : history;
   // The wallet linked to the account (server) counts even without a live session, so players never reconnect to mine, verify or withdraw.
   const linkedWallet = !demo && player.walletAddress ? friendlyAddress(player.walletAddress) : null;
   const wallet = (tcWallet ? friendlyAddress(tcWallet) : null) ?? linkedWallet;
-  return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, synced }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, synced, loaded }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.
