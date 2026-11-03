@@ -33,7 +33,7 @@ export const Route = createFileRoute('/api/public/monetag-postback')({
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const r = await supabaseAdmin.rpc('dogg_ad_postback', {
       p_ymid: q.data.ymid, p_event: q.data.event_type ?? null, p_reward: q.data.reward_event_type ?? null, p_price: price, p_telegram_id: tg,
-    } as never);
+    } as { p_ymid: string; p_event: string; p_reward: string; p_price: number; p_telegram_id: number }); // nulls are allowed by the SQL function
     // A database error returns 500 so Monetag retries later; the row lock + status make retries safe.
     if (r.error) { console.error('monetag postback', r.error.message); return new Response('retry', { status: 500 }); }
     return new Response(String(r.data));
