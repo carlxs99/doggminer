@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ArrowUpRight, ArrowRight, Zap, Clock3, Leaf, LockKeyhole, Sprout, Flame, Gift, Gamepad2, Check, Users, Copy, Wallet, ExternalLink, Trophy, ShieldCheck, RefreshCw, ChevronRight, Music2, Tv, Play } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Zap, Clock3, Leaf, LockKeyhole, Sprout, Gamepad2, Check, Users, Copy, Wallet, ExternalLink, Trophy, ShieldCheck, RefreshCw, ChevronRight, Music2, Tv, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -55,7 +55,8 @@ function AdsCard() {
   const { adsToday, rewardAd, demo } = useDogg();
   const [left, setLeft] = useState<number | null>(null);
   const remaining = Math.max(0, AD_DAILY - adsToday);
-  useEffect(() => { if (left === null) return; if (left === 0) { setLeft(null); rewardAd(); return; } const id = setTimeout(() => setLeft(l => (l ?? 1) - 1), 1000); return () => clearTimeout(id); }, [left, rewardAd]);
+  const reward = useRef(rewardAd); reward.current = rewardAd;
+  useEffect(() => { if (left === null) return; if (left === 0) { setLeft(null); reward.current(); return; } const id = setTimeout(() => setLeft(l => (l ?? 1) - 1), 1000); return () => clearTimeout(id); }, [left]);
   const ready = demo;
   return <section className="ads-card" aria-label="Ver anuncios">
     <div className="ads-top"><span className="ads-icon"><Tv /></span><div><h2>Ver anuncios</h2><p>+{AD_REWARD} $DOGG por anuncio · {adsToday}/{AD_DAILY} hoy</p></div></div>
