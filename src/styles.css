@@ -626,6 +626,5 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .screen-hero.art-leaf .screen-hero-art{width:40%;right:2px}
 }
 @media(max-width:800px){.mobile-brand{min-height:44px;align-items:center}}
-/* Longer screen titles (e.g. Russian «Профиль») shrink so they never run under the artwork */
-.screen-hero h1.long{font-size:clamp(34px,11vw,52px)}
-.screen-hero h1.long.crowned{font-size:clamp(32px,10vw,48px)}
+/* Longer screen titles (e.g. Russian «Профиль») shrink with their length so they never run under the artwork */
+.screen-hero h1{font-size:min(clamp(44px,14vw,60px),calc(72vw / var(--chars,5)))!important}
