@@ -119,7 +119,7 @@ export function Amigos() {
       <section className="info-row"><span className="row-icon gold"><Percent /></span><div><strong>Billetera del crew</strong><small>10 % de lo que minen tus reclutas, para siempre</small></div><Button size="sm" onClick={share}><Share2 /> Compartir</Button></section>
     </div>
     <h2 className="vault-h center">Últimos amigos invitados</h2>
-    <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace y aparecerán aquí con su estado.</p></section>
+    <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace: cada homie cuenta cuando conecta su wallet.</p></section>
   </>;
 }
 
