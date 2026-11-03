@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import bust from '@/assets/ui/dogg-bust.webp';
 import bustCap from '@/assets/ui/dogg-bust-cap.webp';
 import leaf from '@/assets/ui/leaf.webp';
-import crown from '@/assets/ui/crown.png';
+import crown from '@/assets/ui/crown.webp';
 
 const ART = { bust, cap: bustCap, leaf } as const;
 

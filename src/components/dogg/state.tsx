@@ -12,7 +12,7 @@ function notifyLevel(p: ServerPlayer) {
   else if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
 }
 import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
-import coinImg from '@/assets/dogg-coin.png';
+import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
