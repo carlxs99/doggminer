@@ -19,7 +19,6 @@ import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api.public.telegram-webhook'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
-import { Route as ApiPublicWuProbeRouteImport } from './routes/api.public.wu-probe'
 import { Route as ApiPublicJobsChannelPostRouteImport } from './routes/api.public.jobs.channel-post'
 import { Route as ApiPublicJobsPayoutsRouteImport } from './routes/api.public.jobs.payouts'
 
@@ -75,11 +74,6 @@ const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
   path: '/api/public/ton-manifest',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicWuProbeRoute = ApiPublicWuProbeRouteImport.update({
-  id: '/api/public/wu-probe',
-  path: '/api/public/wu-probe',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicJobsChannelPostRoute =
   ApiPublicJobsChannelPostRouteImport.update({
     id: '/api/public/jobs/channel-post',
@@ -103,7 +97,6 @@ export interface FileRoutesByFullPath {
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
-  '/api/public/wu-probe': typeof ApiPublicWuProbeRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
@@ -118,7 +111,6 @@ export interface FileRoutesByTo {
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
-  '/api/public/wu-probe': typeof ApiPublicWuProbeRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
@@ -134,7 +126,6 @@ export interface FileRoutesById {
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
-  '/api/public/wu-probe': typeof ApiPublicWuProbeRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
@@ -151,7 +142,6 @@ export interface FileRouteTypes {
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
-    | '/api/public/wu-probe'
     | '/api/public/jobs/channel-post'
     | '/api/public/jobs/payouts'
   fileRoutesByTo: FileRoutesByTo
@@ -166,7 +156,6 @@ export interface FileRouteTypes {
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
-    | '/api/public/wu-probe'
     | '/api/public/jobs/channel-post'
     | '/api/public/jobs/payouts'
   id:
@@ -181,7 +170,6 @@ export interface FileRouteTypes {
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
-    | '/api/public/wu-probe'
     | '/api/public/jobs/channel-post'
     | '/api/public/jobs/payouts'
   fileRoutesById: FileRoutesById
@@ -197,7 +185,6 @@ export interface RootRouteChildren {
   ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
-  ApiPublicWuProbeRoute: typeof ApiPublicWuProbeRoute
   ApiPublicJobsChannelPostRoute: typeof ApiPublicJobsChannelPostRoute
   ApiPublicJobsPayoutsRoute: typeof ApiPublicJobsPayoutsRoute
 }
@@ -274,13 +261,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTonManifestRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/wu-probe': {
-      id: '/api/public/wu-probe'
-      path: '/api/public/wu-probe'
-      fullPath: '/api/public/wu-probe'
-      preLoaderRoute: typeof ApiPublicWuProbeRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/jobs/channel-post': {
       id: '/api/public/jobs/channel-post'
       path: '/api/public/jobs/channel-post'
@@ -309,7 +289,6 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
-  ApiPublicWuProbeRoute: ApiPublicWuProbeRoute,
   ApiPublicJobsChannelPostRoute: ApiPublicJobsChannelPostRoute,
   ApiPublicJobsPayoutsRoute: ApiPublicJobsPayoutsRoute,
 }
