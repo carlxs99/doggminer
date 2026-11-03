@@ -110,7 +110,7 @@ export const es = {
   'profile.wdHistory': 'Historial de retiros', 'profile.wdEmpty': 'Aún no hay retiros.',
 
   // History labels
-  'hist.mining': 'Cobro de minería', 'hist.withdraw': 'Retiro', 'hist.ad': 'Anuncio visto', 'hist.ref': 'Recompensa de referidos', 'hist.checkin': 'Bonus diario',
+  'hist.mining': 'Cobro de minería', 'hist.withdraw': 'Retiro', 'hist.ad': 'Anuncio visto', 'hist.ref': 'Recompensa de referidos', 'hist.checkin': 'Bonus diario', 'hist.task': 'Tarea completada', 'hist.refund': 'Retiro devuelto', 'hist.admin': 'Ajuste del admin',
 
   // Toasts from game actions
   'toast.upgraded': '¡Tu hold subió! Ahora minas con {name}',

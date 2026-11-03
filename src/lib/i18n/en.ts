@@ -103,7 +103,7 @@ export const en: Record<keyof typeof es, string> = {
   'profile.withdraw': 'Withdraw $DOGG', 'profile.minPh': 'Minimum {n}', 'profile.minNote': 'Minimum {min} $DOGG. Fee {fee} $DOGG.', 'profile.request': 'Request withdrawal',
   'profile.wdHistory': 'Withdrawal history', 'profile.wdEmpty': 'No withdrawals yet.',
 
-  'hist.mining': 'Mining payout', 'hist.withdraw': 'Withdrawal', 'hist.ad': 'Ad watched', 'hist.ref': 'Referral reward', 'hist.checkin': 'Daily bonus',
+  'hist.mining': 'Mining payout', 'hist.withdraw': 'Withdrawal', 'hist.ad': 'Ad watched', 'hist.ref': 'Referral reward', 'hist.checkin': 'Daily bonus', 'hist.task': 'Task completed', 'hist.refund': 'Withdrawal returned', 'hist.admin': 'Admin adjustment',
 
   'toast.upgraded': 'Your hold went up! Now mining with {name}',
   'toast.downgraded': 'Your $DOGG hold dropped: your miner went down to the best level your balance covers.',
