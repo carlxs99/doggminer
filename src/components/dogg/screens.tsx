@@ -10,16 +10,11 @@ import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY,
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
-const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/*.mp4.asset.json', { eager: true, import: 'default' });
-const TIER_CLIP = Array.from({ length: 10 }, (_, index) => {
-  const level = index + 1;
-  const finalClip = Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/final-tier-${level}.mp4.asset.json`));
-  const previousClip = Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/v2-tier-${level}.mp4.asset.json`));
-  const fallback = Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/tier-${level}.mp4.asset.json`));
-  return finalClip?.[1].url ?? previousClip?.[1].url ?? fallback?.[1].url;
-});
-const WIDE_ART = import.meta.glob<string>('@/assets/tiers/wide-*.jpg', { eager: true, import: 'default' });
-const TIER_ART = Array.from({ length: 10 }, (_, index) => Object.entries(WIDE_ART).find(([path]) => path.endsWith(`/wide-${index + 1}.jpg`))?.[1] ?? '');
+// Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.jpg still, so the poster never jumps.
+const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
+const TIER_CLIP = Array.from({ length: 10 }, (_, index) => Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/sq-tier-${index + 1}.mp4.asset.json`))?.[1].url);
+const SQUARE_ART = import.meta.glob<string>('@/assets/tiers/sq-*.jpg', { eager: true, import: 'default' });
+const TIER_ART = Array.from({ length: 10 }, (_, index) => Object.entries(SQUARE_ART).find(([path]) => path.endsWith(`/sq-${index + 1}.jpg`))?.[1] ?? '');
 function Title({ label, title, accent, description }: { label: string; title: string; accent: string; description: string }) { return <div className="page-heading"><span className="eyebrow"><span />{label}</span><h1>{title} <em>{accent}</em><span className="heading-period">.</span></h1><p>{description}</p></div>; }
 function Countdown({ elapsed }: { elapsed: number }) { const s = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 1000)); return <>{String(Math.floor(s / 3600)).padStart(2, '0')}<span>:</span>{String(Math.floor(s % 3600 / 60)).padStart(2, '0')}<span>:</span>{String(s % 60).padStart(2, '0')}</>; }
 export { Title };
