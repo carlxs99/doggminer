@@ -96,13 +96,15 @@ function HoldSummary({ player, demo, busy, current, onActivate }: { player: Play
   const top = bestLevel(total);
   const next = top < 500 ? minerAt(top + 1) : null;
   const best = minerAt(top);
-  return <div className="hold-summary">
-    <div className="hold-sum-row"><span>{t('boost.wallet')} {player.walletAddress || demo ? '' : t('boost.unlinked')}</span><b>{formatDogg(hold)}</b></div>
-    <div className="hold-sum-row"><span>{t('boost.inApp')}</span><b>{formatDogg(player.balance)}</b></div>
-    <div className="hold-sum-row total"><span>{t('boost.total')}</span><b>{formatDogg(total)} $DOGG</b></div>
-    <p>{t('boost.unlocks', { n: top, name: best.name })}{next ? t('boost.missing', { x: formatDogg(Math.max(0, next.hold - total)), n: next.level }) : t('boost.max')}{t('boost.auto')}</p>
-    {top > current && <Button className="w-full" disabled={busy} onClick={() => onActivate(best.id)}><Zap /> {t('boost.upNow', { n: top })}</Button>}
-  </div>;
+  return <>
+    <div className="pnl-strip">
+      <div><small>{t('boost.wallet')}{player.walletAddress || demo ? '' : ` ${t('boost.unlinked')}`}</small><b>{formatDogg(hold)}</b></div>
+      <div><small>{t('boost.inApp')}</small><b>{formatDogg(player.balance)}</b></div>
+      <div className="total"><small>{t('boost.total')}</small><b>{formatDogg(total)}</b></div>
+    </div>
+    <p className="pnl-hint">{(next ? t('boost.missing', { x: formatDogg(Math.max(0, next.hold - total)), n: next.level }) : t('boost.max')).trim()}</p>
+    {top > current && <Button className="w-full" size="sm" disabled={busy} onClick={() => onActivate(best.id)}><Zap /> {t('boost.upNow', { n: top })}</Button>}
+  </>;
 }
 const RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
 function PnlChart() {
@@ -114,17 +116,24 @@ function PnlChart() {
   const gains = history.filter(e => e.amount > 0 && e.kind !== 'withdraw').sort((a, b) => a.at - b.at);
   const today = gains.filter(e => e.at >= now - 864e5).reduce((a, e) => a + e.amount, 0);
   let acc = earnedBefore + gains.filter(e => e.at < from).reduce((a, e) => a + e.amount, 0);
+  const start = acc;
   const pts: [number, number][] = [[Number.isFinite(from) ? from : (gains[0]?.at ?? now - 864e5), acc]];
   for (const e of gains.filter(e => e.at >= from)) { pts.push([e.at, acc]); acc += e.amount; pts.push([e.at, acc]); }
   pts.push([now, acc]);
   const x0 = pts[0]![0], span = Math.max(1, now - x0), top = Math.max(1, acc);
   const line = pts.map(([t, v]) => `${((t - x0) / span * 100).toFixed(2)},${(38 - v / top * 34).toFixed(2)}`).join(' ');
   const miner = getMiner(player.minerId);
-  return <section className="boost-head">
-    <div className="boost-level"><div><strong>{t('mine.level', { n: miner.level || 1 })}</strong><span>{t('boost.pnl', { x: today.toLocaleString('de-DE', { maximumFractionDigits: 2 }) })}</span></div><em>{tierName(miner.category, t)}</em></div>
+  const fmt = (v: number) => v.toLocaleString('de-DE', { maximumFractionDigits: 2 });
+  return <section className="boost-head pnl-card">
+    <div className="pnl-top"><strong>{t('mine.level', { n: miner.level || 1 })}</strong><em>{tierName(miner.category, t)}</em><span>{t('boost.pnl', { x: fmt(today) })}</span></div>
     <HoldSummary player={player} demo={demo} busy={busy} current={miner.level || 1} onActivate={id => void activateMiner(id)} />
-    <div className="boost-ranges" role="tablist">{(Object.keys(RANGES) as (keyof typeof RANGES)[]).map(r => <button key={r} role="tab" aria-selected={range === r} className={range === r ? 'active' : ''} onClick={() => { haptic(); setRange(r); }}>{r === 'All' ? t('boost.all') : r}</button>)}</div>
-    <svg className="boost-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label={t('boost.chart')}><polygon points={`0,40 ${line} 100,40`} /><polyline points={line} /></svg>
+    <div className="pnl-chart-head">
+      <b>+{fmt(acc - start)} $DOGG</b>
+      <div className="pnl-ranges" role="tablist">{(Object.keys(RANGES) as (keyof typeof RANGES)[]).map(r => <button key={r} role="tab" aria-selected={range === r} className={range === r ? 'active' : ''} onClick={() => { haptic(); setRange(r); }}>{r === 'All' ? t('boost.all') : r}</button>)}</div>
+    </div>
+    {acc > 0
+      ? <svg className="pnl-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label={t('boost.chart')}><polygon points={`0,40 ${line} 100,40`} /><polyline points={line} /></svg>
+      : <p className="pnl-empty">{t('boost.noGains')}</p>}
   </section>;
 }
 const PAGE = 10;

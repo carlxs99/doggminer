@@ -58,7 +58,7 @@ export const ru: Record<keyof typeof es, string> = {
   'boost.subtitle': 'Увеличь скорость майнинга', 'boost.packs': 'Пакеты скорости',
   'boost.wallet': 'Кошелёк', 'boost.unlinked': '(не привязан)', 'boost.inApp': 'Намайнено в приложении', 'boost.total': 'Твой общий холд',
   'boost.unlocks': 'Открыто до уровня {n} · {name}.', 'boost.missing': ' До уровня {n} не хватает {x} $DOGG.', 'boost.max': ' У тебя максимальный уровень.', 'boost.auto': ' Майнер сам повышается при покупке и понижается при продаже.',
-  'boost.upNow': 'Перейти на уровень {n}', 'boost.pnl': 'PNL за сегодня +{x} $DOGG', 'boost.all': 'Всё', 'boost.chart': 'Рост заработанных $DOGG',
+  'boost.upNow': 'Перейти на уровень {n}', 'boost.pnl': 'PNL за сегодня +{x} $DOGG', 'boost.all': 'Всё', 'boost.noGains': 'Пока нет доходов. Начни смену, чтобы увидеть PNL.', 'boost.chart': 'Рост заработанных $DOGG',
   'boost.noticeDemo': 'Демо · требования считаются по тестовым кредитам. Балансы кошелька отдельно.',
   'boost.noticeLinked': 'Кошелёк привязан · {n} $DOGG в холде открывают твои майнеры.',
   'boost.noticeConnect': 'Подключи кошелёк в Профиле, чтобы твои $DOGG открывали майнеры.',
