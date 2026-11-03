@@ -27,7 +27,7 @@ export function openDedust(e?: MouseEvent) {
   });
   const tg = window.Telegram?.WebApp;
   // Small delay so the toast is seen and the copy lands before Telegram switches apps.
-  setTimeout(() => { if (tg?.openTelegramLink) tg.openTelegramLink(DEDUST_APP); else window.open(DEDUST_APP, '_blank', 'noopener'); }, 350);
+  setTimeout(() => { if (tg?.initData && tg.openTelegramLink) tg.openTelegramLink(DEDUST_APP); else window.open(DEDUST_APP, '_blank', 'noopener'); }, 350);
 }
 
 export function BuyDedustLink({ className, children }: { className?: string; children: ReactNode }) {
