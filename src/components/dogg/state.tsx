@@ -152,7 +152,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       toast.success('Solicitud de retiro enviada · En revisión');
     } catch (e) { toast.error(friendlyError(e, 'No se pudo retirar')); }
   };
-  // Ads: real Monetag rewarded ad; in Telegram the server opens a session before the ad and pays +15 after it (10/day). Demo pays preview credits.
+  // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +15 (10/day);
+  // the app only polls the result. Demo pays preview credits.
   const [ads, setAds] = useState({ day: '', count: 0 });
   const today = new Date(now || 0).toISOString().slice(0, 10);
   const adsToday = ads.day === today ? ads.count : 0;
@@ -162,27 +163,38 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     if (demo || !initData) return;
     adCall({ data: { initData, action: 'read' } }).then(r => setAds({ day: new Date().toISOString().slice(0, 10), count: r.adsToday })).catch(() => {});
   }, [demo, adCall]);
+  const paidAd = () => { log({ kind: 'task', label: 'Anuncio visto', amount: AD_REWARD }); scratch(); strongHaptic(); toast.success(`+${AD_REWARD} $DOGG por ver el anuncio`); };
   const rewardAd = async () => {
     if (adsToday >= AD_DAILY) { toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
     haptic();
     try {
       const initData = window.Telegram?.WebApp?.initData;
-      if (!demo) {
-        if (!initData) throw new Error('Abre la app desde Telegram.');
-        await adCall({ data: { initData, action: 'start' } });
-      }
-      await showRewardedAd();
       const day = new Date().toISOString().slice(0, 10);
-      if (!demo && initData) {
-        const r = await adCall({ data: { initData, action: 'claim' } });
-        setAds({ day, count: r.adsToday });
-        setPlayer(p => ({ ...p, balance: r.balance }));
-      } else {
+      if (demo) {
+        await showRewardedAd();
         setAds({ day, count: adsToday + 1 });
         setPlayer(p => ({ ...p, balance: p.balance + AD_REWARD }));
+        paidAd();
+        return;
       }
-      log({ kind: 'task', label: 'Anuncio visto', amount: AD_REWARD });
-      scratch(); strongHaptic(); toast.success(`+${AD_REWARD} $DOGG por ver el anuncio`);
+      if (!initData) throw new Error('Abre la app desde Telegram.');
+      const { ymid } = await adCall({ data: { initData, action: 'start' } });
+      if (!ymid) throw new Error('No se pudo preparar el anuncio.');
+      await showRewardedAd(ymid);
+      // Wait for Monetag's server confirmation (usually a few seconds).
+      const end = Date.now() + 25000;
+      let last = 'pending';
+      while (Date.now() < end) {
+        await new Promise(r => setTimeout(r, 2000));
+        const r = await adCall({ data: { initData, action: 'status', ymid } }).catch(() => null);
+        if (!r) continue;
+        last = r.status ?? 'pending';
+        if (r.status === 'paid') { setAds({ day, count: r.adsToday }); setPlayer(p => ({ ...p, balance: r.balance })); paidAd(); return; }
+        if (r.status === 'capped') { setAds({ day, count: r.adsToday }); toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
+        if (r.status !== 'pending' && r.status !== 'not_valued') { toast.error('Monetag no validó este anuncio, así que no suma $DOGG.'); return; }
+      }
+      if (last === 'not_valued') toast.error('Monetag no contó este anuncio como válido, así que no suma $DOGG. Prueba con otro.');
+      else toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
     } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
   };
   return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd }}>{children}</Context.Provider>;

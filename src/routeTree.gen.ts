@@ -15,6 +15,7 @@ import { Route as BilleteraRouteImport } from './routes/billetera'
 import { Route as GrowOpsRouteImport } from './routes/grow-ops'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as TrabajosRouteImport } from './routes/trabajos'
+import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
 
 const IndexRoute = IndexRouteImport.update({
@@ -47,6 +48,12 @@ const TrabajosRoute = TrabajosRouteImport.update({
   path: '/trabajos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicMonetagPostbackRoute =
+  ApiPublicMonetagPostbackRouteImport.update({
+    id: '/api/public/monetag-postback',
+    path: '/api/public/monetag-postback',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
   id: '/api/public/ton-manifest',
   path: '/api/public/ton-manifest',
@@ -60,6 +67,7 @@ export interface FileRoutesByFullPath {
   '/grow-ops': typeof GrowOpsRoute
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
+  '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
 }
 export interface FileRoutesByTo {
@@ -69,6 +77,7 @@ export interface FileRoutesByTo {
   '/grow-ops': typeof GrowOpsRoute
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
+  '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
 }
 export interface FileRoutesById {
@@ -79,6 +88,7 @@ export interface FileRoutesById {
   '/grow-ops': typeof GrowOpsRoute
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
+  '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
 }
 export interface FileRouteTypes {
@@ -90,6 +100,7 @@ export interface FileRouteTypes {
     | '/grow-ops'
     | '/perfil'
     | '/trabajos'
+    | '/api/public/monetag-postback'
     | '/api/public/ton-manifest'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -99,6 +110,7 @@ export interface FileRouteTypes {
     | '/grow-ops'
     | '/perfil'
     | '/trabajos'
+    | '/api/public/monetag-postback'
     | '/api/public/ton-manifest'
   id:
     | '__root__'
@@ -108,6 +120,7 @@ export interface FileRouteTypes {
     | '/grow-ops'
     | '/perfil'
     | '/trabajos'
+    | '/api/public/monetag-postback'
     | '/api/public/ton-manifest'
   fileRoutesById: FileRoutesById
 }
@@ -118,6 +131,7 @@ export interface RootRouteChildren {
   GrowOpsRoute: typeof GrowOpsRoute
   PerfilRoute: typeof PerfilRoute
   TrabajosRoute: typeof TrabajosRoute
+  ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
 }
 
@@ -165,6 +179,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TrabajosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/monetag-postback': {
+      id: '/api/public/monetag-postback'
+      path: '/api/public/monetag-postback'
+      fullPath: '/api/public/monetag-postback'
+      preLoaderRoute: typeof ApiPublicMonetagPostbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/ton-manifest': {
       id: '/api/public/ton-manifest'
       path: '/api/public/ton-manifest'
@@ -182,6 +203,7 @@ const rootRouteChildren: RootRouteChildren = {
   GrowOpsRoute: GrowOpsRoute,
   PerfilRoute: PerfilRoute,
   TrabajosRoute: TrabajosRoute,
+  ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
 }
 export const routeTree = rootRouteImport
