@@ -17,6 +17,7 @@
     "rolldown": "1.2.1"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.106",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
@@ -54,6 +55,7 @@
     "@ton/crypto": "^3.3.0",
     "@ton/ton": "^16.3.0",
     "@tonconnect/ui-react": "^5.0.0",
+    "ai": "^7.0.159",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
