@@ -9,7 +9,7 @@ import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
-import { ScreenHero, leafArt, bustCapArt } from './hero';
+import { ScreenHero, leafArt, bustArt } from './hero';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.jpg still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
@@ -28,7 +28,7 @@ export function Humero() {
   const remaining = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 60000));
   const live = Boolean(player.shiftStartedAt && !finished);
   return <div className="mine-screen">
-    <div className="mine-hero" aria-hidden="true"><img src={bustCapArt} alt="" width={640} height={634} fetchPriority="high" /></div>
+    <div className="mine-hero" aria-hidden="true"><img src={bustArt} alt="" width={640} height={634} fetchPriority="high" /></div>
     <section className="mine-stats"><div><span>TASA DE MINERÍA</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? 'Minando' : finished ? 'Cosecha lista' : 'En pausa'}</em></div><div><span>RANGO ACTUAL</span><strong>Nivel {miner.level || 1}</strong><em>{miner.name}{demo ? ' · demo' : ''}</em></div></section>
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>Reclamado en la app</span></div>
     <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt="Moneda oficial del jetton $DOGG" width={640} height={631} /></div></div>

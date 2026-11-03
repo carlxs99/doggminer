@@ -22,4 +22,4 @@ export function ScreenHero({ title, subtitle, art = 'bust', green = false, crown
   </section>;
 }
 
-export { leaf as leafArt, bustCap as bustCapArt };
+export { leaf as leafArt, bust as bustArt };

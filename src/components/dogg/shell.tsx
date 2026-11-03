@@ -5,6 +5,7 @@ import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
+import { Logo } from './hero';
 import { haptic, JETTON, SWAP, PRICE } from '@/lib/dogg';
 import { toast } from 'sonner';
 const TonWallet = lazy(() => import('./ton-wallet'));
@@ -40,7 +41,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <nav>{navigation.map(({ to, name, subtitle, icon: Icon }) => <Button key={to} asChild variant="ghost" className={`side-link ${pathname === to ? 'selected' : ''}`}><Link to={to} onClick={haptic}><Icon /><span>{name}<small>{subtitle}</small></span>{pathname === to && <span className="active-dot" />}</Link></Button>)}</nav>
       <div className="sidebar-bottom"><div className="club-stamp"><Leaf /><span>GROW TOGETHER.<br />STAY HIGHER.</span></div><span className="network"><i /> TON NETWORK <span>v.1.0</span></span><div className="sidebar-user"><span className="avatar">{name[0]}</span><span>{name}<small>Rookie del hood</small></span><ArrowUpRight size={17} /></div></div>
     </aside>
-    <div className="main-shell"><header className="topbar"><span className="mobile-brand"><Leaf /> $DOGG<span> MINER</span></span><div className="breadcrumb">EL CLUB <span>/</span> <strong>{navigation.find(n => n.to === pathname)?.name.toUpperCase()}</strong></div><div className="header-actions"><Button variant="ghost" size="icon" className="sound-toggle" aria-label={sound ? "Silenciar sonidos" : "Activar sonidos"} onClick={toggleSound}>{sound ? <Volume2 /> : <VolumeX />}</Button><span className="demo-tag">{demo ? 'MODO DEMO' : 'TELEGRAM'}</span><Button variant="outline" className="wallet-connect" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet />{wallet ? `${wallet.slice(0, 5)}…${wallet.slice(-4)}` : 'Conectar wallet'}<ArrowUpRight /></Button></div></header>
+    <div className="main-shell"><header className="topbar"><Link to="/" className="mobile-brand" aria-label="$DOGG MINER, inicio"><Logo /></Link><div className="breadcrumb">EL CLUB <span>/</span> <strong>{navigation.find(n => n.to === pathname)?.name.toUpperCase()}</strong></div><div className="header-actions"><Button variant="ghost" size="icon" className="sound-toggle" aria-label={sound ? "Silenciar sonidos" : "Activar sonidos"} onClick={toggleSound}>{sound ? <Volume2 /> : <VolumeX />}</Button><span className="demo-tag">{demo ? 'MODO DEMO' : 'TELEGRAM'}</span><Button variant="outline" className="wallet-connect" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet /><span className="wallet-label">{wallet ? `${wallet.slice(0, 5)}…${wallet.slice(-4)}` : 'Conectar wallet'}</span><ArrowUpRight /></Button></div></header>
       <main key={pathname} className="page-enter">{children}</main>
       <footer className="page-footer"><span><i /> POWERED BY TON. BUILT FOR THE HOOD.</span><Dialog><DialogTrigger asChild><Button variant="ghost" size="sm"><CircleHelp /> Ayuda y enlaces</Button></DialogTrigger><DialogContent className="help-dialog"><DialogHeader><DialogTitle>Ayuda · $DOGG MINER</DialogTitle></DialogHeader>
         <div className="faq">{FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>
