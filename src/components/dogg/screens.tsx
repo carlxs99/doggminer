@@ -72,7 +72,7 @@ function PnlChart() {
   const pts: [number, number][] = [[Number.isFinite(from) ? from : (gains[0]?.at ?? now - 864e5), acc]];
   for (const e of gains.filter(e => e.at >= from)) { pts.push([e.at, acc]); acc += e.amount; pts.push([e.at, acc]); }
   pts.push([now, acc]);
-  const x0 = pts[0][0], span = Math.max(1, now - x0), top = Math.max(1, acc);
+  const x0 = pts[0]![0], span = Math.max(1, now - x0), top = Math.max(1, acc);
   const line = pts.map(([t, v]) => `${((t - x0) / span * 100).toFixed(2)},${(38 - v / top * 34).toFixed(2)}`).join(' ');
   const miner = getMiner(player.minerId);
   return <section className="boost-head">
