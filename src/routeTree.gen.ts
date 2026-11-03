@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AmigosRouteImport } from './routes/amigos'
 import { Route as BilleteraRouteImport } from './routes/billetera'
 import { Route as GrowOpsRouteImport } from './routes/grow-ops'
@@ -22,6 +23,11 @@ import { Route as ApiPublicJobsPayoutsRouteImport } from './routes/api.public.jo
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AmigosRoute = AmigosRouteImport.update({
@@ -68,6 +74,7 @@ const ApiPublicJobsPayoutsRoute = ApiPublicJobsPayoutsRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
@@ -91,6 +99,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRoute
   '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
@@ -104,6 +113,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/amigos'
     | '/billetera'
     | '/grow-ops'
@@ -115,6 +125,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/amigos'
     | '/billetera'
     | '/grow-ops'
@@ -126,6 +137,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/amigos'
     | '/billetera'
     | '/grow-ops'
@@ -138,6 +150,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRoute
   AmigosRoute: typeof AmigosRoute
   BilleteraRoute: typeof BilleteraRoute
   GrowOpsRoute: typeof GrowOpsRoute
@@ -155,6 +168,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/amigos': {
@@ -218,6 +238,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRoute,
   AmigosRoute: AmigosRoute,
   BilleteraRoute: BilleteraRoute,
   GrowOpsRoute: GrowOpsRoute,

@@ -50,6 +50,45 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_admin_log: {
+        Row: {
+          action: string
+          admin_id: number
+          created_at: string
+          details: Json | null
+          id: number
+        }
+        Insert: {
+          action: string
+          admin_id: number
+          created_at?: string
+          details?: Json | null
+          id?: number
+        }
+        Update: {
+          action?: string
+          admin_id?: number
+          created_at?: string
+          details?: Json | null
+          id?: number
+        }
+        Relationships: []
+      }
+      dogg_admins: {
+        Row: {
+          created_at: string
+          telegram_id: number
+        }
+        Insert: {
+          created_at?: string
+          telegram_id: number
+        }
+        Update: {
+          created_at?: string
+          telegram_id?: number
+        }
+        Relationships: []
+      }
       dogg_payout_lock: {
         Row: {
           id: number
@@ -176,6 +215,86 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_task_claims: {
+        Row: {
+          claimed_at: string | null
+          reward: number | null
+          started_at: string
+          task_id: string
+          telegram_id: number
+        }
+        Insert: {
+          claimed_at?: string | null
+          reward?: number | null
+          started_at?: string
+          task_id: string
+          telegram_id: number
+        }
+        Update: {
+          claimed_at?: string | null
+          reward?: number | null
+          started_at?: string
+          task_id?: string
+          telegram_id?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dogg_task_claims_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "dogg_tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      dogg_tasks: {
+        Row: {
+          active: boolean
+          chat_id: string | null
+          claims: number
+          created_at: string
+          created_by: number | null
+          description: string | null
+          id: string
+          kind: string
+          reward: number
+          sort: number
+          title: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          active?: boolean
+          chat_id?: string | null
+          claims?: number
+          created_at?: string
+          created_by?: number | null
+          description?: string | null
+          id?: string
+          kind: string
+          reward: number
+          sort?: number
+          title: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          active?: boolean
+          chat_id?: string | null
+          claims?: number
+          created_at?: string
+          created_by?: number | null
+          description?: string | null
+          id?: string
+          kind?: string
+          reward?: number
+          sort?: number
+          title?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
       dogg_wallet_links: {
         Row: {
           first_at: string
@@ -264,6 +383,16 @@ export type Database = {
         }
         Returns: string
       }
+      dogg_admin_adjust: {
+        Args: {
+          p_admin: number
+          p_delta: number
+          p_reason: string
+          p_telegram_id: number
+        }
+        Returns: number
+      }
+      dogg_admin_stats: { Args: never; Returns: Json }
       dogg_best_miner: { Args: { p_total: number }; Returns: string }
       dogg_miner_stats: {
         Args: { p_id: string }
@@ -291,6 +420,14 @@ export type Database = {
       dogg_shift: {
         Args: { p_action: string; p_hold?: number; p_telegram_id: number }
         Returns: Json
+      }
+      dogg_task_claim: {
+        Args: { p_member: boolean; p_task: string; p_telegram_id: number }
+        Returns: Json
+      }
+      dogg_task_start: {
+        Args: { p_task: string; p_telegram_id: number }
+        Returns: string
       }
       dogg_verify_withdraw: {
         Args: { p_bought: number; p_telegram_id: number; p_wallet: string }

@@ -10,6 +10,7 @@ import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY 
 import mascot from '@/assets/dogg-mascot.webp';
 import coin from '@/assets/dogg-coin.webp';
 import { ScreenHero, leafArt, bustArt } from './hero';
+import { ClubTasks } from './club-tasks';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
@@ -53,6 +54,7 @@ export function Trabajos() {
   const [socialStart, setSocialStart] = useState<number | null>(null);
   return <><ScreenHero title="Tareas" art="leaf" subtitle={<>Completa tareas y gana más <b>$DOGG</b></>} />
     <AdsCard />
+    <ClubTasks />
     <div className="section-heading task-heading"><h2>Hustle board</h2><span>ON-CHAIN & SOCIAL</span></div><div className="task-list"><Task icon={<Wallet />} title="Hold $DOGG. Representa al hood." subtitle="Conecta tu wallet para consultar tu stash on-chain." reward="ON-CHAIN"><Button asChild variant="outline"><Link to="/perfil">{wallet ? 'Ver mi saldo' : 'Conectar wallet'}<ArrowUpRight /></Link></Button></Task><Task icon={<Users />} title="Invita a tus homies" subtitle="El grow es mejor cuando crecemos juntos." reward="REFERIDOS"><Button asChild variant="outline"><Link to="/amigos">Invitar <ArrowRight /></Link></Button></Task><Task icon={<Music2 />} title="Representa a DOGG en redes" subtitle={socialStart ? 'Tiempo de espera · la verificación social aún no está activada.' : 'Temporizador de ejemplo. Recompensa pendiente de verificación.'} reward="24H"><Button variant="outline" onClick={() => { haptic(); setSocialStart(Date.now()); }} disabled={Boolean(socialStart)}>{socialStart ? <Countdown elapsed={now-socialStart} /> : 'Iniciar tarea'}<Clock3 /></Button></Task></div><Arcade /></>;
 }
 function AdsCard() {
