@@ -1,5 +1,5 @@
 // Texts and buttons the @Doggminerbot chat sends (English). Pure: shared by the webhook, notifications and tests.
-import { MINI_APP_LINK, PRICE, REF_BONUS, REF_SHARE, SWAP, formatDogg, parseRef, referralLink } from './dogg';
+import { MINI_APP_LINK, PRICE, REF_BONUS, REF_SHARE, SWAP, parseRef, referralLink } from './dogg';
 
 export const APP_URL = 'https://doggminer.lovable.app';
 export const WEBHOOK_PATH = '/api/public/telegram-webhook';
@@ -114,7 +114,7 @@ const shortAddr = (a: string) => (a.length > 14 ? `${a.slice(0, 6)}…${a.slice(
 
 export function withdrawalSentMessage(w: { amount: number; address: string; txHash: string | null }): BotMessage {
   return {
-    text: `✅ <b>Withdrawal sent!</b>\n\n💸 Amount: <b>${formatDogg(w.amount).replace(/,000$/, '')} $DOGG</b>\n👛 To: <code>${esc(shortAddr(w.address))}</code>\n\nIt's confirmed on the TON blockchain. Keep stacking 🌿`,
+    text: `✅ <b>Withdrawal sent!</b>\n\n💸 Amount: <b>${whole(w.amount)} $DOGG</b>\n👛 To: <code>${esc(shortAddr(w.address))}</code>\n\nIt's confirmed on the TON blockchain. Keep stacking 🌿`,
     buttons: [[{ text: '🔎 View transaction', url: txLink(w.txHash, w.address) }], [{ text: '⛏️ Back to mining', url: MINI_APP_LINK }]],
   };
 }
