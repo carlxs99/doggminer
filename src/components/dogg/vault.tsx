@@ -146,21 +146,21 @@ export function Amigos() {
       <Button className="ref-share" onClick={share}><Share2 /> Invitar amigos</Button>
       <section className="ref-stats" aria-label="Tus referidos">
         <div><Users /><strong>{d.total}</strong><small>Invitados</small></div>
-        <div><ShieldCheck /><strong>{d.qualified}</strong><small>Calificados</small></div>
+        <div><ShieldCheck /><strong>{d.qualified}</strong><small>Minando</small></div>
         <div><Coin size={18} /><strong>{formatDogg(d.earned).replace(/,000$/, '')}</strong><small>Ganado</small></div>
       </section>
-      <section className="info-row ref-pending"><span className="row-icon gold"><Gift /></span><div><strong>Por reclamar</strong><b className="row-amount">{formatDogg(d.pending)} <Coin /></b><small>{d.walletLinked || demo ? `+${REF_BONUS} por recluta · ${REF_SHARE * 100} % de lo que minen` : 'Vincula tu wallet en Perfil para poder reclamar'}</small></div><Button size="sm" onClick={() => void claim()} disabled={claiming || busy || d.pending <= 0}>{claiming ? <RefreshCw className="animate-spin" /> : 'Reclamar'}</Button></section>
+      <section className="info-row ref-pending"><span className="row-icon gold"><Gift /></span><div><strong>Por reclamar</strong><b className="row-amount">{formatDogg(d.pending)} <Coin /></b><small>+{REF_BONUS} cuando tu homie inicia su primer turno · {REF_SHARE * 100} % de lo que mine</small></div><Button size="sm" onClick={() => void claim()} disabled={claiming || busy || d.pending <= 0}>{claiming ? <RefreshCw className="animate-spin" /> : 'Reclamar'}</Button></section>
     </div>
     <h2 className="vault-h center">Cómo funciona</h2>
     <ol className="ref-steps">
       <li><span>1</span><div><strong>Comparte tu enlace</strong><small>Tu homie abre $DOGG MINER desde él.</small></div></li>
-      <li><span>2</span><div><strong>Conecta su wallet</strong><small>Cuando vincula su wallet TON, ganas <b>+{REF_BONUS} $DOGG</b>.</small></div></li>
+      <li><span>2</span><div><strong>Inicia la minería</strong><small>Ganas <b>+{REF_BONUS} $DOGG</b> solo cuando tu homie prende su primer turno de minería. No necesita wallet.</small></div></li>
       <li><span>3</span><div><strong>Gana para siempre</strong><small>Recibes el <b>{REF_SHARE * 100} %</b> de cada turno que cobre. Él no pierde nada.</small></div></li>
     </ol>
     <h2 className="vault-h center">Últimos amigos invitados</h2>
     {d.friends.length === 0
-      ? <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace: cada homie cuenta cuando conecta su wallet.</p></section>
-      : <section className="vault-list">{d.friends.map((f, i) => <div key={f.joinedAt + i} className="vault-item"><span className="credential-avatar ref-avatar">{f.name.slice(0, 1).toUpperCase()}</span><div><strong>{f.name}</strong><small>{f.username ? `@${f.username} · ` : ''}{ago(Date.parse(f.joinedAt), now)}</small></div><div className="vault-amount">{f.qualified ? <strong>+{formatDogg(f.given + REF_BONUS)} <Coin size={12} /></strong> : null}<em className={f.qualified ? 'ok' : ''}>{f.qualified ? 'Calificado' : 'Falta wallet'}</em></div></div>)}</section>}
+      ? <section className="vault-list empty"><Smartphone /><p>Aún no tienes reclutas. Comparte tu enlace: cada homie cuenta cuando inicia su primer turno de minería.</p></section>
+      : <section className="vault-list">{d.friends.map((f, i) => <div key={f.joinedAt + i} className="vault-item"><span className="credential-avatar ref-avatar">{f.name.slice(0, 1).toUpperCase()}</span><div><strong>{f.name}</strong><small>{f.username ? `@${f.username} · ` : ''}{ago(Date.parse(f.joinedAt), now)}</small></div><div className="vault-amount">{f.qualified ? <strong>+{formatDogg(f.given + REF_BONUS)} <Coin size={12} /></strong> : null}<em className={f.qualified ? 'ok' : ''}>{f.qualified ? 'Minando' : 'Sin minar aún'}</em></div></div>)}</section>}
   </>;
 }
 
