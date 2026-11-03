@@ -111,7 +111,7 @@ export function Amigos() {
   async function copy() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
   function share() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en $DOGG MINER 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
   return <>
-    <ScreenHero title="Amigos" art="cap" subtitle="Invita a tus homies y crece juntos. Solo califican al conectar su wallet." />
+    <ScreenHero title="Amigos" art="cap" subtitle="Invita a tus homies y crece juntos" />
     <div className="row-list">
       <section className="info-row"><span className="row-icon"><Link2 /></span><div><strong>Tu enlace de invitación</strong><small className="break">{link ?? 'Disponible al abrir desde Telegram'}</small></div><Button size="sm" onClick={() => void copy()}>{copied ? <Check /> : 'Copiar'}</Button></section>
       <section className="info-row"><span className="row-icon"><Users /></span><div><strong>Tus referidos</strong><small>0 calificados · 0 en total</small></div></section>
