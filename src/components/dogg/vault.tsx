@@ -44,7 +44,7 @@ function useOnchain(wallet: string | null, refresh: number) {
 }
 
 
-/** One-time withdrawal verification: buy 100 $DOGG with the linked wallet; once passed, withdrawals are always allowed. */
+/** One-time withdrawal verification: the linked wallet must hold 100 $DOGG; once passed, withdrawals are always allowed. */
 function WithdrawVerify() {
   const { player, demo, verifyBuy, verifying } = useDogg();
   const t = useT();
@@ -70,7 +70,7 @@ export function Billetera() {
   const level = levelFor(total);
   const week = useMemo(() => {
     const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(now || 0); d.setHours(0, 0, 0, 0); d.setDate(d.getDate() - (6 - i)); return { start: d.getTime(), mining: 0, team: 0, bonus: 0 }; });
-    for (const e of history) { if (e.amount <= 0) continue; const d = [...days].reverse().find(x => e.at >= x.start); if (!d) continue; if (e.kind === 'mining') d.mining += e.amount; else if (e.kind === 'team') d.team += e.amount; else d.bonus += e.amount; }
+    for (const e of history) { if (e.amount <= 0 || e.kind === 'withdraw') continue; const d = [...days].reverse().find(x => e.at >= x.start); if (!d) continue; if (e.kind === 'mining') d.mining += e.amount; else if (e.kind === 'team') d.team += e.amount; else d.bonus += e.amount; }
     return days;
   }, [history, now]);
   const sum = (k: 'mining' | 'team' | 'bonus') => week.reduce((a, d) => a + d[k], 0);
@@ -194,7 +194,7 @@ export function Perfil() {
   const [amount, setAmount] = useState('');
   const { balances, error, loading } = useOnchain(wallet, refresh);
   const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user : undefined;
-  const withdrawals = history.filter(e => e.kind === 'withdraw');
+  const withdrawals = history.filter(e => e.kind === 'withdraw' && e.amount < 0);
   const now = Date.now();
   return <>
     <ScreenHero title={t('profile.title')} crowned art="bust" />

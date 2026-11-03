@@ -103,7 +103,7 @@ export const ru: Record<keyof typeof es, string> = {
   'profile.withdraw': 'Вывести $DOGG', 'profile.minPh': 'Минимум {n}', 'profile.minNote': 'Минимум {min} $DOGG. Комиссия {fee} $DOGG.', 'profile.request': 'Запросить вывод',
   'profile.wdHistory': 'История выводов', 'profile.wdEmpty': 'Выводов пока нет.',
 
-  'hist.mining': 'Сбор майнинга', 'hist.withdraw': 'Вывод', 'hist.ad': 'Просмотр рекламы', 'hist.ref': 'Реферальная награда', 'hist.checkin': 'Ежедневный бонус',
+  'hist.mining': 'Сбор майнинга', 'hist.withdraw': 'Вывод', 'hist.ad': 'Просмотр рекламы', 'hist.ref': 'Реферальная награда', 'hist.checkin': 'Ежедневный бонус', 'hist.task': 'Задание выполнено', 'hist.refund': 'Вывод возвращён', 'hist.admin': 'Корректировка админа',
 
   'toast.upgraded': 'Твой холд вырос! Теперь майнишь с {name}',
   'toast.downgraded': 'Твой холд $DOGG уменьшился: майнер опустился до лучшего доступного уровня.',

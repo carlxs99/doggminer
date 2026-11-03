@@ -127,6 +127,13 @@
       "when": 1793728112820,
       "tag": "0017_verify_withdraw_by_hold",
       "breakpoints": true
+    },
+    {
+      "idx": 18,
+      "version": "7",
+      "when": 1793728252841,
+      "tag": "0018_earnings_ledger",
+      "breakpoints": true
     }
   ]
 }

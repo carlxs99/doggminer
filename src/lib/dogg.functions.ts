@@ -237,3 +237,31 @@ export const verifyPurchase = createServerFn({ method: 'POST' })
     if (r.error) throw new Error(r.error.message);
     return settle(supabaseAdmin, telegramId, r.data, hold);
   });
+
+/** The player's real $DOGG movements (newest first, up to 500) for the PnL chart and history; withdrawals carry their live status. */
+export const ledgerAction = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.from('dogg_ledger').select('kind, label, amount, ref, created_at').eq('telegram_id', telegramId).order('created_at', { ascending: false }).limit(500);
+    if (r.error) throw new Error(r.error.message);
+    const rows = r.data ?? [];
+    const ids = rows.filter(e => e.kind === 'withdraw' && e.label === 'hist.withdraw' && e.ref).map(e => e.ref as string);
+    const open = new Set<string>();
+    if (ids.length) {
+      const w = await supabaseAdmin.from('dogg_withdrawals').select('id').in('id', ids).in('status', ['pending', 'sending']);
+      for (const x of w.data ?? []) open.add(x.id);
+    }
+    // Earnings older than the 500 returned rows, so the "All" chart starts at the right height.
+    let earnedBefore = 0;
+    const oldest = rows[rows.length - 1]?.created_at;
+    if (rows.length === 500 && oldest) {
+      const older = await supabaseAdmin.from('dogg_ledger').select('amount').eq('telegram_id', telegramId).neq('kind', 'withdraw').gt('amount', 0).lt('created_at', oldest).limit(10000);
+      earnedBefore = (older.data ?? []).reduce((a, e) => a + Number(e.amount), 0);
+    }
+    return {
+      earnedBefore,
+      entries: rows.map(e => ({ kind: e.kind as 'mining' | 'task' | 'withdraw' | 'team', label: e.label, amount: Number(e.amount), at: Date.parse(e.created_at), ...(e.ref && open.has(e.ref) ? { status: 'review' as const } : {}) })),
+    };
+  });

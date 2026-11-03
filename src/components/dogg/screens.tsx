@@ -106,13 +106,14 @@ function HoldSummary({ player, demo, busy, current, onActivate }: { player: Play
 }
 const RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
 function PnlChart() {
-  const { history, now, player, demo, busy, activateMiner } = useDogg();
+  const { history, earnedBefore, now, player, demo, busy, activateMiner } = useDogg();
   const t = useT();
   const [range, setRange] = useState<keyof typeof RANGES>('7d');
   const from = now - RANGES[range];
-  const gains = history.filter(e => e.amount > 0).sort((a, b) => a.at - b.at);
+  // Earnings only: withdrawals and their refunds move the balance but aren't profit.
+  const gains = history.filter(e => e.amount > 0 && e.kind !== 'withdraw').sort((a, b) => a.at - b.at);
   const today = gains.filter(e => e.at >= now - 864e5).reduce((a, e) => a + e.amount, 0);
-  let acc = gains.filter(e => e.at < from).reduce((a, e) => a + e.amount, 0);
+  let acc = earnedBefore + gains.filter(e => e.at < from).reduce((a, e) => a + e.amount, 0);
   const pts: [number, number][] = [[Number.isFinite(from) ? from : (gains[0]?.at ?? now - 864e5), acc]];
   for (const e of gains.filter(e => e.at >= from)) { pts.push([e.at, acc]); acc += e.amount; pts.push([e.at, acc]); }
   pts.push([now, acc]);
