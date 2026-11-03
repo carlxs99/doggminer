@@ -73,10 +73,14 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); setSynced(true);
       }).catch(e => { if (!silent) toast.error(friendlyError(e)); });
       read(false);
+      // Ask once for permission to message the player (withdrawal and referral notices from the bot).
+      const askWrite = setTimeout(() => {
+        try { if (!localStorage.getItem('dogg-write-access')) app.requestWriteAccess?.(ok => localStorage.setItem('dogg-write-access', ok ? '1' : '0')); } catch { /* older clients */ }
+      }, 6000);
       const holdTimer = setInterval(() => read(true), 60000);
       const onVisible = () => { if (document.visibilityState === 'visible') read(true); };
       document.addEventListener('visibilitychange', onVisible);
-      cleanup = () => { clearInterval(timer); clearInterval(holdTimer); document.removeEventListener('visibilitychange', onVisible); };
+      cleanup = () => { clearTimeout(askWrite); clearInterval(timer); clearInterval(holdTimer); document.removeEventListener('visibilitychange', onVisible); };
     };
     let retry: ReturnType<typeof setTimeout> | undefined;
     boot();

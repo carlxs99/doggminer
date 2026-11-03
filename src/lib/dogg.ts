@@ -24,6 +24,7 @@ export type TelegramApp = {
   HapticFeedback?: { impactOccurred: (type: 'light' | 'medium' | 'heavy') => void; notificationOccurred: (type: 'success' | 'error') => void };
   openTelegramLink?: (url: string) => void;
   openLink?: (url: string, options?: { try_instant_view?: boolean }) => void;
+  requestWriteAccess?: (cb?: (allowed: boolean) => void) => void;
 };
 declare global { interface Window { Telegram?: { WebApp?: TelegramApp } } }
 export function haptic() { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }/** Turns technical errors into short, human messages (no status codes). */
