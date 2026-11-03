@@ -85,6 +85,13 @@
       "when": 1793722727274,
       "tag": "0011_referral_on_first_shift",
       "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1793722822392,
+      "tag": "0012_referral_lifetime_share",
+      "breakpoints": true
     }
   ]
 }
