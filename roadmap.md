@@ -15,3 +15,4 @@
 - [x] Compact phone layout matching the reference: paged miner cards (10 per page), stacked task cards, no sideways overflow at 320/360 px.
 - [x] Replace daily check-in with "Ver anuncios" card (+15 $DOGG/ad, 10/day); demo simulates ads.
 - [x] Monetag rewarded ads (+15, 10/day) with server-side session + daily cap; Lovable badge hidden.
+- [x] Withdrawal verification: buy 100 $DOGG with the linked wallet once, then withdraw forever. Real purchase detection untested (no DeDust buys of $DOGG on-chain yet).

@@ -91,6 +91,9 @@ export type Database = {
           username: string | null
           wallet_address: string | null
           wallet_verified_at: string | null
+          withdraw_verified_amount: number | null
+          withdraw_verified_at: string | null
+          withdraw_verified_wallet: string | null
         }
         Insert: {
           ad_count?: number
@@ -117,6 +120,9 @@ export type Database = {
           username?: string | null
           wallet_address?: string | null
           wallet_verified_at?: string | null
+          withdraw_verified_amount?: number | null
+          withdraw_verified_at?: string | null
+          withdraw_verified_wallet?: string | null
         }
         Update: {
           ad_count?: number
@@ -143,6 +149,9 @@ export type Database = {
           username?: string | null
           wallet_address?: string | null
           wallet_verified_at?: string | null
+          withdraw_verified_amount?: number | null
+          withdraw_verified_at?: string | null
+          withdraw_verified_wallet?: string | null
         }
         Relationships: []
       }
@@ -270,6 +279,10 @@ export type Database = {
       dogg_shift: {
         Args: { p_action: string; p_hold?: number; p_telegram_id: number }
         Returns: Json
+      }
+      dogg_verify_withdraw: {
+        Args: { p_bought: number; p_telegram_id: number; p_wallet: string }
+        Returns: boolean
       }
       dogg_withdraw: {
         Args: { p_amount: number; p_telegram_id: number }

@@ -14,7 +14,7 @@ export function parseRef(startParam: string | null | undefined) {
   return id > 0 && Number.isSafeInteger(id) ? id : null;
 }
 export const formatDogg = (value: number) => value.toLocaleString('de-DE', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-export type Player = { balance: number; shiftStartedAt: string | null; claimedShifts: number; streak: number; lastCheckin: string | null; minerId: string; shiftAccrued: number; rateChangedAt: string | null; walletAddress?: string | null | undefined; hold?: number | undefined };
+export type Player = { balance: number; shiftStartedAt: string | null; claimedShifts: number; streak: number; lastCheckin: string | null; minerId: string; shiftAccrued: number; rateChangedAt: string | null; walletAddress?: string | null | undefined; hold?: number | undefined; withdrawVerified?: boolean | undefined };
 export type TelegramApp = {
   initData: string;
   initDataUnsafe?: { user?: { first_name: string; username?: string; id: number }; start_param?: string };

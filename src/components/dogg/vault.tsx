@@ -9,6 +9,7 @@ import { ScreenHero } from './hero';
 import { JETTON, SWAP, PRICE, REF_BONUS, REF_SHARE, formatDogg, friendlyError, haptic, referralLink } from '@/lib/dogg';
 import { referralAction } from '@/lib/dogg.functions';
 import { coinRain, strongHaptic } from '@/lib/fx';
+import { VERIFY_BUY } from '@/lib/purchase';
 import { useServerFn } from '@tanstack/react-start';
 import { bestLevel, getMiner } from '@/lib/mining';
 import coin from '@/assets/dogg-coin.webp';
@@ -37,6 +38,20 @@ function useOnchain(wallet: string | null, refresh: number) {
     return () => { active = false; };
   }, [wallet, refresh]);
   return { balances, error, loading };
+}
+
+
+/** One-time withdrawal verification: buy 100 $DOGG with the linked wallet; once passed, withdrawals are always allowed. */
+function WithdrawVerify() {
+  const { player, demo, verifyBuy, verifying } = useDogg();
+  if (player.withdrawVerified) return <p className="wv-ok"><ShieldCheck /> Wallet verificada para retiros</p>;
+  const linked = demo || Boolean(player.walletAddress);
+  return <section className="withdraw-verify">
+    <div className="wv-head"><span className="row-icon gold"><ShieldCheck /></span><div><strong>Verifica tu wallet para retirar</strong><small>Compra al menos <b>{VERIFY_BUY} $DOGG</b> en DeDust con tu wallet vinculada. Solo se hace una vez: después podrás retirar siempre.</small></div></div>
+    <ol className="wv-steps"><li className={linked ? 'ok' : ''}><Check /> Conecta y vincula tu wallet</li><li><Check /> Compra {VERIFY_BUY} $DOGG o más con ella</li><li><Check /> Toca «Verificar compra»</li></ol>
+    <div className="wv-actions"><Button asChild variant="outline"><a href={SWAP} target="_blank" rel="noopener noreferrer"><RefreshCw /> Comprar en DeDust</a></Button><Button onClick={() => void verifyBuy()} disabled={verifying || !linked}>{verifying ? <RefreshCw className="animate-spin" /> : <ShieldCheck />} Verificar compra</Button></div>
+    {!linked && <small className="wv-note">Primero conecta tu wallet arriba y firma la vinculación.</small>}
+  </section>;
 }
 
 export function Billetera() {
@@ -84,8 +99,9 @@ export function Billetera() {
     <p className="vault-info"><Info /> Los $DOGG que compras se quedan en tu billetera y cuentan para tu nivel. Ahora estás en el nivel {level}. Vender hace que bajes de nivel.</p>
 
     <h2 className="vault-h">Retirar</h2>
+    <WithdrawVerify />
     <section className="vault-withdraw"><div><strong>Envía tus <Coin /> de la app a tu billetera</strong><small>Mín. {WITHDRAW_MIN.toLocaleString('de-DE')} · comisión {WITHDRAW_FEE} <Coin size={12} /></small></div>
-      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><Button type="submit" disabled={busy}><ArrowUpRight /> Retirar</Button></form></section>
+      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><Button type="submit" disabled={busy || !player.withdrawVerified}><ArrowUpRight /> Retirar</Button></form></section>
 
     <h2 className="vault-h">Nómina</h2>
     <section className="vault-payroll"><div className="payroll-top"><div><span className="eyebrow">GANADO ESTA SEMANA</span><strong>{formatDogg(weekTotal)} <Coin size={18} /></strong></div><span className="payroll-today"><small>Hoy</small>+{Math.round(todayGain)}</span></div>
@@ -181,8 +197,9 @@ export function Perfil() {
       <section className="info-row"><div><strong>Billetera de minería</strong><small>{player.walletAddress ? 'Vinculada a tu cuenta' : 'Lista para retirar'}</small></div><b className="row-amount">{formatDogg(player.balance)} <Coin /></b></section>
     </div>
     {error && <p role="alert" className="text-destructive text-sm mt-2">{error}</p>}
+    <WithdrawVerify />
     <section className="vault-withdraw stacked"><strong>Retirar $DOGG</strong>
-      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`Mínimo ${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><small>Mínimo {WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG. Comisión {WITHDRAW_FEE} $DOGG.</small><Button type="submit" disabled={busy}><ArrowUpRight /> Solicitar retiro</Button></form></section>
+      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`Mínimo ${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><small>Mínimo {WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG. Comisión {WITHDRAW_FEE} $DOGG.</small><Button type="submit" disabled={busy || !player.withdrawVerified}><ArrowUpRight /> Solicitar retiro</Button></form></section>
     <section className="vault-list"><h3 className="list-title">Historial de retiros</h3>{withdrawals.length === 0 ? <p className="vault-empty">Aún no hay retiros.</p> : withdrawals.map(e => <div key={e.at + e.label} className="vault-item"><span className="vault-icon withdraw"><ArrowUpRight /></span><div><strong>{e.label}</strong><small>{ago(e.at, now)}</small></div><div className="vault-amount"><strong className="neg">{formatDogg(e.amount)} <Coin size={14} /></strong>{e.status === 'review' && <em>En revisión</em>}</div></div>)}</section>
     <div className="vault-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>Cambiar TON → $DOGG</small></a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>Gráfico en vivo</strong><small>Precio de $DOGG</small></a></div>
     <div className="token-contract"><span className="eyebrow">CONTRATO DEL JETTON</span><code>{JETTON}</code></div>

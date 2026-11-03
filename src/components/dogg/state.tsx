@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
-import { adAction, playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { adAction, playerAction, requestWithdraw, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { VERIFY_BUY } from '@/lib/purchase';
 import { showRewardedAd } from '@/lib/ads';
 import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
@@ -16,7 +17,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -134,6 +135,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(`El mínimo de retiro es ${WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG.`);
       if (!wallet) throw new Error('Conecta tu wallet TON para retirar.');
+      if (!player.withdrawVerified) throw new Error(`Verifica tu wallet comprando ${VERIFY_BUY} $DOGG para poder retirar.`);
       if (amount + WITHDRAW_FEE > player.balance) throw new Error(`Saldo insuficiente: necesitas ${(amount + WITHDRAW_FEE).toLocaleString('de-DE')} $DOGG (incluye ${WITHDRAW_FEE} de comisión).`);
       if (!demo) {
         const initData = window.Telegram?.WebApp?.initData;
@@ -153,6 +155,19 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), status: 'review' });
       toast.success('Solicitud de retiro enviada · En revisión');
     } catch (e) { toast.error(friendlyError(e, 'No se pudo retirar')); }
+  };
+  // Withdrawal verification: the server checks that the linked wallet bought >= 100 $DOGG (one time, permanent).
+  const purchaseCall = useServerFn(verifyPurchase);
+  const [verifying, setVerifying] = useState(false);
+  const verifyBuy = async () => {
+    if (verifying) return; haptic();
+    if (demo) { setPlayer(p => ({ ...p, withdrawVerified: true })); toast.success('Demo · wallet verificada. En Telegram se comprueba tu compra real.'); return; }
+    const initData = window.Telegram?.WebApp?.initData;
+    if (!initData) { toast.error('Abre la app desde Telegram.'); return; }
+    setVerifying(true);
+    try { const p = await purchaseCall({ data: { initData } }); setPlayer(p); notifyLevel(p); strongHaptic(); toast.success('¡Wallet verificada! Ya puedes retirar cuando quieras.'); }
+    catch (e) { toast.error(friendlyError(e, 'No se pudo verificar tu compra')); }
+    finally { setVerifying(false); }
   };
   // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +15 (10/day);
   // the app only polls the result. Demo pays preview credits.
@@ -199,7 +214,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       else toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
     } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
   };
-  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.

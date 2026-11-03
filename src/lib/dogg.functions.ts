@@ -2,8 +2,9 @@ import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { JETTON, parseRef } from './dogg';
 import { autoUpgradeId } from './mining';
+import { purchasedDogg, type TonapiEvent } from './purchase';
 
-const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional() });
+const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional() });
 
 async function verifyTelegramUser(initData: string) {
   const token = process.env['TELEGRAM_BOT_TOKEN'];
@@ -222,4 +223,46 @@ export const referralAction = createServerFn({ method: 'POST' })
     const r = await supabaseAdmin.rpc('dogg_referral', { p_telegram_id: telegramId, p_action: data.action });
     if (r.error) throw new Error(r.error.message);
     return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), friends: z.array(FriendSchema) }).parse(r.data);
+  });
+
+/** $DOGG the wallet has bought on a DEX, read server-side from its TONAPI jetton history (up to 500 events). */
+async function boughtDogg(address: string) {
+  const key = process.env['TONAPI_KEY'];
+  const events: TonapiEvent[] = [];
+  let before = '';
+  for (let page = 0; page < 5; page++) {
+    let res: Response | null = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      res = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/jettons/${JETTON}/history?limit=100${before ? `&before_lt=${before}` : ''}`, key ? { headers: { Authorization: `Bearer ${key}` } } : undefined);
+      if (res.ok || res.status === 404) break;
+      await new Promise(r => setTimeout(r, 900 + attempt * 900));
+    }
+    if (!res || res.status === 404) break;
+    if (!res.ok) throw new Error(`No se pudo comprobar tu compra ahora mismo (${res.status}). Inténtalo en un minuto.`);
+    const j = await res.json() as { events?: TonapiEvent[]; next_from?: number };
+    events.push(...(j.events ?? []));
+    if (!j.next_from || !j.events?.length) break;
+    before = String(j.next_from);
+  }
+  return purchasedDogg(events, address);
+}
+
+/** One-time withdrawal verification: the linked wallet must have bought >= 100 $DOGG. Once passed, it's permanent. */
+export const verifyPurchase = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const row = await supabaseAdmin.from('dogg_players').select('wallet_address, withdraw_verified_at').eq('telegram_id', telegramId).maybeSingle();
+    const wallet = row.data?.wallet_address;
+    if (!wallet) throw new Error('Conecta y vincula tu wallet TON primero.');
+    if (!row.data?.withdraw_verified_at) {
+      const bought = await boughtDogg(wallet);
+      const v = await supabaseAdmin.rpc('dogg_verify_withdraw', { p_telegram_id: telegramId, p_wallet: wallet, p_bought: bought });
+      if (v.error) throw new Error(v.error.message);
+    }
+    const hold = await currentHold(supabaseAdmin, telegramId);
+    const r = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
+    if (r.error) throw new Error(r.error.message);
+    return settle(supabaseAdmin, telegramId, r.data, hold);
   });
