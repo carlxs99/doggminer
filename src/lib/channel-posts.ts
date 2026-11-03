@@ -227,7 +227,7 @@ export function writerInstructions() {
     '- Caption: 450-900 characters, short lines, Telegram HTML only (<b> and <i>), no links, no hashtags spam (max 2).',
     '- Pick an angle that is NOT in the previous posts list; the title and the content must be clearly different from every previous post.',
     '- image_headline: 1-3 words, max 18 characters, ALL CAPS, punchy. image_subline: max 32 characters, ALL CAPS.',
-    '- image_scene: one or two sentences describing what the DOGG character (a cartoon dog rapper) is doing and where, matching the angle; no text in the scene.',
+    '- image_scene: one or two sentences describing what the DOGG character (a cartoon dog rapper) is doing and where, matching the angle, always at night with dark background, neon green light and smoke; no text in the scene.',
     '- button_text: short call to action that opens the app, max 26 characters, starting with an emoji.',
   ].join('\n');
 }
@@ -286,6 +286,7 @@ export function aiPostButtons(buttonText: string | null | undefined): Button[][]
 export function imagePrompt(d: Pick<AiPostDraft, 'image_headline' | 'image_subline' | 'image_scene'>) {
   return [
     'Keep the exact same DOGG character from the reference (cartoon dog rapper with braids, black cap with a small gold crown, dark sunglasses, gold chain, black hoodie) and the same art style: black background with neon green smoke, gold accents, graffiti green-and-white title font.',
+    'Keep the dark night mood: mostly black background, neon green glow and smoke, warm gold highlights (no daylight, no blue sky).',
     'Wide 16:9 Telegram channel image.',
     `Left side: big graffiti title "${d.image_headline}"${d.image_subline ? ` and a smaller clean line "${d.image_subline}"` : ''}.`,
     `Right side: ${d.image_scene}`,
