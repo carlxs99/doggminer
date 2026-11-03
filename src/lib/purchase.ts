@@ -43,3 +43,20 @@ export function purchasedDogg(events: TonapiEvent[], wallet: string) {
   }
   return total;
 }
+
+/** A toncenter v3 jetton transfer (addresses are raw owner addresses, any case). */
+export type ToncenterTransfer = { source?: string | null; destination?: string | null; amount?: string; jetton_master?: string | null; transaction_aborted?: boolean; transaction_hash?: string };
+
+/** Same rule from toncenter data: $DOGG the trading pool sent to the wallet, in transactions that didn't fail. */
+export function purchasedFromTransfers(transfers: ToncenterTransfer[], wallet: string) {
+  let total = 0;
+  const seen = new Set<string>();
+  for (const t of transfers) {
+    if (t.transaction_hash) { if (seen.has(t.transaction_hash)) continue; seen.add(t.transaction_hash); }
+    if (t.transaction_aborted) continue;
+    if (t.jetton_master && !same(t.jetton_master, DOGG_MASTER_RAW)) continue;
+    if (!same(t.destination ?? undefined, wallet) || !DOGG_POOLS_RAW.some(p => same(t.source ?? undefined, p))) continue;
+    total += Number(t.amount ?? '0') / 1e9; // $DOGG has 9 decimals
+  }
+  return total;
+}
