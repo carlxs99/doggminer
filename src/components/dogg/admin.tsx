@@ -91,7 +91,7 @@ function Overview() {
 }
 
 const EMPTY = { id: undefined as string | undefined, kind: 'channel' as TaskKind, title: '', description: '', url: '', chatId: '', reward: '100', sort: '0' };
-const KIND_ICON = { channel: Megaphone, group: Users, bot: Bot } as const;
+const KIND_ICON = { channel: Megaphone, group: Users, bot: Bot, react: Heart } as const;
 
 function TasksAdmin() {
   const list = useServerFn(adminTasks);
