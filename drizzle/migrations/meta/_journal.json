@@ -134,6 +134,13 @@
       "when": 1793728252841,
       "tag": "0018_earnings_ledger",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1793729294085,
+      "tag": "0019_multi_account_detector",
+      "breakpoints": true
     }
   ]
 }
