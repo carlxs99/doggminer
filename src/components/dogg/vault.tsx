@@ -49,7 +49,7 @@ function WithdrawVerify() {
   const { player, demo, verifyBuy, verifying } = useDogg();
   const t = useT();
   if (player.withdrawVerified) return <p className="wv-ok"><ShieldCheck /> {t('wv.ok')}</p>;
-  const linked = demo || Boolean(player.walletAddress);
+  const linked = Boolean(player.walletAddress);
   return <section className="withdraw-verify">
     <div className="wv-head"><span className="row-icon gold"><ShieldCheck /></span><div><strong>{t('wv.title')}</strong><small>{t('wv.desc', { n: VERIFY_BUY })}</small></div></div>
     <ol className="wv-steps"><li className={linked ? 'ok' : ''}><Check /> {t('wv.s1')}</li><li><Check /> {t('wv.s2', { n: VERIFY_BUY })}</li><li><Check /> {t('wv.s3')}</li></ol>
