@@ -12,7 +12,7 @@ function notifyLevel(p: ServerPlayer) {
   else if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
 }
 import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
-import coinImg from '@/assets/dogg-coin.png';
+import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
@@ -59,7 +59,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       app?.ready(); app?.expand(); try { app?.setHeaderColor?.('#070b08'); (app as unknown as { setBackgroundColor?: (c: string) => void })?.setBackgroundColor?.('#070b08'); } catch { /* older clients */ }
       (app as unknown as { setHeaderTitle?: (title: string) => void } | undefined)?.setHeaderTitle?.('$DOGG MINER');
       setNow(Date.now());
-      const timer = setInterval(() => setNow(Date.now()), 100);
+      // Shared clock ticks once a second; only the live counter on Minar ticks faster, locally, so the whole app doesn't re-render 10×/s.
+      const timer = setInterval(() => setNow(Date.now()), 1000);
       if (!app?.initData) { cleanup = () => clearInterval(timer); return; }
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
       const read = (silent: boolean) => call({ data: { initData: app.initData!, action: 'read' } }).then(p => {

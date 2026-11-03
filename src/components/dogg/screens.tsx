@@ -7,18 +7,25 @@ import { toast } from 'sonner';
 import { useDogg } from './state';
 import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
-import mascot from '@/assets/dogg-mascot.jpg';
-import coin from '@/assets/dogg-coin.png';
+import mascot from '@/assets/dogg-mascot.webp';
+import coin from '@/assets/dogg-coin.webp';
 import { ScreenHero, leafArt, bustArt } from './hero';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
-// Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.jpg still, so the poster never jumps.
+// Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
 const TIER_CLIP = Array.from({ length: 10 }, (_, index) => Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/sq-tier-${index + 1}.mp4.asset.json`))?.[1].url);
-const SQUARE_ART = import.meta.glob<string>('@/assets/tiers/sq-*.jpg', { eager: true, import: 'default' });
-const TIER_ART = Array.from({ length: 10 }, (_, index) => Object.entries(SQUARE_ART).find(([path]) => path.endsWith(`/sq-${index + 1}.jpg`))?.[1] ?? '');
+const SQUARE_ART = import.meta.glob<string>('@/assets/tiers/sq-[0-9]*.webp', { eager: true, import: 'default' });
+const TIER_ART = Array.from({ length: 10 }, (_, index) => Object.entries(SQUARE_ART).find(([path]) => path.endsWith(`/sq-${index + 1}.webp`))?.[1] ?? '');
 function Title({ label, title, accent, description }: { label: string; title: string; accent: string; description: string }) { return <div className="page-heading"><span className="eyebrow"><span />{label}</span><h1>{title} <em>{accent}</em><span className="heading-period">.</span></h1><p>{description}</p></div>; }
 function Countdown({ elapsed }: { elapsed: number }) { const s = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 1000)); return <>{String(Math.floor(s / 3600)).padStart(2, '0')}<span>:</span>{String(Math.floor(s % 3600 / 60)).padStart(2, '0')}<span>:</span>{String(s % 60).padStart(2, '0')}</>; }
 export { Title };
+/** The six-decimal counter is the only thing that ticks fast; it re-renders on its own instead of the whole app. */
+function LiveEarned({ player, live, fallback }: { player: ReturnType<typeof useDogg>['player']; live: boolean; fallback: number }) {
+  const [t, setT] = useState(() => Date.now());
+  useEffect(() => { if (!live) return; const id = setInterval(() => setT(Date.now()), 100); return () => clearInterval(id); }, [live]);
+  const value = live ? shiftTotal(player, t) : fallback;
+  return <div className="mine-live" data-testid="turn-total">+{value.toLocaleString('de-DE', { minimumFractionDigits: 6, maximumFractionDigits: 6 })}</div>;
+}
 export function Humero() {
   const { player, now, action, busy, demo } = useDogg();
   const elapsed = player.shiftStartedAt ? Math.max(0, now - Date.parse(player.shiftStartedAt)) : 0;
@@ -32,7 +39,7 @@ export function Humero() {
     <section className="mine-stats"><div><span>TASA DE MINERÍA</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? 'Minando' : finished ? 'Cosecha lista' : 'En pausa'}</em></div><div><span>RANGO ACTUAL</span><strong>Nivel {miner.level || 1}</strong><em>{miner.name}{demo ? ' · demo' : ''}</em></div></section>
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>Reclamado en la app</span></div>
     <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt="Moneda oficial del jetton $DOGG" width={640} height={631} /></div></div>
-    <div className="mine-live" data-testid="turn-total">+{earned.toLocaleString('de-DE', { minimumFractionDigits: 6, maximumFractionDigits: 6 })}</div>
+    <LiveEarned player={player} live={live} fallback={earned} />
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || live} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? 'Procesando…' : player.shiftStartedAt ? (finished ? 'PUFF PUFF, COBRA' : 'QUEMANDO EL TURNO') : 'PRENDE EL TURNO'}<ArrowRight /></Button></div>
     <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> Mira anuncios y tareas del hood</Link></Button>

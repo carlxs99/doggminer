@@ -8,8 +8,8 @@ import { Title } from './screens';
 import { ScreenHero } from './hero';
 import { JETTON, SWAP, PRICE, formatDogg, haptic } from '@/lib/dogg';
 import { bestLevel, getMiner } from '@/lib/mining';
-import coin from '@/assets/dogg-coin.png';
-import mascot from '@/assets/dogg-mascot.jpg';
+import coin from '@/assets/dogg-coin.webp';
+import mascot from '@/assets/dogg-mascot.webp';
 
 const Coin = ({ size = 16 }: { size?: number }) => <img src={coin} width={size} height={size} alt="" className="inline-coin" />;
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;

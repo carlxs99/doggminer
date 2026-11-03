@@ -488,3 +488,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .bottom-nav>a.selected svg{filter:drop-shadow(0 0 6px var(--neon-line))}
 @media(min-width:801px){.screen-hero{min-height:180px}.screen-hero-art{max-width:280px}}
 @media(prefers-reduced-motion:reduce){.screen-hero h1{transform:none}}
+/* ===== Phone performance: no full-screen blur or animated blurs (the smoke is a static picture) ===== */
+.smoke-layer i{display:none}
+.bottom-nav{backdrop-filter:none!important;background:var(--card-deep)!important}
+.mine-stats{backdrop-filter:none!important;background:color-mix(in oklch,var(--card-deep) 94%,transparent)!important}
+.mine-coin.spinning img{animation:coin-float 4s ease-in-out infinite;will-change:transform}
