@@ -67,13 +67,15 @@ async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, h
 }
 
 export const playerAction = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'checkin', 'select']), minerId: z.string().max(40).optional() }))
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'checkin', 'select']), minerId: z.string().max(40).optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional() }))
   .handler(async ({ data }) => {
     const tg = await verifyTelegramUser(data.initData);
     const telegramId = tg.id;
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     // On open: create the player, keep its Telegram name and attach the inviter (only for brand-new accounts).
     if (data.action === 'read') await supabaseAdmin.rpc('dogg_register', { p_telegram_id: telegramId, p_referrer: tg.referrer as number, p_first_name: tg.firstName as string, p_username: tg.username as string });
+    // Multi-account detector: hashed device + network signals on every open (informative only, never blocks).
+    if (data.action === 'read') { const { recordSignals } = await import('./multi.server'); await recordSignals(supabaseAdmin, telegramId, data.device, tg); }
     const hold = await currentHold(supabaseAdmin, telegramId);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);

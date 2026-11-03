@@ -1,11 +1,11 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
-import { Bot, Megaphone, Users, RefreshCw, Pause, Play, Trash2, Pencil, Search, ArrowUpRight, Wallet, ShieldCheck, ListChecks, LayoutDashboard, Plus, Minus, Check, Undo2, Send } from 'lucide-react';
+import { Bot, Fingerprint, Megaphone, Users, RefreshCw, Pause, Play, Trash2, Pencil, Search, ArrowUpRight, Wallet, ShieldCheck, ListChecks, LayoutDashboard, Plus, Minus, Check, Undo2, Send } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDogg } from './state';
-import { adminAdjust, adminOverview, adminSaveTask, adminTaskAction, adminTasks, adminUsers, adminWithdrawalAction, adminWithdrawals, type AdminTask, type AdminUser, type AdminWithdrawal } from '@/lib/admin.functions';
+import { adminAdjust, adminOverview, adminSaveTask, adminTaskAction, adminTasks, adminUsers, adminWithdrawalAction, adminWithdrawals, adminMulti, adminMultiReview, type AdminTask, type AdminUser, type AdminWithdrawal, type MultiAccount } from '@/lib/admin.functions';
 import type { TaskKind } from '@/lib/tasks';
 import { useT } from './lang';
 import { currentLang, LOCALE, t as tg, type Key } from '@/lib/i18n';
@@ -16,12 +16,13 @@ const n = (v: number, d = 0) => Number(v ?? 0).toLocaleString(LOCALE[currentLang
 const when = (iso: string | null) => iso ? new Date(iso).toLocaleString(LOCALE[currentLang()], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
 const short = (a: string) => a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a;
 const initData = () => window.Telegram?.WebApp?.initData ?? '';
-type Tab = 'resumen' | 'tareas' | 'usuarios' | 'retiros';
+type Tab = 'resumen' | 'tareas' | 'usuarios' | 'retiros' | 'multi';
 const TABS: { id: Tab; label: Key; icon: typeof Bot }[] = [
   { id: 'resumen', label: 'admin.tabSummary', icon: LayoutDashboard },
   { id: 'tareas', label: 'admin.tabTasks', icon: ListChecks },
   { id: 'usuarios', label: 'admin.tabUsers', icon: Users },
   { id: 'retiros', label: 'admin.tabWd', icon: ArrowUpRight },
+  { id: 'multi', label: 'admin.tabMulti', icon: Fingerprint },
 ];
 
 export function AdminPanel() {
@@ -36,6 +37,7 @@ export function AdminPanel() {
     {tab === 'tareas' && <TasksAdmin />}
     {tab === 'usuarios' && <UsersAdmin />}
     {tab === 'retiros' && <WithdrawalsAdmin />}
+    {tab === 'multi' && <MultiAdmin />}
   </div>;
 }
 
@@ -211,5 +213,55 @@ function WithdrawalsAdmin() {
         {w.error && <small className="admin-err">{w.error}</small>}
         {(w.status === 'pending' || w.status === 'sending') && <div className="admin-actions"><Button size="sm" variant="outline" onClick={() => void resolve(w, 'mark_sent')}><Check /> {t('admin.markSent')}</Button><Button size="sm" variant="outline" onClick={() => void resolve(w, 'refund')}><Undo2 /> {t('admin.refund')}</Button></div>}
       </article>)}</div>
+  </>;
+}
+
+// ---------- Multi-account detector ----------
+const REASONS: Record<string, { key: Key; icon: string }> = {
+  device: { key: 'multi.rDevice', icon: '📱' }, fp: { key: 'multi.rFp', icon: '🧬' }, ip: { key: 'multi.rIp', icon: '🌐' },
+  wallet: { key: 'multi.rWallet', icon: '👛' }, selfref: { key: 'multi.rSelfref', icon: '🔁' },
+};
+const level = (score: number) => (score >= 70 ? 'high' : score >= 40 ? 'mid' : 'low');
+type MultiFilter = 'all' | 'high' | 'pending' | 'flagged';
+
+function MultiAdmin() {
+  const call = useServerFn(adminMulti);
+  const review = useServerFn(adminMultiReview);
+  const t = useT();
+  const { data, loading, reload } = useLoad(() => call({ data: { initData: initData() } }), [call]);
+  const [filter, setFilter] = useState<MultiFilter>('all');
+  const [busy, setBusy] = useState<number | null>(null);
+  const rows = (data ?? []).filter(r => filter === 'all' || (filter === 'high' && r.score >= 70) || (filter === 'flagged' && r.review === 'flagged')
+    || (filter === 'pending' && (!r.review || (r.review === 'ok' && r.score > (r.review_score ?? 0)))));
+  const act = async (id: number, status: 'ok' | 'flagged' | 'clear') => {
+    setBusy(id); haptic();
+    try { await review({ data: { initData: initData(), telegramId: id, status } }); toast.success(t('multi.saved')); reload(); }
+    catch (e) { toast.error(friendlyError(e)); }
+    finally { setBusy(null); }
+  };
+  const high = (data ?? []).filter(r => r.score >= 70).length;
+  return <>
+    <div className="admin-bar"><span>{t('multi.title')}</span><Button size="sm" variant="outline" onClick={reload} disabled={loading}><RefreshCw className={loading ? 'animate-spin' : ''} /> {t('admin.refresh')}</Button></div>
+    <p className="admin-muted">{t('multi.help')}</p>
+    <div className="admin-stats"><Stat label={t('multi.linked')} value={n(data?.length ?? 0)} /><Stat label={t('multi.highRisk')} value={n(high)} /></div>
+    <div className="admin-chips">{(['all', 'high', 'pending', 'flagged'] as MultiFilter[]).map(f => <button key={f} className={filter === f ? 'on' : ''} onClick={() => { haptic(); setFilter(f); }}>{t(`multi.f_${f}` as Key)}</button>)}</div>
+    {loading && !data ? <p className="admin-muted">…</p> : rows.length === 0 ? <p className="admin-muted">{t('multi.empty')}</p> : rows.map(r => {
+      const changed = r.review === 'ok' && r.score > (r.review_score ?? 0);
+      return <section key={r.id} className={`admin-card multi-card ${level(r.score)}`}>
+        <div className="multi-head">
+          <div><strong>{r.first_name || r.username || 'Homie'}</strong><small>{r.username ? `@${r.username} · ` : ''}ID {r.id}{r.country ? ` · ${r.country}` : ''}</small></div>
+          <em className={`multi-score ${level(r.score)}`}>{r.score}<small>/100</small></em>
+        </div>
+        <div className="multi-reasons">{r.reasons.map(k => <span key={k}>{REASONS[k]?.icon} {REASONS[k] ? t(REASONS[k].key) : k}</span>)}</div>
+        <p className="multi-meta">{t('multi.meta', { b: n(r.balance ?? 0, 2), d: when(r.created_at) })} · {r.has_wallet ? t('multi.wallet') : t('multi.noWallet')}{r.can_withdraw ? ` · ${t('multi.canWithdraw')}` : ''}{r.referred_by ? ` · ${t('multi.invitedBy', { id: r.referred_by })}` : ''}</p>
+        <ul className="multi-peers">{r.peers.map(p => <li key={p.id}><span>{p.name}{p.username ? ` @${p.username}` : ''}<small>ID {p.id} · {n(p.balance, 2)} $DOGG</small></span><b>{p.kinds.map(k => REASONS[k]?.icon ?? '•').join(' ')}</b></li>)}</ul>
+        {r.review && <p className={`multi-review ${r.review}`}>{r.review === 'ok' ? t('multi.reviewedOk') : t('multi.reviewedFlag')}{changed ? ` · ${t('multi.rose', { a: r.review_score ?? 0, b: r.score })}` : ''}</p>}
+        <div className="multi-actions">
+          <Button size="sm" variant="outline" disabled={busy === r.id} onClick={() => void act(r.id, 'ok')}><Check /> {t('multi.markOk')}</Button>
+          <Button size="sm" variant={r.review === 'flagged' ? 'default' : 'outline'} disabled={busy === r.id} onClick={() => void act(r.id, 'flagged')}><ShieldCheck /> {t('multi.markFlag')}</Button>
+          {r.review && <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => void act(r.id, 'clear')}><Undo2 /> {t('multi.clear')}</Button>}
+        </div>
+      </section>;
+    })}
   </>;
 }

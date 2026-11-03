@@ -119,6 +119,33 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_multi_reviews: {
+        Row: {
+          admin_id: number
+          note: string | null
+          score: number
+          status: string
+          telegram_id: number
+          updated_at: string
+        }
+        Insert: {
+          admin_id: number
+          note?: string | null
+          score?: number
+          status: string
+          telegram_id: number
+          updated_at?: string
+        }
+        Update: {
+          admin_id?: number
+          note?: string | null
+          score?: number
+          status?: string
+          telegram_id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dogg_payout_lock: {
         Row: {
           id: number
@@ -147,6 +174,7 @@ export type Database = {
           last_hold: number | null
           last_hold_at: string | null
           miner_id: string
+          multi_alerted_at: string | null
           rate_changed_at: string | null
           ref_earned: number
           ref_given: number
@@ -178,6 +206,7 @@ export type Database = {
           last_hold?: number | null
           last_hold_at?: string | null
           miner_id?: string
+          multi_alerted_at?: string | null
           rate_changed_at?: string | null
           ref_earned?: number
           ref_given?: number
@@ -209,6 +238,7 @@ export type Database = {
           last_hold?: number | null
           last_hold_at?: string | null
           miner_id?: string
+          multi_alerted_at?: string | null
           rate_changed_at?: string | null
           ref_earned?: number
           ref_given?: number
@@ -248,6 +278,36 @@ export type Database = {
           referrer_id?: number
           telegram_id?: number
           wallet_address?: string
+        }
+        Relationships: []
+      }
+      dogg_signals: {
+        Row: {
+          country: string | null
+          first_seen: string
+          hits: number
+          kind: string
+          last_seen: string
+          telegram_id: number
+          value: string
+        }
+        Insert: {
+          country?: string | null
+          first_seen?: string
+          hits?: number
+          kind: string
+          last_seen?: string
+          telegram_id: number
+          value: string
+        }
+        Update: {
+          country?: string | null
+          first_seen?: string
+          hits?: number
+          kind?: string
+          last_seen?: string
+          telegram_id?: number
+          value?: string
         }
         Relationships: []
       }
@@ -437,8 +497,21 @@ export type Database = {
         Args: { p_id: string }
         Returns: Record<string, unknown>
       }
+      dogg_multi_peers: {
+        Args: { p_telegram_id: number }
+        Returns: {
+          kind: string
+          peer: number
+        }[]
+      }
+      dogg_multi_report: { Args: { p_min_score?: number }; Returns: Json }
+      dogg_multi_score: { Args: { p_telegram_id: number }; Returns: Json }
       dogg_payout_acquire: { Args: never; Returns: boolean }
       dogg_payout_release: { Args: never; Returns: undefined }
+      dogg_record_signals: {
+        Args: { p_country: string; p_signals: Json; p_telegram_id: number }
+        Returns: Json
+      }
       dogg_referral: {
         Args: { p_action: string; p_telegram_id: number }
         Returns: Json
