@@ -715,3 +715,32 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @keyframes splash-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
 @keyframes splash-breathe{0%,100%{transform:scale(.92);opacity:.45}50%{transform:scale(1.05);opacity:.7}}
 @media (prefers-reduced-motion:reduce){.splash-coin,.splash-glow{animation:none}}
+/* Mine on phones: compact enough that the start/claim button sits above the bottom dock */
+@media (max-width:600px){
+  .mine-screen{gap:10px}
+  .mine-hero{height:96px;margin-bottom:-40px}
+  .mine-hero img{height:132px;margin-top:-22px;margin-right:-10px}
+  .mine-stats{padding:10px 12px;gap:8px}
+  .mine-stats strong{font-size:17px}
+  .mine-stats em{font-size:11px;margin-top:0}
+  .mine-claimed strong{font-size:20px!important;line-height:1.1}
+  .mine-claimed span{margin-top:3px;padding:2px 12px;font-size:11px!important}
+  .mine-coin{padding:6px;width:min(44vw,200px);width:min(44vw,24svh,200px)}
+  .mine-leaf{width:min(26vw,120px);width:min(26vw,15svh,120px)}
+  .mine-live{font-size:clamp(32px,10vw,46px)!important}
+  .turn-badge{height:30px}
+  .mine-claim{padding:5px}
+  .mine-claim .start-shift{height:48px}
+  .mine-wide,.mine-buy a{height:42px}
+}
+/* Short phones: the coin already shows the character, so the bust steps aside */
+@media (max-width:600px) and (max-height:700px){
+  .mine-hero{display:none}
+  .mine-coin{width:min(40vw,170px);width:min(40vw,21svh,170px)}
+}
+@media (max-width:600px) and (max-height:600px){
+  .mine-screen{gap:8px}
+  .mine-claimed strong{font-size:18px!important}
+  .mine-coin{width:min(34vw,130px);width:min(34vw,19svh,130px)}
+  .mine-live{font-size:30px!important}
+}

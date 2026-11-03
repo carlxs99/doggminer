@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState, type ReactNode
 import { Languages, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu';
-import { detectLang, LANGS, LOCALE, setCurrentLang, translate, type Key, type Lang, type Vars } from '@/lib/i18n';
+import { detectLang, FALLBACK_LANG, LANGS, LOCALE, setCurrentLang, translate, type Key, type Lang, type Vars } from '@/lib/i18n';
 import { haptic } from '@/lib/dogg';
 
 type Ctx = { lang: Lang; setLang: (l: Lang) => void };
@@ -11,15 +11,15 @@ const g = globalThis as { __doggLang?: React.Context<Ctx | null> };
 const LangContext = g.__doggLang ??= createContext<Ctx | null>(null);
 
 export function LangProvider({ children }: { children: ReactNode }) {
-  // Server and first client render use Spanish; the saved / Telegram language is applied after hydration.
-  const [lang, setLangState] = useState<Lang>('es');
+  // Server and first client render use the English fallback; the saved / Telegram language is applied after hydration.
+  const [lang, setLangState] = useState<Lang>(FALLBACK_LANG);
   useEffect(() => { const l = detectLang(); setCurrentLang(l); setLangState(l); }, []);
   useEffect(() => { document.documentElement.lang = lang; }, [lang]);
   const value = useMemo<Ctx>(() => ({ lang, setLang: (l: Lang) => { setCurrentLang(l); try { localStorage.setItem('dogg-lang', l); } catch { /* storage blocked */ } setLangState(l); } }), [lang]);
   return <LangContext.Provider value={value}>{children}</LangContext.Provider>;
 }
 
-export function useLang() { return useContext(LangContext) ?? { lang: 'es' as Lang, setLang: () => {} }; }
+export function useLang() { return useContext(LangContext) ?? { lang: FALLBACK_LANG, setLang: () => {} }; }
 
 /** Translator bound to the chosen language; components using it re-render when the language changes. */
 export function useT() {
