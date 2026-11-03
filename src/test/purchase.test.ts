@@ -31,7 +31,7 @@ describe('withdrawal purchase verification', () => {
 });
 
 describe('purchase verification from toncenter transfers', () => {
-  const up = (a: string) => a.toUpperCase().replace('0X', '0x');
+  const up = (a: string) => a.toUpperCase();
   const tr = (hash: string, amount: number, source: string, destination: string, aborted = false) => ({ transaction_hash: hash, amount: String(amount * 1e9), source: up(source), destination: up(destination), jetton_master: up(DOGG_MASTER_RAW), transaction_aborted: aborted });
   it('counts $DOGG the pool sent to the wallet (case-insensitive addresses)', () => {
     expect(purchasedFromTransfers([tr('a', 70, pool, me), tr('b', 30, pool, me)], me)).toBe(100);
