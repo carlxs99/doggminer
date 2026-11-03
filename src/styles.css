@@ -737,7 +737,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-stats{padding:8px 14px}
   .mine-hero img{height:112px;margin-top:-16px;margin-right:-8px}
   .mine-coin{width:min(44vw,190px);width:min(44vw,calc(40svh - 142px),190px)}
-  .mine-leaf{width:min(26vw,110px);width:min(26vw,calc(22svh - 50px),110px)}
+  .mine-leaf{width:min(22vw,96px);width:min(22vw,calc(24svh - 82px),96px)}
   .mine-live{font-size:38px!important}
   .mine-claimed strong{font-size:20px!important}
 }
@@ -748,7 +748,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-stats strong{font-size:17px}
   .mine-claimed strong{font-size:16px!important}
   .mine-coin{width:min(30vw,130px);width:min(30vw,16svh,130px)}
-  .mine-leaf{width:min(22vw,72px);width:min(22vw,13svh,72px)}
+  .mine-leaf{width:min(18vw,60px);width:min(18vw,11svh,60px)}
   .mine-live{font-size:28px!important}
 }
 .profile-card img.profile-dogg{border-radius:50%;object-fit:contain;filter:drop-shadow(0 0 10px color-mix(in oklch,var(--gold) 45%,transparent))}
