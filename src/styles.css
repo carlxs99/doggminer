@@ -625,3 +625,4 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .sound-toggle{left:6px!important}
   .screen-hero.art-leaf .screen-hero-art{width:40%;right:2px}
 }
+@media(max-width:800px){.mobile-brand{min-height:44px;align-items:center}}
