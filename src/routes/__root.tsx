@@ -94,12 +94,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", type: "image/png", href: "/favicon.png" },
+      { rel: 'preconnect', href: 'https://fonts.googleapis.com' },
+      { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossOrigin: 'anonymous' },
       { rel: 'stylesheet', href: 'https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Pirata+One&family=Barlow:wght@400;500;600;700;800&family=Barlow+Condensed:wght@400;500;600;700;800&display=swap' },
     ],
     scripts: [
       { src: 'https://telegram.org/js/telegram-web-app.js' },
       // Monetag ads SDK (zone 12183992) — exposes window.show_12183992
-      { src: 'https://libtl.com/sdk.js', 'data-zone': '12183992', 'data-sdk': 'show_12183992' } as { src: string },
+      // async: it must not block the first paint; ads.ts waits for it when "Ver anuncio" is tapped.
+      { src: 'https://libtl.com/sdk.js', async: true, 'data-zone': '12183992', 'data-sdk': 'show_12183992' } as { src: string },
     ],
   }),
   shellComponent: RootShell,
