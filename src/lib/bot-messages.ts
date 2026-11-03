@@ -125,3 +125,19 @@ export function withdrawalReturnedMessage(w: { amount: number; fee: number }): B
     buttons: [[{ text: '⛏️ Open the app', url: MINI_APP_LINK }]],
   };
 }
+
+/** Public payouts channel where every confirmed withdrawal is announced. */
+export const PAYOUTS_CHANNEL = '@doggspayouts';
+
+/** Public name for the payouts channel: @username, else first name, else "Anonymous miner" (never the Telegram id). */
+export function payoutUser(firstName?: string | null, username?: string | null) {
+  if (username?.trim()) return `@${esc(username.trim())}`;
+  return esc(firstName?.trim() || 'Anonymous miner');
+}
+
+export function payoutChannelMessage(w: { user: string; amount: number; address: string; txHash: string | null }): BotMessage {
+  return {
+    text: `✅ <b>New Payout!</b>\n\n👤 User: ${w.user}\n💰 Amount: <b>${whole(w.amount)} $DOGG</b>`,
+    buttons: [[{ text: '🔎 View on Tonviewer', url: txLink(w.txHash, w.address) }]],
+  };
+}
