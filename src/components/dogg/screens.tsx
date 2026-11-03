@@ -1,12 +1,12 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from '@tanstack/react-router';
-import { ArrowUpRight, ArrowRight, Zap, Clock3, Leaf, LockKeyhole, Sprout, Flame, Gift, Gamepad2, Check, Users, Copy, Wallet, ExternalLink, Trophy, ShieldCheck, RefreshCw, ChevronRight, Music2 } from 'lucide-react';
+import { ArrowUpRight, ArrowRight, Zap, Clock3, Leaf, LockKeyhole, Sprout, Gamepad2, Check, Users, Copy, Wallet, ExternalLink, Trophy, ShieldCheck, RefreshCw, ChevronRight, Music2, Tv, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { useDogg } from './state';
 import type { Player } from '@/lib/dogg';
-import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic } from '@/lib/dogg';
+import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY, AD_SECONDS } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
@@ -38,19 +38,33 @@ export function Humero() {
     <div className="mine-live" data-testid="turn-total">+{earned.toLocaleString('de-DE', { minimumFractionDigits: 6, maximumFractionDigits: 6 })}</div>
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || live} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? 'Procesando…' : player.shiftStartedAt ? (finished ? 'PUFF PUFF, COBRA' : 'QUEMANDO EL TURNO') : 'PRENDE EL TURNO'}<ArrowRight /></Button></div>
-    <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Gift /> Bonus diario y tareas del hood</Link></Button>
+    <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> Mira anuncios y tareas del hood</Link></Button>
     <div className="mine-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-green">Comprar en DeDust</a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">Ver precio</a></div>
     <p className="mine-note">También puedes comprar y vender $DOGG desde Tonkeeper. Lo que tengas en tu wallet cuenta para tu rango.</p>
   </div>;
 }
 
 export function Trabajos() {
-  const { player, action, busy, now, wallet } = useDogg();
+  const { now, wallet } = useDogg();
   const [socialStart, setSocialStart] = useState<number | null>(null);
-  const checked = player.lastCheckin === new Date(now || 0).toISOString().slice(0, 10);
-  return <><div className="screen-head"><small>$DOGG MINER</small><h1>Tareas $DOGG</h1><p>Completa tareas del hood y bonus diarios para ganar $DOGG.</p></div>
-    <section className="daily-section"><div className="section-heading"><h2><Flame /> Daily check-in</h2><span className="text-gold">RACHA: {player.streak} / 7 DÍAS</span></div><div className="day-grid">{[1,2,3,4,5,6,7].map(day => <div key={day} className={`day-item ${day <= player.streak ? 'complete' : ''} ${day === 7 ? 'jackpot' : ''}`}><span>DÍA {day}</span>{day <= player.streak ? <Check /> : day === 7 ? <Gift /> : <Leaf />}<strong>+10</strong><small>créditos</small></div>)}</div><Button onClick={() => action('checkin')} disabled={busy || checked}>{checked ? <><Check /> BONUS RECLAMADO</> : <><Gift /> RECLAMAR BONUS DE HOY</>}</Button></section>
+  return <><div className="screen-head"><small>$DOGG MINER</small><h1>Tareas $DOGG</h1><p>Completa tareas y mira anuncios para ganar $DOGG.</p></div>
+    <AdsCard />
     <div className="section-heading task-heading"><h2>Hustle board</h2><span>ON-CHAIN & SOCIAL</span></div><div className="task-list"><Task icon={<Wallet />} title="Hold $DOGG. Representa al hood." subtitle="Conecta tu wallet para consultar tu stash on-chain." reward="ON-CHAIN"><Button asChild variant="outline"><Link to="/perfil">{wallet ? 'Ver mi saldo' : 'Conectar wallet'}<ArrowUpRight /></Link></Button></Task><Task icon={<Users />} title="Invita a tus homies" subtitle="El grow es mejor cuando crecemos juntos." reward="REFERIDOS"><Button asChild variant="outline"><Link to="/amigos">Invitar <ArrowRight /></Link></Button></Task><Task icon={<Music2 />} title="Representa a DOGG en redes" subtitle={socialStart ? 'Tiempo de espera · la verificación social aún no está activada.' : 'Temporizador de ejemplo. Recompensa pendiente de verificación.'} reward="24H"><Button variant="outline" onClick={() => { haptic(); setSocialStart(Date.now()); }} disabled={Boolean(socialStart)}>{socialStart ? <Countdown elapsed={now-socialStart} /> : 'Iniciar tarea'}<Clock3 /></Button></Task></div><Arcade /></>;
+}
+function AdsCard() {
+  const { adsToday, rewardAd, demo } = useDogg();
+  const [left, setLeft] = useState<number | null>(null);
+  const remaining = Math.max(0, AD_DAILY - adsToday);
+  const reward = useRef(rewardAd); reward.current = rewardAd;
+  useEffect(() => { if (left === null) return; if (left === 0) { setLeft(null); reward.current(); return; } const id = setTimeout(() => setLeft(l => (l ?? 1) - 1), 1000); return () => clearTimeout(id); }, [left]);
+  const ready = demo;
+  return <section className="ads-card" aria-label="Ver anuncios">
+    <div className="ads-top"><span className="ads-icon"><Tv /></span><div><h2>Ver anuncios</h2><p>+{AD_REWARD} $DOGG por anuncio · {adsToday}/{AD_DAILY} hoy</p></div></div>
+    <div className="ads-bar" role="progressbar" aria-valuemin={0} aria-valuemax={AD_DAILY} aria-valuenow={adsToday}><i style={{ width: `${adsToday / AD_DAILY * 100}%` }} /></div>
+    <small>{!ready ? 'Los anuncios con recompensa llegan muy pronto.' : remaining ? `Te quedan ${remaining} hoy` : 'Vuelve mañana para ver más anuncios'}</small>
+    <Button className="ads-button" disabled={!ready || !remaining || left !== null} onClick={() => { haptic(); setLeft(AD_SECONDS); }}>{left !== null ? `Anuncio en curso… ${left}s` : !ready ? 'Próximamente' : <><Play /> Ver anuncio (+{AD_REWARD} $DOGG)</>}</Button>
+    {demo && <p className="ads-note">Modo demo: anuncio simulado, los créditos no son tokens reales.</p>}
+  </section>;
 }
 function Task({ icon, title, subtitle, reward, children }: { icon: React.ReactNode; title: string; subtitle: string; reward: string; children: React.ReactNode }) { return <article className="task-row"><span className="task-icon">{icon}</span><div className="task-body"><div className="task-top"><h3>{title}</h3><small>{reward}</small></div><p>{subtitle}</p></div><div className="task-action">{children}</div></article>; }
 function Arcade() {

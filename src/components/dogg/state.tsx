@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
-import { haptic, SHIFT_MS, type Player } from '@/lib/dogg';
+import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
 import { autoUpgradeId, getMiner, shiftTotal, switchMiner } from '@/lib/mining';
 type ServerPlayer = Player & { downgraded?: string | null | undefined; upgraded?: string | null | undefined };
@@ -15,7 +15,7 @@ import coinImg from '@/assets/dogg-coin.png';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null> };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => void };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -151,7 +151,19 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       toast.success('Solicitud de retiro enviada · En revisión');
     } catch (e) { toast.error(friendlyError(e, 'No se pudo retirar')); }
   };
-  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge }}>{children}</Context.Provider>;
+  // Ads: demo credits only until an ad network with server-side reward confirmation is connected.
+  const [ads, setAds] = useState({ day: '', count: 0 });
+  const today = new Date(now || 0).toISOString().slice(0, 10);
+  const adsToday = ads.day === today ? ads.count : 0;
+  const rewardAd = () => {
+    if (!demo) { toast.error('Los anuncios con recompensa llegan muy pronto.'); return; }
+    if (adsToday >= AD_DAILY) { toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
+    setAds({ day: today, count: adsToday + 1 });
+    log({ kind: 'task', label: 'Anuncio visto', amount: AD_REWARD });
+    setPlayer(p => ({ ...p, balance: p.balance + AD_REWARD }));
+    scratch(); toast.success(`+${AD_REWARD} $DOGG por ver el anuncio`);
+  };
+  return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.
