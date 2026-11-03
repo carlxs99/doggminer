@@ -628,3 +628,27 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @media(max-width:800px){.mobile-brand{min-height:44px;align-items:center}}
 /* Longer screen titles (e.g. Russian «Профиль») shrink with their length so they never run under the artwork */
 .screen-hero h1{font-size:min(clamp(44px,14vw,60px),calc(72vw / var(--chars,5)))!important}
+
+/* ===== Admin: multi-account detector */
+.admin-tabs{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.multi-card.high{border-color:color-mix(in oklch,var(--destructive) 70%,transparent)!important}
+.multi-card.mid{border-color:color-mix(in oklch,var(--gold) 70%,transparent)!important}
+.multi-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.multi-head>div{min-width:0;display:flex;flex-direction:column;gap:2px}
+.multi-head strong{font-size:15px;overflow-wrap:anywhere}
+.multi-head small{font-size:11px;color:var(--muted-foreground);overflow-wrap:anywhere}
+.multi-score{flex:none;font-style:normal;font-weight:900;font-size:20px;line-height:1;padding:6px 10px;border-radius:12px;background:var(--muted)}
+.multi-score small{font-size:10px;font-weight:700;opacity:.7}
+.multi-score.high{background:var(--destructive);color:var(--destructive-foreground)}
+.multi-score.mid{background:var(--gold);color:var(--card-deep)}
+.multi-reasons{display:flex;flex-wrap:wrap;gap:6px}
+.multi-reasons span{font-size:11px;font-weight:700;padding:4px 8px;border-radius:999px;border:1px solid var(--border);background:color-mix(in oklch,var(--card-deep) 80%,transparent)}
+.multi-meta{font-size:11px;color:var(--muted-foreground);line-height:1.5}
+.multi-peers{display:flex;flex-direction:column;gap:4px;border-top:1px solid var(--border);padding-top:8px}
+.multi-peers li{display:flex;justify-content:space-between;align-items:center;gap:8px;font-size:13px;min-width:0}
+.multi-peers li>span{min-width:0;display:flex;flex-direction:column;overflow-wrap:anywhere}
+.multi-peers small{font-size:11px;color:var(--muted-foreground)}
+.multi-peers b{flex:none;font-size:14px}
+.multi-review{font-size:12px;font-weight:700;color:var(--primary)}
+.multi-review.flagged{color:var(--gold)}
+.multi-actions{display:flex;flex-wrap:wrap;gap:6px}

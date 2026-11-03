@@ -165,3 +165,39 @@ export const adminWithdrawalAction = createServerFn({ method: 'POST' })
     await log(db, adminId, `withdraw_${data.action}`, { id: data.id, txHash: data.txHash ?? null });
     return { ok: true, summary: '' };
   });
+
+// ---------- Multi-account detector (informative: nothing is blocked automatically) ----------
+const MultiPeer = z.object({ id: z.coerce.number(), name: z.string(), username: z.string().nullable(), kinds: z.array(z.string()), balance: z.coerce.number() });
+const MultiRow = z.object({
+  id: z.coerce.number(), score: z.coerce.number(), reasons: z.array(z.string()), first_name: z.string().nullable(), username: z.string().nullable(),
+  balance: z.coerce.number().nullable(), created_at: z.string().nullable(), referred_by: z.coerce.number().nullable(), can_withdraw: z.boolean().nullable(),
+  has_wallet: z.boolean().nullable(), country: z.string().nullable(), peers: z.array(MultiPeer), review: z.enum(['ok', 'flagged']).nullable(),
+  review_score: z.coerce.number().nullable(), review_note: z.string().nullable(),
+});
+export type MultiAccount = z.infer<typeof MultiRow>;
+
+export const adminMulti = createServerFn({ method: 'POST' })
+  .inputValidator(Init)
+  .handler(async ({ data }) => {
+    const { db } = await requireAdmin(data.initData);
+    const r = await db.rpc('dogg_multi_report', { p_min_score: 15 });
+    if (r.error) throw new Error(r.error.message);
+    return z.array(MultiRow).parse(r.data ?? []);
+  });
+
+export const adminMultiReview = createServerFn({ method: 'POST' })
+  .inputValidator(Init.extend({ telegramId: z.number().int().positive(), status: z.enum(['ok', 'flagged', 'clear']), note: z.string().trim().max(200).optional() }))
+  .handler(async ({ data }) => {
+    const { adminId, db } = await requireAdmin(data.initData);
+    if (data.status === 'clear') {
+      const d = await db.from('dogg_multi_reviews').delete().eq('telegram_id', data.telegramId);
+      if (d.error) throw new Error(d.error.message);
+    } else {
+      const sc = await db.rpc('dogg_multi_score', { p_telegram_id: data.telegramId });
+      const score = Number((sc.data as { score?: number } | null)?.score ?? 0);
+      const u = await db.from('dogg_multi_reviews').upsert({ telegram_id: data.telegramId, status: data.status, score, note: data.note ?? null, admin_id: adminId, updated_at: new Date().toISOString() });
+      if (u.error) throw new Error(u.error.message);
+    }
+    await log(db, adminId, `multi_${data.status}`, { telegram_id: data.telegramId });
+    return { ok: true };
+  });
