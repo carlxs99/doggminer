@@ -7,7 +7,6 @@ import { toast } from 'sonner';
 import { useDogg } from './state';
 import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
-import mascot from '@/assets/dogg-mascot.webp';
 import coin from '@/assets/dogg-coin.webp';
 import { ScreenHero, leafArt, bustArt } from './hero';
 import { ClubTasks } from './club-tasks';
