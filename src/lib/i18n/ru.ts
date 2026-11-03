@@ -84,7 +84,7 @@ export const ru: Record<keyof typeof es, string> = {
   'time.now': 'сейчас', 'time.min': '{n} мин назад', 'time.h': '{n} ч назад', 'time.d': '{n} дн назад',
   'wv.ok': 'Кошелёк подтверждён для вывода', 'wv.title': 'Подтверди кошелёк для вывода', 'wv.desc': 'Купи не менее {n} $DOGG на DeDust привязанным кошельком. Это делается один раз — потом выводить можно всегда.',
   'wv.s1': 'Подключи и привяжи кошелёк', 'wv.s2': 'Купи им {n} $DOGG или больше', 'wv.s3': 'Нажми «Проверить покупку»', 'wv.buy': 'Купить на DeDust', 'wv.verify': 'Проверить покупку', 'wv.note': 'Сначала подключи кошелёк выше и подпиши привязку.',
-  'buy.web': 'Удобнее на сайте? Открыть DeDust в браузере', 'buy.copied': 'Контракт $DOGG скопирован', 'buy.copiedDesc': 'В DeDust нажми на токен для получения и вставь контракт, чтобы выбрать $DOGG.', 'buy.search': 'Найди $DOGG на DeDust', 'buy.searchDesc': 'Вставь этот контракт: {c}',
+  'buy.miniApp': 'Хочешь мини‑приложение DeDust? Открой его и вставь контракт', 'buy.copied': 'Контракт $DOGG скопирован', 'buy.copiedDesc': 'В DeDust нажми на токен для получения и вставь контракт, чтобы выбрать $DOGG.', 'buy.search': 'Найди $DOGG на DeDust', 'buy.searchDesc': 'Вставь этот контракт: {c}',
 
   'friends.subtitle': 'Зови своих и расти вместе', 'friends.link': 'Твоя ссылка-приглашение', 'friends.linkTg': 'Доступна при открытии из Telegram', 'friends.copyLink': 'Копировать ссылку', 'friends.invite': 'Пригласить друзей',
   'friends.stats': 'Твои рефералы', 'friends.invited': 'Приглашено', 'friends.mining': 'Майнят', 'friends.earned': 'Заработано',

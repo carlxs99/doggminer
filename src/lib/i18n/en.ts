@@ -84,7 +84,7 @@ export const en: Record<keyof typeof es, string> = {
   'time.now': 'now', 'time.min': '{n} min ago', 'time.h': '{n} h ago', 'time.d': '{n} d ago',
   'wv.ok': 'Wallet verified for withdrawals', 'wv.title': 'Verify your wallet to withdraw', 'wv.desc': 'Buy at least {n} $DOGG on DeDust with your linked wallet. You only do this once: after that you can always withdraw.',
   'wv.s1': 'Connect and link your wallet', 'wv.s2': 'Buy {n} $DOGG or more with it', 'wv.s3': 'Tap "Verify purchase"', 'wv.buy': 'Buy on DeDust', 'wv.verify': 'Verify purchase', 'wv.note': 'First connect your wallet above and sign the link.',
-  'buy.web': 'Prefer the web? Open DeDust on the web', 'buy.copied': '$DOGG contract copied', 'buy.copiedDesc': 'In DeDust, tap the token to receive and paste the contract to pick $DOGG.', 'buy.search': 'Find $DOGG on DeDust', 'buy.searchDesc': 'Paste this contract: {c}',
+  'buy.miniApp': 'Prefer the DeDust mini app? Open it and paste the contract', 'buy.copied': '$DOGG contract copied', 'buy.copiedDesc': 'In DeDust, tap the token to receive and paste the contract to pick $DOGG.', 'buy.search': 'Find $DOGG on DeDust', 'buy.searchDesc': 'Paste this contract: {c}',
 
   'friends.subtitle': 'Invite your homies and grow together', 'friends.link': 'Your invite link', 'friends.linkTg': 'Available when opened from Telegram', 'friends.copyLink': 'Copy link', 'friends.invite': 'Invite friends',
   'friends.stats': 'Your referrals', 'friends.invited': 'Invited', 'friends.mining': 'Mining', 'friends.earned': 'Earned',
