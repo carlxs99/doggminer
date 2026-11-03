@@ -12,6 +12,7 @@ import coin from '@/assets/dogg-coin.webp';
 import { ScreenHero, leafArt, bustArt } from './hero';
 import { ClubTasks } from './club-tasks';
 import { useT } from './lang';
+import { PNL_RANGES, pnlSeries, pnlToday, type PnlRange } from '@/lib/pnl';
 import { BuyDedustLink, DedustWebLink } from './buy';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
@@ -104,32 +105,22 @@ function HoldSummary({ player, demo, busy, current, onActivate }: { player: Play
     {top > current && <Button className="w-full" size="sm" disabled={busy} onClick={() => onActivate(best.id)}><Zap /> {t('boost.upNow', { n: top })}</Button>}
   </>;
 }
-const RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
 function PnlChart() {
   const { history, earnedBefore, now, player, demo, busy, activateMiner } = useDogg();
   const t = useT();
-  const [range, setRange] = useState<keyof typeof RANGES>('7d');
-  const from = now - RANGES[range];
-  // Earnings only: withdrawals and their refunds move the balance but aren't profit.
-  const gains = history.filter(e => e.amount > 0 && e.kind !== 'withdraw').sort((a, b) => a.at - b.at);
-  const today = gains.filter(e => e.at >= now - 864e5).reduce((a, e) => a + e.amount, 0);
-  let acc = earnedBefore + gains.filter(e => e.at < from).reduce((a, e) => a + e.amount, 0);
-  const start = acc;
-  const pts: [number, number][] = [[Number.isFinite(from) ? from : (gains[0]?.at ?? now - 864e5), acc]];
-  for (const e of gains.filter(e => e.at >= from)) { pts.push([e.at, acc]); acc += e.amount; pts.push([e.at, acc]); }
-  pts.push([now, acc]);
-  const x0 = pts[0]![0], span = Math.max(1, now - x0), top = Math.max(1, acc);
-  const line = pts.map(([t, v]) => `${((t - x0) / span * 100).toFixed(2)},${(38 - v / top * 34).toFixed(2)}`).join(' ');
+  const [range, setRange] = useState<PnlRange>('7d');
+  const today = pnlToday(history, now);
+  const { gained, line, hasData } = pnlSeries(history, now, range, earnedBefore);
   const miner = getMiner(player.minerId);
   const fmt = (v: number) => v.toLocaleString('de-DE', { maximumFractionDigits: 2 });
   return <section className="boost-head pnl-card">
     <div className="pnl-top"><strong>{t('mine.level', { n: miner.level || 1 })}</strong><em>{tierName(miner.category, t)}</em><span>{t('boost.pnl', { x: fmt(today) })}</span></div>
     <HoldSummary player={player} demo={demo} busy={busy} current={miner.level || 1} onActivate={id => void activateMiner(id)} />
     <div className="pnl-chart-head">
-      <b>+{fmt(acc - start)} $DOGG</b>
-      <div className="pnl-ranges" role="tablist">{(Object.keys(RANGES) as (keyof typeof RANGES)[]).map(r => <button key={r} role="tab" aria-selected={range === r} className={range === r ? 'active' : ''} onClick={() => { haptic(); setRange(r); }}>{r === 'All' ? t('boost.all') : r}</button>)}</div>
+      <b>+{fmt(gained)} $DOGG</b>
+      <div className="pnl-ranges" role="tablist">{(Object.keys(PNL_RANGES) as PnlRange[]).map(r => <button key={r} role="tab" aria-selected={range === r} className={range === r ? 'active' : ''} onClick={() => { haptic(); setRange(r); }}>{r === 'All' ? t('boost.all') : r}</button>)}</div>
     </div>
-    {acc > 0
+    {hasData
       ? <svg className="pnl-chart" viewBox="0 0 100 40" preserveAspectRatio="none" aria-label={t('boost.chart')}><polygon points={`0,40 ${line} 100,40`} /><polyline points={line} /></svg>
       : <p className="pnl-empty">{t('boost.noGains')}</p>}
   </section>;

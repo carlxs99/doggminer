@@ -23,9 +23,8 @@ export function pnlSeries(entries: LedgerEntry[], now: number, range: PnlRange, 
   const pts: [number, number][] = [[from, acc]];
   for (const e of inRange) { pts.push([e.at, acc]); acc += e.amount; pts.push([e.at, acc]); }
   pts.push([now, acc]);
-  const gained = acc - (all ? 0 : 0);
   const span = Math.max(1, now - from);
   const top = Math.max(acc, 1e-9);
   const line = pts.map(([t, v]) => `${(((t - from) / span) * 100).toFixed(2)},${(38 - (v / top) * 36).toFixed(2)}`).join(' ');
-  return { gained, line, hasData: acc > 0 };
+  return { gained: acc, line, hasData: acc > 0 };
 }
