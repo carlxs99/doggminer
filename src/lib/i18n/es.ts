@@ -59,7 +59,7 @@ export const es = {
   'boost.subtitle': 'Aumenta tu velocidad de minería', 'boost.packs': 'Paquetes de velocidad',
   'boost.wallet': 'Wallet', 'boost.unlinked': '(sin vincular)', 'boost.inApp': 'Minado en la app', 'boost.total': 'Tu hold total',
   'boost.unlocks': 'Desbloquea hasta el nivel {n} · {name}.', 'boost.missing': ' Te faltan {x} $DOGG para el nivel {n}.', 'boost.max': ' Tienes el nivel máximo.', 'boost.auto': ' Tu minero sube solo al comprar y baja solo si vendes.',
-  'boost.upNow': 'Subir ya al nivel {n}', 'boost.pnl': 'PNL de hoy +{x} $DOGG', 'boost.all': 'Todo', 'boost.noGains': 'Aún no hay ganancias. Empieza un turno para ver tu PNL.', 'boost.chart': 'Progreso de $DOGG ganado',
+  'boost.upNow': 'Subir ya al nivel {n}', 'boost.pnl': 'PNL de hoy +{x} $DOGG', 'boost.all': 'Todo', 'splash.loading': 'Encendiendo el humero…', 'boost.noGains': 'Aún no hay ganancias. Empieza un turno para ver tu PNL.', 'boost.chart': 'Progreso de $DOGG ganado',
   'boost.noticeLinked': 'Wallet vinculada · {n} $DOGG en hold desbloquean tus mineros.',
   'boost.noticeConnect': 'Conecta tu wallet en Perfil para que tu $DOGG desbloquee mineros.',
   'boost.tierRange': 'NIVEL {a}–{b}', 'boost.prev': 'Anterior', 'boost.next': 'Siguiente', 'boost.range': 'Nivel {a}–{b}',
