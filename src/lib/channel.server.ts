@@ -60,7 +60,7 @@ async function publish(admin: Admin, row: Row, post: { caption: string; buttons:
       const form = new FormData();
       form.set('chat_id', CHANNEL);
       if (typeof post.photo === 'string') form.set('photo', post.photo);
-      else form.set('photo', new Blob([post.photo], { type: 'image/jpeg' }), 'dogg-news.jpg');
+      else form.set('photo', new Blob([post.photo.buffer as ArrayBuffer], { type: 'image/jpeg' }), 'dogg-news.jpg');
       form.set('caption', post.caption);
       form.set('parse_mode', 'HTML');
       form.set('reply_markup', reply_markup);
