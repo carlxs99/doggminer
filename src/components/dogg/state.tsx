@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { adAction, playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
-import { showRewardedAd, startInAppAds } from '@/lib/ads';
+import { showRewardedAd } from '@/lib/ads';
 import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
 import { autoUpgradeId, getMiner, shiftTotal, switchMiner } from '@/lib/mining';
@@ -157,7 +157,6 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const today = new Date(now || 0).toISOString().slice(0, 10);
   const adsToday = ads.day === today ? ads.count : 0;
   const adCall = useServerFn(adAction);
-  useEffect(() => { void startInAppAds(); }, []);
   useEffect(() => {
     const initData = window.Telegram?.WebApp?.initData;
     if (demo || !initData) return;
@@ -172,8 +171,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         if (!initData) throw new Error('Abre la app desde Telegram.');
         await adCall({ data: { initData, action: 'start' } });
       }
-      const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-      await showRewardedAd(userId ? String(userId) : undefined);
+      await showRewardedAd();
       const day = new Date().toISOString().slice(0, 10);
       if (!demo && initData) {
         const r = await adCall({ data: { initData, action: 'claim' } });

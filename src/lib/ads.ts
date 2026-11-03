@@ -1,6 +1,6 @@
-// Monetag SDK (loaded in the root <head>): one zone serves the automatic in-app interstitials and the rewarded ad of the "Ver anuncios" task.
+// Monetag SDK (loaded in the root <head>). Only the Rewarded Interstitial is used, and only when the user taps "Ver anuncio".
 export const AD_ZONE = '12183992';
-type ShowAd = (options?: Record<string, unknown>) => Promise<unknown>;
+type ShowAd = () => Promise<unknown>;
 
 function sdk(): ShowAd | null {
   const fn = (window as unknown as Record<string, unknown>)[`show_${AD_ZONE}`];
@@ -18,25 +18,13 @@ async function waitForSdk(ms = 8000) {
   return null;
 }
 
-/** Rewarded interstitial: resolves only after the user has watched the ad. */
-export async function showRewardedAd(ymid?: string) {
+/** Rewarded interstitial: show_12183992() resolves only after the user has watched the ad. */
+export async function showRewardedAd() {
   const show = await waitForSdk();
   if (!show) throw new Error('No se pudo cargar el anuncio. Si usas un bloqueador de anuncios, desactívalo e inténtalo de nuevo.');
   try {
-    await show(ymid ? { ymid } : undefined);
+    await show();
   } catch {
     throw new Error('Ahora mismo no hay anuncios disponibles. Inténtalo en unos minutos.');
   }
-}
-
-let inAppStarted = false;
-/** Automatic In-App Interstitial: 2 ads within 6 minutes, 30s apart, first after 5s; session kept across pages. */
-export async function startInAppAds() {
-  if (inAppStarted) return;
-  inAppStarted = true;
-  const show = await waitForSdk(15000);
-  if (!show) return;
-  try {
-    await show({ type: 'inApp', inAppSettings: { frequency: 2, capping: 0.1, interval: 30, timeout: 5, everyPage: false } });
-  } catch { /* no fill: nothing to do */ }
 }
