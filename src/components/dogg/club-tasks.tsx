@@ -60,7 +60,7 @@ export function ClubTasks() {
     const done = (balance: number) => {
       applyBalance(balance, { kind: 'task', label: t.title, amount: t.reward });
       setTasks(ts => ts?.map(x => x.id === t.id ? { ...x, claimed: true } : x) ?? null);
-      scratch(); strongHaptic(); toast.success(`+${formatDogg(t.reward)} $DOGG · ${t.title}`);
+      scratch(); strongHaptic(); toast.success(`+${formatDogg(t.reward).replace(/,000$/, "")} $DOGG · ${t.title}`);
     };
     try {
       const initData = window.Telegram?.WebApp?.initData;
