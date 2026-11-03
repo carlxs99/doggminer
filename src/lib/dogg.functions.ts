@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { JETTON } from './dogg';
 import { autoUpgradeId } from './mining';
 
-const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional() });
+const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional() });
 
 async function verifyTelegram(initData: string) {
   const token = process.env['TELEGRAM_BOT_TOKEN'];
