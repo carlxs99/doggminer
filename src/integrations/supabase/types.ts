@@ -91,30 +91,66 @@ export type Database = {
       }
       dogg_channel_posts: {
         Row: {
+          angle: string | null
+          attempts: number
+          button_text: string | null
+          caption: string | null
           chat: string
           created_at: string
           error: string | null
+          image_headline: string | null
+          image_scene: string | null
+          image_subline: string | null
+          kind: string
+          lease_until: string | null
           message_id: number | null
-          post_index: number
+          post_index: number | null
           sent_at: string | null
+          status: string
+          title: string | null
+          updated_at: string
           week_key: string
         }
         Insert: {
+          angle?: string | null
+          attempts?: number
+          button_text?: string | null
+          caption?: string | null
           chat: string
           created_at?: string
           error?: string | null
+          image_headline?: string | null
+          image_scene?: string | null
+          image_subline?: string | null
+          kind?: string
+          lease_until?: string | null
           message_id?: number | null
-          post_index: number
+          post_index?: number | null
           sent_at?: string | null
+          status?: string
+          title?: string | null
+          updated_at?: string
           week_key: string
         }
         Update: {
+          angle?: string | null
+          attempts?: number
+          button_text?: string | null
+          caption?: string | null
           chat?: string
           created_at?: string
           error?: string | null
+          image_headline?: string | null
+          image_scene?: string | null
+          image_subline?: string | null
+          kind?: string
+          lease_until?: string | null
           message_id?: number | null
-          post_index?: number
+          post_index?: number | null
           sent_at?: string | null
+          status?: string
+          title?: string | null
+          updated_at?: string
           week_key?: string
         }
         Relationships: []
