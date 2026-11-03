@@ -12,3 +12,4 @@
 - [x] Activate social verification, hold-based upgrades and token payouts: requires real task destinations, reward economics and payout funding/authorization.
 - [x] Fix 429 balance error on app open (cache + retry)
 - [x] Automatic withdrawals (payout wallet configured; real send untested)
+- [x] Compact phone layout matching the reference: paged miner cards (10 per page), stacked task cards, no sideways overflow at 320/360 px.

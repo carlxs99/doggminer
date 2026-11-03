@@ -342,3 +342,78 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .list-title{font-size:15px;font-weight:600;margin-bottom:6px}.vault-h.center{text-align:center;justify-content:center}
 .vault-list .list-title{padding:4px 2px}.vault-list:has(.list-title){padding:16px;border-radius:16px}
 .hold-summary{margin-top:14px;border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:6px}.hold-sum-row{display:flex;justify-content:space-between;font-size:13px;color:var(--muted-foreground)}.hold-sum-row b{color:var(--foreground);font-variant-numeric:tabular-nums}.hold-sum-row.total{color:var(--foreground);font-weight:600;border-top:1px dashed var(--border);padding-top:6px}.hold-sum-row.total b{color:var(--primary)}.hold-summary p{font-size:12px;color:var(--muted-foreground);margin:4px 0}.hold-summary p strong{color:var(--gold)}
+
+/* ===== Compact LUM-style pass: same density as the reference on phones ===== */
+.miner-category{margin-top:12px}
+.miner-pager{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:10px;margin:4px 0 12px}
+.miner-pager>span{text-align:center;font-size:12px;color:var(--muted-foreground);line-height:1.25;min-width:0}
+.miner-pager b{display:block;color:var(--foreground);font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.miner-pager button{min-width:88px;height:40px;border-radius:12px;font-size:13px}
+.grow-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px}
+.grow-card,.miner-category .grow-card{padding:10px;border-radius:14px;display:flex;flex-direction:column;gap:6px}
+.grow-art.tier-art{margin:0 0 2px;border-radius:10px}
+.grow-badge{position:absolute;top:6px;right:6px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;background:color-mix(in oklch,var(--background) 75%,transparent);color:var(--primary)}
+.tier-art.idle .grow-badge{color:var(--muted-foreground)}
+.grow-card h2,.miner-category .grow-card h2{font-family:var(--font-sans);font-size:14px;font-weight:600;line-height:1.25;min-height:0;margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grow-card.rank-9 h2,.grow-card.rank-10 h2{color:var(--gold)}
+.grow-stats,.miner-category .grow-stats{display:flex;flex-direction:column;gap:2px;padding:0;border:0}
+.grow-stats strong{font-family:var(--font-sans);font-size:14px;font-weight:600;color:var(--primary);display:flex;align-items:center;gap:4px;margin:0}
+.grow-stats strong small{color:var(--primary);font-size:11px;font-family:var(--font-sans)}
+.grow-stats>span{font-size:11px;color:var(--muted-foreground)}
+.hold-requirement{padding:0;font-size:11px;gap:5px}.hold-requirement svg{width:12px;height:12px}
+.grow-card .miner-state-button{margin-top:auto;height:38px;min-height:38px;font-size:11px;letter-spacing:.04em;border-radius:10px;white-space:nowrap;padding:0 6px;line-height:1}
+.tier-count{text-align:center;margin:12px 0 0}
+.task-list{display:flex;flex-direction:column;gap:12px}
+.task-row{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;align-items:start;padding:14px;border:1px solid var(--border);background:var(--card);border-radius:16px}
+.task-row>div{min-width:0!important;flex:none}
+.task-top{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.task-row h3{margin:0;font-size:14px;line-height:1.3}
+.task-top small{font-size:10px;color:var(--primary);white-space:nowrap;font-weight:600}
+.task-row p{margin-top:3px;font-size:12px;line-height:1.4}
+.task-icon{width:40px;height:40px;border-radius:10px}
+.task-action{grid-column:1/-1;margin-top:8px}
+.task-action>*{width:100%;margin-left:0!important;height:40px;border-radius:12px;font-size:12px}
+.arcade-banner{display:grid;grid-template-columns:40px minmax(0,1fr);gap:4px 12px;padding:14px;border-radius:16px;margin-top:16px;align-items:center}
+.arcade-banner>svg{width:32px;height:32px}
+.arcade-banner h2{font-size:17px;line-height:1.2;margin-top:2px}
+.arcade-banner>button{grid-column:1/-1;width:100%;margin:8px 0 0!important;height:40px;border-radius:12px}
+.info-row small.break{word-break:normal;overflow-wrap:anywhere}
+.vault-h.center{font-family:var(--font-sans);font-size:14px;font-weight:500;color:var(--muted-foreground);margin:20px 0 10px}
+.turn-badge{white-space:nowrap;min-width:0;padding:0 14px}
+.demo-tag{white-space:nowrap}
+@media(max-width:600px){
+.topbar{height:56px}
+.screen-head h1{font-size:26px}
+.screen-head p{font-size:13px}
+.screen-head{margin-bottom:14px}
+.mine-screen{gap:12px}
+.mine-stats{padding:12px 14px;border-radius:14px}
+.mine-stats strong{font-size:18px}
+.mine-stats span{font-size:10px}
+.mine-coin{width:min(58vw,230px)}
+.mine-live{font-size:clamp(32px,10vw,48px)}
+.mine-claim{padding:6px;border-radius:16px}
+.mine-claim .start-shift{height:50px;font-size:15px}
+.mine-wide,.mine-buy a{height:44px;font-size:13px}
+.boost-head{padding:14px;border-radius:14px}
+.boost-level strong{font-size:24px}
+.boost-chart{height:110px}
+.vault-h{font-size:18px;margin:20px 0 10px}
+.section-heading{margin-bottom:14px}
+.section-heading h2{font-size:18px}
+.daily-section{padding:16px 0}
+.day-grid{margin-bottom:14px}
+.day-item{padding:10px 2px;gap:6px}
+.day-item small{margin-top:-4px}
+.day-item strong{font-size:16px}
+.task-heading{margin-top:20px}
+.vault-buy a{padding:12px 8px}
+.vault-buy a strong{font-size:15px}
+.info-row{padding:12px;border-radius:14px}
+.row-icon{width:40px;height:40px}
+.wallet-connect{max-width:150px}
+}
+.topbar{gap:8px}.mobile-brand{min-width:0;white-space:nowrap}.header-actions{flex-shrink:0;min-width:0}
+@media(max-width:400px){.demo-tag{display:none}.wallet-connect{max-width:140px}}
+.grow-art .grow-badge svg,.grow-badge svg{width:13px!important;height:13px!important;stroke-width:2.5;color:currentColor}
+@media(max-width:600px){.grow-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.grow-card,.miner-category .grow-card{padding:8px}.grow-card h2,.miner-category .grow-card h2{font-size:13px}}
