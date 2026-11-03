@@ -6,11 +6,12 @@ import { VERIFY_BUY } from '@/lib/purchase';
 import { showRewardedAd } from '@/lib/ads';
 import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
+import { t } from '@/lib/i18n';
 import { autoUpgradeId, getMiner, shiftTotal, switchMiner } from '@/lib/mining';
 type ServerPlayer = Player & { downgraded?: string | null | undefined; upgraded?: string | null | undefined };
 function notifyLevel(p: ServerPlayer) {
-  if (p.upgraded) { toast.success(`¡Tu hold subió! Ahora minas con ${getMiner(p.upgraded).name}`); strongHaptic(); }
-  else if (p.downgraded) toast.warning('Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.');
+  if (p.upgraded) { toast.success(t('toast.upgraded', { name: getMiner(p.upgraded).name })); strongHaptic(); }
+  else if (p.downgraded) toast.warning(t('toast.downgraded'));
 }
 import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
 import coinImg from '@/assets/dogg-coin.webp';
@@ -47,8 +48,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const verifyProof = useCallback(async (v: WalletProof) => {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
-    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); notifyLevel(p); toast.success(`Wallet vinculada · ${(p.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold`); }
-    catch (e) { toast.error(friendlyError(e, 'No se pudo vincular la wallet')); }
+    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); notifyLevel(p); toast.success(t('toast.walletLinked', { n: (p.hold ?? 0).toLocaleString('de-DE') })); }
+    catch (e) { toast.error(friendlyError(e, t('toast.walletLinkFail'))); }
   }, [verifyCall]);
   useEffect(() => {
     let cleanup = () => {};
@@ -83,7 +84,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     if (!demo) return;
     const up = autoUpgradeId(player.minerId, player.balance, 0);
-    if (up) { setPlayer(p => switchMiner(p, up, Date.now())); toast.success(`¡Subiste a ${getMiner(up).name}!`); }
+    if (up) { setPlayer(p => switchMiner(p, up, Date.now())); toast.success(t('toast.levelUp', { name: getMiner(up).name })); }
   }, [demo, player.balance, player.minerId]);
   const action = async (kind: 'start' | 'claim' | 'checkin') => {
     if (busy) return;
@@ -91,7 +92,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       if (!demo) {
         const initData = window.Telegram?.WebApp?.initData;
-        if (!initData) throw new Error('Abre la app desde Telegram.');
+        if (!initData) throw new Error(t('err.openTelegram'));
         { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
       } else {
         const today = new Date().toISOString().slice(0, 10);
@@ -100,18 +101,18 @@ export function DoggProvider({ children }: { children: ReactNode }) {
           const start = new Date().toISOString();
           setPlayer(p => ({ ...p, shiftStartedAt: start, rateChangedAt: start, shiftAccrued: 0 }));
         } else if (kind === 'claim') {
-          if (!player.shiftStartedAt || Date.now() - Date.parse(player.shiftStartedAt) < SHIFT_MS) throw new Error('Tu turno termina en 24 horas.');
-          log({ kind: 'mining', label: 'Cobro de minería', amount: shiftTotal(player, Date.now()) });
+          if (!player.shiftStartedAt || Date.now() - Date.parse(player.shiftStartedAt) < SHIFT_MS) throw new Error(t('toast.shift24'));
+          log({ kind: 'mining', label: 'hist.mining', amount: shiftTotal(player, Date.now()) });
           setPlayer(p => ({ ...p, balance: p.balance + shiftTotal(p, Date.now()), shiftStartedAt: null, rateChangedAt: null, shiftAccrued: 0, claimedShifts: p.claimedShifts + 1 }));
         } else {
-          if (player.lastCheckin === today) throw new Error('Ya reclamaste el bonus de hoy.');
-          log({ kind: 'task', label: 'Daily check-in', amount: 10 });
+          if (player.lastCheckin === today) throw new Error(t('toast.checkinDone'));
+          log({ kind: 'task', label: 'hist.checkin', amount: 10 });
           setPlayer(p => ({ ...p, balance: p.balance + 10, streak: p.streak % 7 + 1, lastCheckin: today }));
         }
       }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
-      toast.success(kind === 'start' ? 'Turno prendido. Keep it growing 🌱' : kind === 'checkin' ? 'Bonus diario reclamado: +10 créditos' : 'Puff puff… cosecha cobrada 💰');
-    } catch (e) { toast.error(friendlyError(e, 'No se pudo completar la acción')); }
+      toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'checkin' ? t('toast.checkin') : t('toast.harvest'));
+    } catch (e) { toast.error(friendlyError(e, t('toast.actionFail'))); }
     finally { setBusy(false); }
   };
   const activateMiner = async (id: string) => {
@@ -120,54 +121,54 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       const miner = getMiner(id);
       if (demo) {
-        if (player.balance < miner.hold) throw new Error(`Mantén ${miner.hold.toLocaleString('de-DE')} $DOGG de demo para activar este minero.`);
+        if (player.balance < miner.hold) throw new Error(t('toast.demoHold', { n: miner.hold.toLocaleString('de-DE') }));
         setPlayer(p => switchMiner(p, id, Date.now()));
       } else {
         const initData = window.Telegram?.WebApp?.initData;
-        if (!initData) throw new Error('Abre la app desde Telegram.');
+        if (!initData) throw new Error(t('err.openTelegram'));
         setPlayer(await call({ data: { initData, action: 'select', minerId: id } }));
       }
       setNow(Date.now()); toast.success(`${miner.name} · ${miner.daily} $DOGG/d`);
-    } catch(e) { toast.error(friendlyError(e, 'No se pudo activar')); }
+    } catch(e) { toast.error(friendlyError(e, t('toast.activateFail'))); }
     finally { setBusy(false); }
   };
   const withdraw = async (amount: number) => {
     if (busy) return; haptic();
     try {
-      if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(`El mínimo de retiro es ${WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG.`);
-      if (!wallet) throw new Error('Conecta tu wallet TON para retirar.');
-      if (!player.withdrawVerified) throw new Error(`Verifica tu wallet comprando ${VERIFY_BUY} $DOGG para poder retirar.`);
-      if (amount + WITHDRAW_FEE > player.balance) throw new Error(`Saldo insuficiente: necesitas ${(amount + WITHDRAW_FEE).toLocaleString('de-DE')} $DOGG (incluye ${WITHDRAW_FEE} de comisión).`);
+      if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(t('toast.minWithdraw', { n: WITHDRAW_MIN.toLocaleString('de-DE') }));
+      if (!wallet) throw new Error(t('toast.connectToWithdraw'));
+      if (!player.withdrawVerified) throw new Error(t('toast.verifyToWithdraw', { n: VERIFY_BUY }));
+      if (amount + WITHDRAW_FEE > player.balance) throw new Error(t('toast.insufficient', { n: (amount + WITHDRAW_FEE).toLocaleString('de-DE'), fee: WITHDRAW_FEE }));
       if (!demo) {
         const initData = window.Telegram?.WebApp?.initData;
-        if (!initData) throw new Error('Abre la app desde Telegram.');
+        if (!initData) throw new Error(t('err.openTelegram'));
         setBusy(true);
         try {
           const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
           if (r.player) { setPlayer(r.player); notifyLevel(r.player); } else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
-          if (r.status === 'failed') throw new Error('El envío falló y se te devolvió el saldo. Inténtalo más tarde.');
-          log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
+          if (r.status === 'failed') throw new Error(t('toast.wdFailed'));
+          log({ kind: 'withdraw', label: 'hist.withdraw', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
           coinRain(coinImg); bass(); strongHaptic();
-          toast.success(r.status === 'sent' ? `¡${amount.toLocaleString('de-DE')} $DOGG enviados a tu wallet!` : 'Retiro en camino a tu wallet · llegará en unos minutos');
+          toast.success(r.status === 'sent' ? t('toast.wdSent', { n: amount.toLocaleString('de-DE') }) : t('toast.wdOnWay'));
         } finally { setBusy(false); }
         return;
       }
       setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
-      log({ kind: 'withdraw', label: 'Retiro', amount: -(amount + WITHDRAW_FEE), status: 'review' });
-      toast.success('Solicitud de retiro enviada · En revisión');
-    } catch (e) { toast.error(friendlyError(e, 'No se pudo retirar')); }
+      log({ kind: 'withdraw', label: 'hist.withdraw', amount: -(amount + WITHDRAW_FEE), status: 'review' });
+      toast.success(t('toast.wdReview'));
+    } catch (e) { toast.error(friendlyError(e, t('toast.wdFail'))); }
   };
   // Withdrawal verification: the server checks that the linked wallet bought >= 100 $DOGG (one time, permanent).
   const purchaseCall = useServerFn(verifyPurchase);
   const [verifying, setVerifying] = useState(false);
   const verifyBuy = async () => {
     if (verifying) return; haptic();
-    if (demo) { setPlayer(p => ({ ...p, withdrawVerified: true })); toast.success('Demo · wallet verificada. En Telegram se comprueba tu compra real.'); return; }
+    if (demo) { setPlayer(p => ({ ...p, withdrawVerified: true })); toast.success(t('toast.verifyDemo')); return; }
     const initData = window.Telegram?.WebApp?.initData;
-    if (!initData) { toast.error('Abre la app desde Telegram.'); return; }
+    if (!initData) { toast.error(t('err.openTelegram')); return; }
     setVerifying(true);
-    try { const p = await purchaseCall({ data: { initData } }); setPlayer(p); notifyLevel(p); strongHaptic(); toast.success('¡Wallet verificada! Ya puedes retirar cuando quieras.'); }
-    catch (e) { toast.error(friendlyError(e, 'No se pudo verificar tu compra')); }
+    try { const p = await purchaseCall({ data: { initData } }); setPlayer(p); notifyLevel(p); strongHaptic(); toast.success(t('toast.verifyOk')); }
+    catch (e) { toast.error(friendlyError(e, t('toast.verifyFail'))); }
     finally { setVerifying(false); }
   };
   // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +15 (10/day);
@@ -181,9 +182,9 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     if (demo || !initData) return;
     adCall({ data: { initData, action: 'read' } }).then(r => setAds({ day: new Date().toISOString().slice(0, 10), count: r.adsToday })).catch(() => {});
   }, [demo, adCall]);
-  const paidAd = () => { log({ kind: 'task', label: 'Anuncio visto', amount: AD_REWARD }); scratch(); strongHaptic(); toast.success(`+${AD_REWARD} $DOGG por ver el anuncio`); };
+  const paidAd = () => { log({ kind: 'task', label: 'hist.ad', amount: AD_REWARD }); scratch(); strongHaptic(); toast.success(t('toast.adPaid', { r: AD_REWARD })); };
   const rewardAd = async () => {
-    if (adsToday >= AD_DAILY) { toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
+    if (adsToday >= AD_DAILY) { toast.error(t('toast.adsCap', { n: AD_DAILY })); return; }
     haptic();
     try {
       const initData = window.Telegram?.WebApp?.initData;
@@ -195,9 +196,9 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         paidAd();
         return;
       }
-      if (!initData) throw new Error('Abre la app desde Telegram.');
+      if (!initData) throw new Error(t('err.openTelegram'));
       const { ymid } = await adCall({ data: { initData, action: 'start' } });
-      if (!ymid) throw new Error('No se pudo preparar el anuncio.');
+      if (!ymid) throw new Error(t('toast.adPrepFail'));
       await showRewardedAd(ymid);
       // Wait for Monetag's server confirmation (usually a few seconds).
       const end = Date.now() + 25000;
@@ -208,12 +209,12 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         if (!r) continue;
         last = r.status ?? 'pending';
         if (r.status === 'paid') { setAds({ day, count: r.adsToday }); setPlayer(p => ({ ...p, balance: r.balance })); paidAd(); return; }
-        if (r.status === 'capped') { setAds({ day, count: r.adsToday }); toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
-        if (r.status !== 'pending' && r.status !== 'not_valued') { toast.error('Monetag no validó este anuncio, así que no suma $DOGG.'); return; }
+        if (r.status === 'capped') { setAds({ day, count: r.adsToday }); toast.error(t('toast.adsCap', { n: AD_DAILY })); return; }
+        if (r.status !== 'pending' && r.status !== 'not_valued') { toast.error(t('toast.adNotValid')); return; }
       }
-      if (last === 'not_valued') toast.error('Monetag no contó este anuncio como válido, así que no suma $DOGG. Prueba con otro.');
-      else toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
-    } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
+      if (last === 'not_valued') toast.error(t('toast.adNotValued'));
+      else toast.message(t('toast.adPending'), { description: t('toast.adPendingDesc', { r: AD_REWARD }) });
+    } catch (e) { toast.error(friendlyError(e, t('toast.adFail'))); }
   };
   return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin }}>{children}</Context.Provider>;
 }

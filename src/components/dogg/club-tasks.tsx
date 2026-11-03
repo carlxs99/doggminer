@@ -8,6 +8,7 @@ import { claimTask, listTasks, startTask, type PlayerTask } from '@/lib/tasks.fu
 import { botWaitLeft, BOT_TASK_WAIT_S } from '@/lib/tasks';
 import { formatDogg, friendlyError, haptic } from '@/lib/dogg';
 import { scratch, strongHaptic } from '@/lib/fx';
+import { useT } from './lang';
 
 const ICON = { channel: Megaphone, group: Users, bot: Bot } as const;
 
@@ -20,6 +21,7 @@ function openLink(url: string) {
 /** Tasks the admin created: join a channel/group (checked by the bot) or open a bot for 10 s. */
 export function ClubTasks() {
   const { demo, player, applyBalance } = useDogg();
+  const t = useT();
   const list = useServerFn(listTasks);
   const start = useServerFn(startTask);
   const claim = useServerFn(claimTask);
@@ -34,59 +36,59 @@ export function ClubTasks() {
     list({ data: initData ? { initData } : {} }).then(r => {
       if (!active) return;
       setTasks(r);
-      setStarted(Object.fromEntries(r.filter(t => t.startedAt).map(t => [t.id, Date.parse(t.startedAt!)])));
+      setStarted(Object.fromEntries(r.filter(x => x.startedAt).map(x => [x.id, Date.parse(x.startedAt!)])));
     }).catch(() => { if (active) setTasks([]); });
     return () => { active = false; };
   }, [demo, list]);
 
-  const counting = (tasks ?? []).some(t => t.kind === 'bot' && !t.claimed && started[t.id] && botWaitLeft(started[t.id]!, now) > 0);
+  const counting = (tasks ?? []).some(x => x.kind === 'bot' && !x.claimed && started[x.id] && botWaitLeft(started[x.id]!, now) > 0);
   useEffect(() => { if (!counting) return; const id = setInterval(() => setNow(Date.now()), 500); return () => clearInterval(id); }, [counting]);
 
   if (!tasks?.length) return null;
 
-  async function go(t: PlayerTask) {
-    haptic(); openLink(t.url);
+  async function go(task: PlayerTask) {
+    haptic(); openLink(task.url);
     const initData = window.Telegram?.WebApp?.initData;
-    if (demo || !initData) { setStarted(s => ({ ...s, [t.id]: s[t.id] ?? Date.now() })); setNow(Date.now()); return; }
+    if (demo || !initData) { setStarted(s => ({ ...s, [task.id]: s[task.id] ?? Date.now() })); setNow(Date.now()); return; }
     try {
-      const r = await start({ data: { initData, taskId: t.id } });
+      const r = await start({ data: { initData, taskId: task.id } });
       const at = Date.now() - Math.max(0, Date.parse(r.serverNow) - Date.parse(r.startedAt));
-      setStarted(s => ({ ...s, [t.id]: at })); setNow(Date.now());
-    } catch (e) { toast.error(friendlyError(e, 'No se pudo abrir la tarea')); }
+      setStarted(s => ({ ...s, [task.id]: at })); setNow(Date.now());
+    } catch (e) { toast.error(friendlyError(e, t('club.openFail'))); }
   }
 
-  async function collect(t: PlayerTask) {
-    haptic(); setBusyId(t.id);
+  async function collect(task: PlayerTask) {
+    haptic(); setBusyId(task.id);
     const done = (balance: number) => {
-      applyBalance(balance, { kind: 'task', label: t.title, amount: t.reward });
-      setTasks(ts => ts?.map(x => x.id === t.id ? { ...x, claimed: true } : x) ?? null);
-      scratch(); strongHaptic(); toast.success(`+${formatDogg(t.reward).replace(/,000$/, "")} $DOGG · ${t.title}`);
+      applyBalance(balance, { kind: 'task', label: task.title, amount: task.reward });
+      setTasks(ts => ts?.map(x => x.id === task.id ? { ...x, claimed: true } : x) ?? null);
+      scratch(); strongHaptic(); toast.success(t('toast.taskPaid', { n: formatDogg(task.reward).replace(/,000$/, ''), title: task.title }));
     };
     try {
       const initData = window.Telegram?.WebApp?.initData;
-      if (demo || !initData) { done(player.balance + t.reward); return; }
-      const r = await claim({ data: { initData, taskId: t.id } });
+      if (demo || !initData) { done(player.balance + task.reward); return; }
+      const r = await claim({ data: { initData, taskId: task.id } });
       done(r.balance);
-    } catch (e) { toast.error(friendlyError(e, 'No se pudo verificar')); }
+    } catch (e) { toast.error(friendlyError(e, t('club.verifyFail'))); }
     finally { setBusyId(null); }
   }
 
   return <>
-    <div className="section-heading task-heading"><h2>Tareas del club</h2><span>CANALES · GRUPOS · BOTS</span></div>
-    <div className="task-list club-tasks">{tasks.map(t => {
-      const Icon = ICON[t.kind];
-      const s = started[t.id];
-      const left = t.kind === 'bot' && s ? botWaitLeft(s, now) : 0;
-      const hint = t.kind === 'bot' ? `Abre el bot, espera ${BOT_TASK_WAIT_S} s y reclama.` : `Únete al ${t.kind === 'channel' ? 'canal' : 'grupo'}; el bot comprueba que estás dentro.`;
-      return <article key={t.id} className={`task-row club-task ${t.claimed ? 'done' : ''}`}>
+    <div className="section-heading task-heading"><h2>{t('club.title')}</h2><span>{t('club.tag')}</span></div>
+    <div className="task-list club-tasks">{tasks.map(task => {
+      const Icon = ICON[task.kind];
+      const s = started[task.id];
+      const left = task.kind === 'bot' && s ? botWaitLeft(s, now) : 0;
+      const hint = task.kind === 'bot' ? t('club.hintBot', { s: BOT_TASK_WAIT_S }) : task.kind === 'channel' ? t('club.hintChannel') : t('club.hintGroup');
+      return <article key={task.id} className={`task-row club-task ${task.claimed ? 'done' : ''}`}>
         <span className="task-icon"><Icon /></span>
-        <div className="task-body"><div className="task-top"><h3>{t.title}</h3><small>+{formatDogg(t.reward).replace(/,000$/, '')} $DOGG</small></div><p>{t.description || hint}</p></div>
+        <div className="task-body"><div className="task-top"><h3>{task.title}</h3><small>+{formatDogg(task.reward).replace(/,000$/, '')} $DOGG</small></div><p>{task.description || hint}</p></div>
         <div className="task-action">
-          {t.claimed ? <Button variant="outline" disabled><Check /> Hecho</Button>
-            : !s ? <Button onClick={() => void go(t)}>{t.kind === 'bot' ? 'Abrir bot' : 'Unirse'} <ExternalLink /></Button>
-            : left > 0 ? <Button variant="outline" disabled>Espera {left}s</Button>
-            : <><Button onClick={() => void collect(t)} disabled={busyId === t.id}>{busyId === t.id ? <RefreshCw className="animate-spin" /> : t.kind === 'bot' ? 'Reclamar' : 'Verificar'}</Button>
-                {t.kind !== 'bot' && <button className="task-reopen" onClick={() => openLink(t.url)}>Abrir de nuevo</button>}</>}
+          {task.claimed ? <Button variant="outline" disabled><Check /> {t('club.done')}</Button>
+            : !s ? <Button onClick={() => void go(task)}>{task.kind === 'bot' ? t('club.openBot') : t('club.join')} <ExternalLink /></Button>
+            : left > 0 ? <Button variant="outline" disabled>{t('club.wait', { n: left })}</Button>
+            : <><Button onClick={() => void collect(task)} disabled={busyId === task.id}>{busyId === task.id ? <RefreshCw className="animate-spin" /> : task.kind === 'bot' ? t('club.claim') : t('club.verify')}</Button>
+                {task.kind !== 'bot' && <button className="task-reopen" onClick={() => openLink(task.url)}>{t('club.reopen')}</button>}</>}
         </div>
       </article>;
     })}</div>

@@ -2,6 +2,7 @@ import { TonConnectUIProvider, useTonConnectUI, useTonWallet } from '@tonconnect
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useDogg } from './state';
+import { t } from '@/lib/i18n';
 function Bridge() {
   const [ui] = useTonConnectUI();
   const wallet = useTonWallet();
@@ -30,7 +31,7 @@ function Bridge() {
     if (item && 'proof' in item) {
       void verifyProof({ address, publicKey: wallet.account.publicKey, stateInit: wallet.account.walletStateInit, proof: item.proof });
     } else {
-      toast.info('Vuelve a conectar tu wallet y acepta la firma (gratis) para verificar que es tuya.');
+      toast.info(t('toast.reconnect'));
       void ui.disconnect().then(() => { sent.current = null; void ui.openModal(); });
     }
   }, [wallet, demo, player.walletAddress, verifyProof, ui]);

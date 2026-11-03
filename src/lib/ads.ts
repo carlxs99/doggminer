@@ -1,3 +1,4 @@
+import { t } from './i18n';
 // Monetag SDK (loaded in the root <head>). Only the Rewarded Interstitial is used, and only when the user taps "Ver anuncio".
 export const AD_ZONE = '12183992';
 type ShowAd = (opts?: { ymid?: string; requestVar?: string }) => Promise<unknown>;
@@ -21,10 +22,10 @@ async function waitForSdk(ms = 8000) {
 /** Rewarded interstitial. The ymid ties this ad show to a server-side ad view; Monetag sends it back in its postback. */
 export async function showRewardedAd(ymid?: string) {
   const show = await waitForSdk();
-  if (!show) throw new Error('No se pudo cargar el anuncio. Si usas un bloqueador de anuncios, desactívalo e inténtalo de nuevo.');
+  if (!show) throw new Error(t('toast.adLoad'));
   try {
     await show(ymid ? { ymid, requestVar: 'ver-anuncio' } : undefined);
   } catch {
-    throw new Error('Ahora mismo no hay anuncios disponibles. Inténtalo en unos minutos.');
+    throw new Error(t('toast.adNone'));
   }
 }

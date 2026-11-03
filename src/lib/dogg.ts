@@ -1,3 +1,4 @@
+import { t, translateServer } from './i18n';
 export const JETTON = 'EQCnT_6nreJHUaxbZw7g64gkP5vx6LvSXWFboW5tYsCpLS7I';
 export const SWAP = `https://dedust.io/swap/GRAM/${JETTON}`;
 export const PRICE = `https://dedust.io/coins/${JETTON}`;
@@ -25,11 +26,13 @@ export type TelegramApp = {
 };
 declare global { interface Window { Telegram?: { WebApp?: TelegramApp } } }
 export function haptic() { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); }/** Turns technical errors into short, human messages (no status codes). */
-export function friendlyError(e: unknown, fallback = 'Algo salió mal. Inténtalo de nuevo.') {
+export function friendlyError(e: unknown, fallback = t('err.generic')) {
   const raw = e instanceof Error ? e.message : typeof e === 'string' ? e : '';
   if (!raw) return fallback;
-  if (/429|rate|too many/i.test(raw)) return 'Mucho tráfico ahora mismo. Espera unos segundos y vuelve a intentarlo.';
-  if (/failed to fetch|network|load failed|timeout/i.test(raw)) return 'Sin conexión. Revisa tu internet e inténtalo de nuevo.';
-  if (/\b5\d\d\b|internal/i.test(raw)) return 'El servicio no responde ahora mismo. Inténtalo en un momento.';
-  return raw.replace(/\s*\(\d{3}\)/g, '');
+  if (/429|rate|too many/i.test(raw)) return t('err.rate');
+  if (/failed to fetch|network|load failed|timeout/i.test(raw)) return t('err.offline');
+  if (/\b5\d\d\b|internal/i.test(raw)) return t('err.server');
+  const clean = raw.replace(/\s*\(\d{3}\)/g, '');
+  // Server messages are in Spanish: show them in the player's language when known.
+  return translateServer(clean) ?? clean;
 }

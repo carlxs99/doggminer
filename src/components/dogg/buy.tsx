@@ -1,6 +1,8 @@
 import type { MouseEvent, ReactNode } from 'react';
 import { toast } from 'sonner';
 import { JETTON, SWAP, haptic } from '@/lib/dogg';
+import { t } from '@/lib/i18n';
+import { useT } from './lang';
 
 /** Official DeDust Telegram Mini App (@dedustBot), so buying happens inside Telegram. */
 export const DEDUST_APP = 'https://t.me/dedustBot/swap';
@@ -22,8 +24,8 @@ export function openDedust(e?: MouseEvent) {
   e?.preventDefault();
   haptic();
   void copyContract().then(ok => {
-    if (ok) toast.success('Contrato de $DOGG copiado', { description: 'En DeDust, toca el token a recibir y pega el contrato para elegir $DOGG.', duration: 6000 });
-    else toast.message('Busca $DOGG en DeDust', { description: `Pega este contrato: ${JETTON}`, duration: 9000 });
+    if (ok) toast.success(t('buy.copied'), { description: t('buy.copiedDesc'), duration: 6000 });
+    else toast.message(t('buy.search'), { description: t('buy.searchDesc', { c: JETTON }), duration: 9000 });
   });
   const tg = window.Telegram?.WebApp;
   // Small delay so the toast is seen and the copy lands before Telegram switches apps.
@@ -36,5 +38,6 @@ export function BuyDedustLink({ className, children }: { className?: string; chi
 
 /** Secondary option: the DeDust website with $DOGG preselected. */
 export function DedustWebLink({ className = 'buy-web' }: { className?: string }) {
-  return <a href={SWAP} target="_blank" rel="noopener noreferrer" className={className}>¿Prefieres la web? Abrir DeDust en la web</a>;
+  const tr = useT();
+  return <a href={SWAP} target="_blank" rel="noopener noreferrer" className={className}>{tr('buy.web')}</a>;
 }
