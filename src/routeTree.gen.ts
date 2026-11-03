@@ -17,6 +17,7 @@ import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
+import { Route as ApiPublicJobsPayoutsRouteImport } from './routes/api.public.jobs.payouts'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -59,6 +60,11 @@ const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
   path: '/api/public/ton-manifest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJobsPayoutsRoute = ApiPublicJobsPayoutsRouteImport.update({
+  id: '/api/public/jobs/payouts',
+  path: '/api/public/jobs/payouts',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
+  '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -79,6 +86,7 @@ export interface FileRoutesByTo {
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
+  '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
+  '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -102,6 +111,7 @@ export interface FileRouteTypes {
     | '/trabajos'
     | '/api/public/monetag-postback'
     | '/api/public/ton-manifest'
+    | '/api/public/jobs/payouts'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/trabajos'
     | '/api/public/monetag-postback'
     | '/api/public/ton-manifest'
+    | '/api/public/jobs/payouts'
   id:
     | '__root__'
     | '/'
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/trabajos'
     | '/api/public/monetag-postback'
     | '/api/public/ton-manifest'
+    | '/api/public/jobs/payouts'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -133,6 +145,7 @@ export interface RootRouteChildren {
   TrabajosRoute: typeof TrabajosRoute
   ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
+  ApiPublicJobsPayoutsRoute: typeof ApiPublicJobsPayoutsRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -193,6 +206,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTonManifestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/payouts': {
+      id: '/api/public/jobs/payouts'
+      path: '/api/public/jobs/payouts'
+      fullPath: '/api/public/jobs/payouts'
+      preLoaderRoute: typeof ApiPublicJobsPayoutsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -205,6 +225,7 @@ const rootRouteChildren: RootRouteChildren = {
   TrabajosRoute: TrabajosRoute,
   ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
+  ApiPublicJobsPayoutsRoute: ApiPublicJobsPayoutsRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

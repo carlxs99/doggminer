@@ -152,3 +152,11 @@ export async function processPayouts(admin: Admin, budgetMs = 45_000) {
   } finally { await admin.rpc('dogg_payout_release'); }
   return summary;
 }
+
+/** Read-only snapshot of the payout wallet (address, version, balances) for diagnostics. */
+export async function payoutStatus() {
+  const ctx = await setup();
+  const f = await funds(ctx);
+  const recent = await outgoing(ctx, Math.floor(Date.now() / 1000) - 30 * 86400).catch(() => null);
+  return { address: ctx.wallet.address.toString({ bounceable: false }), version: ctx.wallet instanceof WalletContractV5R1 ? 'W5' : 'v4', ton: Number(f.ton) / 1e9, dogg: Number(f.dogg) / 10 ** ctx.decimals, jettonWallet: ctx.jettonWallet.toString(), seqno: await ctx.opened.getSeqno(), indexerOk: recent !== null, recentOut: recent?.length ?? 0 };
+}
