@@ -17,7 +17,7 @@ export function ScreenHero({ title, subtitle, art = 'bust', green = false, crown
   const t = useT();
   return <section className={`screen-hero art-${art}`}>
     <div className="screen-hero-text">
-      <h1 className={green ? 'green' : ''}>{title}{crowned && <img className="hero-crown" src={crown} alt="" width={160} height={133} aria-hidden="true" />}</h1>
+      <h1 className={[green ? 'green' : '', title.length >= 7 ? 'long' : '', crowned ? 'crowned' : ''].filter(Boolean).join(' ')}>{title}{crowned && <img className="hero-crown" src={crown} alt="" width={160} height={133} aria-hidden="true" />}</h1>
       {subtitle && <p>{subtitle}</p>}
     </div>
     <img className="screen-hero-art" src={ART[art]} alt={art === 'leaf' ? '' : t('hero.alt')} width={640} height={634} />
