@@ -175,9 +175,8 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     await supabaseAdmin.from('dogg_players').update({ wallet_address: null, wallet_verified_at: null, last_hold: null, last_hold_at: null }).eq('wallet_address', address).neq('telegram_id', telegramId);
     const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: address, wallet_verified_at: new Date().toISOString(), last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
     if (upd.error) throw new Error(upd.error.code === '23505' ? 'Esta wallet ya está vinculada a otra cuenta de Telegram.' : upd.error.message);
-    // Remember every account that verified this wallet, then qualify the recruit (+100 to its inviter) if it's its first wallet.
+    // Remember every account that verified this wallet.
     await supabaseAdmin.from('dogg_wallet_links').upsert({ wallet_address: address, telegram_id: telegramId }, { onConflict: 'wallet_address,telegram_id', ignoreDuplicates: true });
-    await supabaseAdmin.rpc('dogg_referral_qualify', { p_telegram_id: telegramId });
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     return settle(supabaseAdmin, telegramId, result.data, hold);
