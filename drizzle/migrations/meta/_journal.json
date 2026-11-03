@@ -92,6 +92,13 @@
       "when": 1793722822392,
       "tag": "0012_referral_lifetime_share",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1793723003346,
+      "tag": "0013_withdraw_purchase_verification",
+      "breakpoints": true
     }
   ]
 }
