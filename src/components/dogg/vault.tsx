@@ -110,7 +110,7 @@ export function Amigos() {
   async function copy() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } try { await navigator.clipboard.writeText(link); setCopied(true); toast.success('Invitación copiada'); } catch { toast.error('No se pudo copiar la invitación'); } }
   function share() { haptic(); if (!link) { toast.info('Abre la app desde Telegram para tener tu enlace.'); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent('Únete a mi crew en $DOGG MINER 🌱')}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
   return <>
-    <div className="screen-head"><small>$DOGG MINER</small><h1>Amigos</h1><p>¡Invita a tus homies para crecer juntos! Solo califican después de conectar su wallet.</p></div>
+    <ScreenHero title="Amigos" subtitle="Invita a tus homies y crece juntos. Solo califican al conectar su wallet." />
     <div className="row-list">
       <section className="info-row"><span className="row-icon"><Link2 /></span><div><strong>Tu enlace de invitación</strong><small className="break">{link ?? 'Disponible al abrir desde Telegram'}</small></div><Button size="sm" onClick={() => void copy()}>{copied ? <Check /> : 'Copiar'}</Button></section>
       <section className="info-row"><span className="row-icon"><Users /></span><div><strong>Tus referidos</strong><small>0 calificados · 0 en total</small></div></section>
@@ -131,7 +131,7 @@ export function Perfil() {
   const withdrawals = history.filter(e => e.kind === 'withdraw');
   const now = Date.now();
   return <>
-    <div className="screen-head"><h1>Perfil</h1></div>
+    <ScreenHero title="Perfil" crowned art="cap" />
     <section className="info-row profile-card"><span className="credential-avatar">{name.slice(0, 1).toUpperCase()}</span><div><strong>{name}</strong>{tg?.username && <small>@{tg.username}</small>}<small>{tg?.id ? `ID ${tg.id}` : demo ? 'Modo demo' : ''}</small></div><img src={mascot} alt="" width={56} height={56} /></section>
     <Button className="wallet-pill" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet />{wallet ? `Wallet conectada · ${short(wallet)}` : 'Conectar wallet'}</Button>
     <div className="row-list">

@@ -9,6 +9,7 @@ import type { Player } from '@/lib/dogg';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
 import mascot from '@/assets/dogg-mascot.jpg';
 import coin from '@/assets/dogg-coin.png';
+import { ScreenHero, leafArt, bustCapArt } from './hero';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.jpg still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
@@ -27,9 +28,10 @@ export function Humero() {
   const remaining = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 60000));
   const live = Boolean(player.shiftStartedAt && !finished);
   return <div className="mine-screen">
+    <div className="mine-hero" aria-hidden="true"><img src={bustCapArt} alt="" width={640} height={634} fetchPriority="high" /></div>
     <section className="mine-stats"><div><span>TASA DE MINERÍA</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? 'Minando' : finished ? 'Cosecha lista' : 'En pausa'}</em></div><div><span>RANGO ACTUAL</span><strong>Nivel {miner.level || 1}</strong><em>{miner.name}{demo ? ' · demo' : ''}</em></div></section>
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>Reclamado en la app</span></div>
-    <div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt="Moneda oficial del jetton $DOGG" width={640} height={631} fetchPriority="high" /></div>
+    <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt="Moneda oficial del jetton $DOGG" width={640} height={631} /></div></div>
     <div className="mine-live" data-testid="turn-total">+{earned.toLocaleString('de-DE', { minimumFractionDigits: 6, maximumFractionDigits: 6 })}</div>
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || live} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? 'Procesando…' : player.shiftStartedAt ? (finished ? 'PUFF PUFF, COBRA' : 'QUEMANDO EL TURNO') : 'PRENDE EL TURNO'}<ArrowRight /></Button></div>
@@ -42,7 +44,7 @@ export function Humero() {
 export function Trabajos() {
   const { now, wallet } = useDogg();
   const [socialStart, setSocialStart] = useState<number | null>(null);
-  return <><div className="screen-head"><small>$DOGG MINER</small><h1>Tareas $DOGG</h1><p>Completa tareas y mira anuncios para ganar $DOGG.</p></div>
+  return <><ScreenHero title="Tareas" art="leaf" subtitle={<>Completa tareas y gana más <b>$DOGG</b></>} />
     <AdsCard />
     <div className="section-heading task-heading"><h2>Hustle board</h2><span>ON-CHAIN & SOCIAL</span></div><div className="task-list"><Task icon={<Wallet />} title="Hold $DOGG. Representa al hood." subtitle="Conecta tu wallet para consultar tu stash on-chain." reward="ON-CHAIN"><Button asChild variant="outline"><Link to="/perfil">{wallet ? 'Ver mi saldo' : 'Conectar wallet'}<ArrowUpRight /></Link></Button></Task><Task icon={<Users />} title="Invita a tus homies" subtitle="El grow es mejor cuando crecemos juntos." reward="REFERIDOS"><Button asChild variant="outline"><Link to="/amigos">Invitar <ArrowRight /></Link></Button></Task><Task icon={<Music2 />} title="Representa a DOGG en redes" subtitle={socialStart ? 'Tiempo de espera · la verificación social aún no está activada.' : 'Temporizador de ejemplo. Recompensa pendiente de verificación.'} reward="24H"><Button variant="outline" onClick={() => { haptic(); setSocialStart(Date.now()); }} disabled={Boolean(socialStart)}>{socialStart ? <Countdown elapsed={now-socialStart} /> : 'Iniciar tarea'}<Clock3 /></Button></Task></div><Arcade /></>;
 }
@@ -118,7 +120,7 @@ export function GrowOps() {
   const shown = inTier.slice(page * PAGE, page * PAGE + PAGE);
   const pickTier = (t: string) => { haptic(); setTier(t); const i = MINERS.filter(m => m.category === t).findIndex(m => m.id === player.minerId); setPage(i >= 0 ? Math.floor(i / PAGE) : 0); };
   const go = (d: number) => { haptic(); setPage(p => Math.min(pages - 1, Math.max(0, p + d))); };
-  return <><div className="screen-head"><h1>Aumentar velocidad de minería</h1><p>Tu rango sigue al $DOGG minado en la app más tu hold on-chain.</p></div><PnlChart /><h2 className="vault-h">Paquetes de velocidad</h2>
+  return <><ScreenHero title="Boost" green art="cap" subtitle="Aumenta tu velocidad de minería" /><PnlChart /><h2 className="vault-h">Paquetes de velocidad</h2>
     <div className="grow-notice"><ShieldCheck /><span>{demo ? 'Demo · requisitos basados en créditos de prueba. Los saldos de wallet son independientes.' : player.walletAddress ? `Wallet vinculada · ${(player.hold ?? 0).toLocaleString('de-DE')} $DOGG en hold desbloquean tus mineros.` : 'Conecta tu wallet en Perfil para que tu $DOGG desbloquee mineros.'}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((t, i) => <button key={t} role="tab" aria-selected={tier === t} className={`rank-${i + 1} ${tier === t ? 'active' : ''}`} onClick={() => pickTier(t)}><small>NIVEL {i * 50 + 1}–{i * 50 + 50}</small>{t}</button>)}</div>
     <section className="miner-category">
