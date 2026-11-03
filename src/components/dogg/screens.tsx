@@ -11,6 +11,7 @@ import mascot from '@/assets/dogg-mascot.webp';
 import coin from '@/assets/dogg-coin.webp';
 import { ScreenHero, leafArt, bustArt } from './hero';
 import { ClubTasks } from './club-tasks';
+import { BuyDedustLink, DedustWebLink } from './buy';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
@@ -44,7 +45,8 @@ export function Humero() {
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || live} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? 'Procesando…' : player.shiftStartedAt ? (finished ? 'PUFF PUFF, COBRA' : 'QUEMANDO EL TURNO') : 'PRENDE EL TURNO'}<ArrowRight /></Button></div>
     <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> Mira anuncios y tareas del hood</Link></Button>
-    <div className="mine-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-green">Comprar en DeDust</a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">Ver precio</a></div>
+    <div className="mine-buy"><BuyDedustLink className="buy-green">Comprar en DeDust</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">Ver precio</a></div>
+    <DedustWebLink />
     <p className="mine-note">También puedes comprar y vender $DOGG desde Tonkeeper. Lo que tengas en tu wallet cuenta para tu rango.</p>
   </div>;
 }
