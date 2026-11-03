@@ -20,3 +20,4 @@
 - Miner tier art is square: each sq-tier-N clip starts and ends on its sq-N still, which doubles as the poster, so playback never jumps or crops.
 - Rewarded ads: the server opens an ad view with a unique ymid passed to the Monetag SDK, and only the secret-checked Monetag postback (/api/public/monetag-postback) pays, once per ymid, valued events only, under row locks with a daily cap, because client reports of ad views can be forged.
 - Screen headers use the shared ScreenHero/Logo components (src/components/dogg/hero.tsx) and the neon theme block at the end of src/styles.css, so all five screens keep one visual style.
+- The shared game clock in the provider ticks once per second and fast-moving counters keep their own local timer, because a fast global tick re-renders every screen and makes phones lag; bundled images are resized WebP for the same reason.
