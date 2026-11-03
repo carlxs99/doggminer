@@ -72,8 +72,8 @@ function HoldSummary({ player, demo, busy, current, onActivate }: { player: Play
     <div className="hold-sum-row"><span>Wallet {player.walletAddress || demo ? '' : '(sin vincular)'}</span><b>{formatDogg(hold)}</b></div>
     <div className="hold-sum-row"><span>Minado en la app</span><b>{formatDogg(player.balance)}</b></div>
     <div className="hold-sum-row total"><span>Tu hold total</span><b>{formatDogg(total)} $DOGG</b></div>
-    <p>Desbloquea hasta el <strong>nivel {top}</strong> · {best.name}.{next ? ` Te faltan ${formatDogg(Math.max(0, next.hold - total))} $DOGG para el nivel ${next.level}.` : ' Tienes el nivel máximo.'} Si vendes, bajas al nivel que cubra tu hold.</p>
-    {top > current && <Button className="w-full" disabled={busy} onClick={() => onActivate(best.id)}><Zap /> Activar nivel {top}</Button>}
+    <p>Desbloquea hasta el <strong>nivel {top}</strong> · {best.name}.{next ? ` Te faltan ${formatDogg(Math.max(0, next.hold - total))} $DOGG para el nivel ${next.level}.` : ' Tienes el nivel máximo.'} Tu minero sube solo al comprar y baja solo si vendes.</p>
+    {top > current && <Button className="w-full" disabled={busy} onClick={() => onActivate(best.id)}><Zap /> Subir ya al nivel {top}</Button>}
   </div>;
 }
 const RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
@@ -112,7 +112,7 @@ export function GrowOps() {
         <div className={`grow-art tier-art ${active ? 'live' : 'idle'}`}>{active ? <video src={TIER_CLIP[MINER_TIERS.indexOf(category as never)]} poster={TIER_ART[MINER_TIERS.indexOf(category as never)]} autoPlay muted loop playsInline preload="auto" aria-label={`${category}: DOGG regando su planta`} /> : <img src={TIER_ART[MINER_TIERS.indexOf(category as never)] ?? TIER_ART[0]} alt={`${category}: DOGG regando su planta`} loading="lazy" />}</div>
         <h2>{miner.name}</h2><div className="grow-stats"><div><span>Potencia</span><strong><Zap size={15} /> {miner.power} <small>TH/s</small></strong></div><div><span>Producción diaria</span><strong>{miner.daily} <small>$DOGG/d</small></strong></div></div>
         <div className="hold-requirement"><Wallet />{miner.hold === 0 ? 'Disponible para todos' : `Hold: ${miner.hold.toLocaleString('de-DE')} $DOGG`}</div>
-        <Button variant={active ? 'default' : 'outline'} className="miner-state-button w-full" disabled={busy || active || !eligible} onClick={() => void activateMiner(miner.id)}>{active ? <><Check /> MINANDO AHORA</> : eligible ? 'MINAR' : `MANTÉN ${miner.hold.toLocaleString('de-DE')} $DOGG`}</Button>
+        <Button variant={active ? 'default' : 'outline'} className="miner-state-button w-full" disabled={busy || active || !eligible || miner.daily < getMiner(player.minerId).daily} onClick={() => void activateMiner(miner.id)}>{active ? <><Check /> MINANDO AHORA</> : eligible ? (miner.daily < getMiner(player.minerId).daily ? 'ALCANZADO' : 'MINAR') : `MANTÉN ${miner.hold.toLocaleString('de-DE')} $DOGG`}</Button>
       </article>;
     })}</div></section>)}
   </>;

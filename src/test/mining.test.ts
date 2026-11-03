@@ -47,3 +47,14 @@ describe('hold unlocks miners', () => {
     expect(minerAt(bestLevel(5_000) + 1).hold).toBeGreaterThan(5_000);
   });
 });
+
+import { autoUpgradeId } from '@/lib/mining';
+describe('automatic miner upgrade', () => {
+  it('rises to the best miner the hold covers, never down', () => {
+    expect(autoUpgradeId('rookie-1', 0, 927_000)).toBe('miner-500');
+    expect(autoUpgradeId('rookie-1', 3, 2)).toBeNull();
+    expect(autoUpgradeId('miner-500', 0, 5)).toBeNull();
+    const id = autoUpgradeId('rookie-1', 1_000, 4_000)!;
+    expect(minerAt(Number(id.split('-')[1])).hold).toBeLessThanOrEqual(5_000);
+  });
+});
