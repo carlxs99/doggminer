@@ -42,7 +42,7 @@ export function Humero() {
   const live = Boolean(player.shiftStartedAt && !finished);
   return <div className="mine-screen">
     <div className="mine-hero" aria-hidden="true"><img src={bustArt} alt="" width={640} height={634} fetchPriority="high" /></div>
-    <section className="mine-stats"><div><span>{t('mine.rate')}</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? t('mine.mining') : finished ? t('mine.ready') : t('mine.paused')}</em></div><div><span>{t('mine.rank')}</span><strong>{t('mine.level', { n: miner.level || 1 })}</strong><em>{miner.name}{demo ? t('mine.demo') : ''}</em></div></section>
+    <section className="mine-stats"><div><span>{t('mine.rate')}</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? t('mine.mining') : finished ? t('mine.ready') : t('mine.paused')}</em></div><div><span>{t('mine.rank')}</span><strong>{t('mine.level', { n: miner.level || 1 })}</strong><em>{miner.name}</em></div></section>
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>{t('mine.claimed')}</span></div>
     <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt={t('mine.coinAlt')} width={640} height={631} /></div></div>
     <LiveEarned player={player} live={live} fallback={earned} />
@@ -58,11 +58,10 @@ export function Humero() {
 export function Trabajos() {
   const { now, wallet } = useDogg();
   const t = useT();
-  const [socialStart, setSocialStart] = useState<number | null>(null);
   return <><ScreenHero title={t('tasks.title')} art="leaf" subtitle={<>{t('tasks.subtitle')} <b>$DOGG</b></>} />
     <AdsCard />
     <ClubTasks />
-    <div className="section-heading task-heading"><h2>Hustle board</h2><span>ON-CHAIN & SOCIAL</span></div><div className="task-list"><Task icon={<Wallet />} title={t('tasks.hold')} subtitle={t('tasks.holdSub')} reward="ON-CHAIN"><Button asChild variant="outline"><Link to="/perfil">{wallet ? t('tasks.seeBalance') : t('tasks.connect')}<ArrowUpRight /></Link></Button></Task><Task icon={<Users />} title={t('tasks.invite')} subtitle={t('tasks.inviteSub')} reward={t('tasks.refTag')}><Button asChild variant="outline"><Link to="/amigos">{t('tasks.inviteBtn')} <ArrowRight /></Link></Button></Task><Task icon={<Music2 />} title={t('tasks.social')} subtitle={socialStart ? t('tasks.socialWait') : t('tasks.socialSub')} reward="24H"><Button variant="outline" onClick={() => { haptic(); setSocialStart(Date.now()); }} disabled={Boolean(socialStart)}>{socialStart ? <Countdown elapsed={now-socialStart} /> : t('tasks.startTask')}<Clock3 /></Button></Task></div></>;
+    <div className="section-heading task-heading"><h2>Hustle board</h2><span>ON-CHAIN & SOCIAL</span></div><div className="task-list"><Task icon={<Wallet />} title={t('tasks.hold')} subtitle={t('tasks.holdSub')} reward="ON-CHAIN"><Button asChild variant="outline"><Link to="/perfil">{wallet ? t('tasks.seeBalance') : t('tasks.connect')}<ArrowUpRight /></Link></Button></Task><Task icon={<Users />} title={t('tasks.invite')} subtitle={t('tasks.inviteSub')} reward={t('tasks.refTag')}><Button asChild variant="outline"><Link to="/amigos">{t('tasks.inviteBtn')} <ArrowRight /></Link></Button></Task></div></>;
 }
 function AdsCard() {
   const { adsToday, rewardAd, demo } = useDogg();
@@ -75,7 +74,6 @@ function AdsCard() {
     <div className="ads-bar" role="progressbar" aria-valuemin={0} aria-valuemax={AD_DAILY} aria-valuenow={adsToday}><i style={{ width: `${adsToday / AD_DAILY * 100}%` }} /></div>
     <small>{remaining ? t('ads.left', { n: remaining }) : t('ads.tomorrow')}</small>
     <Button className="ads-button" disabled={!remaining || watching} onClick={watch}>{watching ? t('ads.watching') : <><Play /> {t('ads.watch', { r: AD_REWARD })}</>}</Button>
-    {demo && <p className="ads-note">{t('ads.demo')}</p>}
   </section>;
 }
 function Task({ icon, title, subtitle, reward, children }: { icon: React.ReactNode; title: string; subtitle: string; reward: string; children: React.ReactNode }) { return <article className="task-row"><span className="task-icon">{icon}</span><div className="task-body"><div className="task-top"><h3>{title}</h3><small>{reward}</small></div><p>{subtitle}</p></div><div className="task-action">{children}</div></article>; }
@@ -152,7 +150,7 @@ export function GrowOps() {
   const pickTier = (t: string) => { haptic(); setTier(t); const i = MINERS.filter(m => m.category === t).findIndex(m => m.id === player.minerId); setPage(i >= 0 ? Math.floor(i / PAGE) : 0); };
   const go = (d: number) => { haptic(); setPage(p => Math.min(pages - 1, Math.max(0, p + d))); };
   return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><h2 className="vault-h">{t('boost.packs')}</h2>
-    <div className="grow-notice"><ShieldCheck /><span>{demo ? t('boost.noticeDemo') : player.walletAddress ? t('boost.noticeLinked', { n: (player.hold ?? 0).toLocaleString('de-DE') }) : t('boost.noticeConnect')}</span></div>
+    <div className="grow-notice"><ShieldCheck /><span>{player.walletAddress ? t('boost.noticeLinked', { n: (player.hold ?? 0).toLocaleString('de-DE') }) : t('boost.noticeConnect')}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((tierLabel, i) => <button key={tierLabel} role="tab" aria-selected={tier === tierLabel} className={`rank-${i + 1} ${tier === tierLabel ? 'active' : ''}`} onClick={() => pickTier(tierLabel)}><small>{t('boost.tierRange', { a: i * 50 + 1, b: i * 50 + 50 })}</small>{tierName(tierLabel, t)}</button>)}</div>
     <section className="miner-category">
       <div className="miner-pager"><Button size="sm" onClick={() => go(-1)} disabled={page === 0}>{t('boost.prev')}</Button><span><b>{tierName(tier, t)}</b>{t('boost.range', { a: tierIndex * 50 + page * PAGE + 1, b: tierIndex * 50 + Math.min(inTier.length, page * PAGE + PAGE) })}</span><Button size="sm" onClick={() => go(1)} disabled={page >= pages - 1}>{t('boost.next')}</Button></div>

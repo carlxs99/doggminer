@@ -49,7 +49,7 @@ export function ClubTasks() {
   async function go(task: PlayerTask) {
     haptic(); openLink(task.url);
     const initData = window.Telegram?.WebApp?.initData;
-    if (demo || !initData) { setStarted(s => ({ ...s, [task.id]: s[task.id] ?? Date.now() })); setNow(Date.now()); return; }
+    if (demo || !initData) { toast.error(t('err.openTelegram')); return; }
     try {
       const r = await start({ data: { initData, taskId: task.id } });
       const at = Date.now() - Math.max(0, Date.parse(r.serverNow) - Date.parse(r.startedAt));
@@ -66,7 +66,7 @@ export function ClubTasks() {
     };
     try {
       const initData = window.Telegram?.WebApp?.initData;
-      if (demo || !initData) { done(player.balance + task.reward); return; }
+      if (demo || !initData) { toast.error(t('err.openTelegram')); return; }
       const r = await claim({ data: { initData, taskId: task.id } });
       done(r.balance);
     } catch (e) { toast.error(friendlyError(e, t('club.verifyFail'))); }
