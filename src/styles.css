@@ -745,3 +745,37 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-live{font-size:30px!important}
 }
 .profile-card img.profile-dogg{border-radius:50%;object-fit:contain;filter:drop-shadow(0 0 10px color-mix(in oklch,var(--gold) 45%,transparent))}
+/* Phone density pass: smaller screen headers and tighter cards so content starts higher */
+@media (max-width:600px){
+  .screen-hero{min-height:112px;margin:-8px -4px 10px;padding:4px}
+  .screen-hero h1{font-size:min(clamp(36px,11.5vw,50px),calc(66vw / var(--chars,5)))!important}
+  .screen-hero p{margin-top:6px;font-size:13px}
+  .screen-hero-art{width:40%;max-width:170px;bottom:-10px}
+  .screen-hero.art-leaf .screen-hero-art{width:34%!important}
+  .vault-h{margin:14px 0 8px}
+  .grow-notice{padding:8px 0;margin:6px 0 10px}
+  .tier-tabs{margin-bottom:2px}
+  .miner-pager{margin:2px 0 8px}
+  .miner-pager button{height:36px;min-width:76px}
+  .grow-card,.miner-category .grow-card{gap:4px}
+  .grow-stats,.miner-category .grow-stats{flex-direction:row;align-items:baseline;justify-content:space-between;gap:4px;flex-wrap:wrap}
+  .grow-stats strong{font-size:13px}
+  .grow-stats>span{font-size:10px}
+  .grow-card .miner-state-button{height:34px;min-height:34px;margin-top:2px}
+  .vault-list:has(.list-title){padding:12px}
+  .vault-empty{padding:6px 2px!important}
+  .vault-buy a{padding:10px 8px;gap:3px}
+  .vault-buy a svg{width:18px;height:18px}
+}
+@media (max-width:600px) and (max-height:700px){
+  .screen-hero{min-height:92px}
+  .screen-hero h1{font-size:min(clamp(32px,10vw,44px),calc(60vw / var(--chars,5)))!important}
+  .screen-hero-art{width:34%;max-width:140px}
+  .screen-hero.art-leaf .screen-hero-art{width:28%!important}
+}
+@media (max-width:600px) and (max-height:560px){
+  .mine-stats{padding:8px 12px}
+  .mine-coin{width:min(30vw,110px);width:min(30vw,16svh,110px)}
+  .mine-claimed span{margin-top:2px;padding:1px 10px}
+  .mine-leaf{width:min(20vw,64px);width:min(20vw,12svh,64px)}
+}

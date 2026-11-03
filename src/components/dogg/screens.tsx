@@ -151,7 +151,6 @@ export function GrowOps() {
           <div className={`grow-art tier-art ${active ? 'live' : 'idle'}`}>{active ? <video src={TIER_CLIP[tierIndex]} poster={TIER_ART[tierIndex]} autoPlay muted loop playsInline preload="auto" aria-label={t('boost.artAlt', { tier: tierName(tier, t) })} /> : <img src={TIER_ART[tierIndex] ?? TIER_ART[0]} alt={t('boost.artAlt', { tier: tierName(tier, t) })} loading="lazy" />}<span className="grow-badge">{active ? <Check size={13} /> : !eligible ? <LockKeyhole size={13} /> : <Sprout size={13} />}</span></div>
           <h2>{miner.name}</h2>
           <div className="grow-stats"><strong><Zap size={13} /> +{miner.power} <small>TH/s</small></strong><span>{miner.daily} $DOGG/d</span></div>
-          {!eligible && <div className="hold-requirement"><Wallet />{t('boost.hold', { n: miner.hold.toLocaleString('de-DE') })}</div>}
           <Button variant={active ? 'default' : eligible && !reached ? 'default' : 'secondary'} className="miner-state-button w-full" disabled={busy || active || !eligible || reached} onClick={() => void activateMiner(miner.id)}>{active ? <><Check /> {t('boost.mining')}</> : eligible ? (reached ? t('boost.reached') : t('boost.mine')) : t('boost.keep', { n: miner.hold.toLocaleString('de-DE') })}</Button>
         </article>;
       })}</div>
