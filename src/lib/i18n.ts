@@ -14,7 +14,7 @@ export const LANGS: { id: Lang; label: string; name: string }[] = [
 export const LOCALE: Record<Lang, string> = { es: 'es-ES', en: 'en-GB', ru: 'ru-RU' };
 const DICTS: Record<Lang, Record<Key, string>> = { es, en, ru };
 
-let current: Lang = 'es';
+let current: Lang = 'en';
 /** Set by the language provider; lets non-React code (toasts, thrown errors) speak the chosen language. */
 export function setCurrentLang(lang: Lang) { current = lang; }
 export function currentLang() { return current; }
