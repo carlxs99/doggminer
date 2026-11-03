@@ -725,7 +725,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-stats em{margin-top:0}
   .mine-claimed strong{font-size:22px!important;line-height:1.1}
   .mine-claimed span{margin-top:4px;padding:2px 14px;font-size:12px!important}
-  .mine-coin{padding:6px;width:min(56vw,230px);width:min(56vw,calc(42svh - 110px),230px)}
+  .mine-coin{padding:6px;width:min(56vw,230px);width:min(56vw,calc(42svh - 126px),230px)}
   .mine-leaf{width:min(32vw,140px);width:min(32vw,calc(26svh - 60px),140px)}
   .mine-live{font-size:clamp(36px,11vw,54px)!important}
   .mine-claim{padding:4px}
@@ -733,9 +733,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-wide,.mine-buy a{height:42px}
 }
 @media (max-width:600px) and (max-height:719px){
-  .mine-hero{height:84px;margin-bottom:-46px}
+  .mine-hero{height:84px;margin-bottom:-50px}
+  .mine-stats{padding:8px 14px}
   .mine-hero img{height:112px;margin-top:-16px;margin-right:-8px}
-  .mine-coin{width:min(44vw,190px);width:min(44vw,calc(40svh - 120px),190px)}
+  .mine-coin{width:min(44vw,190px);width:min(44vw,calc(40svh - 142px),190px)}
   .mine-leaf{width:min(26vw,110px);width:min(26vw,calc(22svh - 50px),110px)}
   .mine-live{font-size:38px!important}
   .mine-claimed strong{font-size:20px!important}
@@ -745,10 +746,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-screen{gap:8px}
   .mine-stats{padding:8px 12px}
   .mine-stats strong{font-size:17px}
-  .mine-claimed strong{font-size:18px!important}
-  .mine-coin{width:min(34vw,130px);width:min(34vw,19svh,130px)}
+  .mine-claimed strong{font-size:16px!important}
+  .mine-coin{width:min(30vw,130px);width:min(30vw,16svh,130px)}
   .mine-leaf{width:min(22vw,72px);width:min(22vw,13svh,72px)}
-  .mine-live{font-size:30px!important}
+  .mine-live{font-size:28px!important}
 }
 .profile-card img.profile-dogg{border-radius:50%;object-fit:contain;filter:drop-shadow(0 0 10px color-mix(in oklch,var(--gold) 45%,transparent))}
 /* Phone density pass: smaller screen headers and tighter cards so content starts higher */
