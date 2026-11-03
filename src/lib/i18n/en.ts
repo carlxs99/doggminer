@@ -36,6 +36,7 @@ export const en: Record<keyof typeof es, string> = {
 
   'mine.rate': 'MINING RATE', 'mine.mining': 'Mining', 'mine.ready': 'Harvest ready', 'mine.paused': 'Paused',
   'mine.rank': 'CURRENT RANK', 'mine.level': 'Level {n}',
+  'mine.subtitle': 'Light your shift and mine',
   'mine.claimed': 'Claimed in the app',
   'mine.coinAlt': 'Official $DOGG jetton coin',
   'mine.processing': 'Processing…', 'mine.claim': 'PUFF PUFF, COLLECT', 'mine.burning': 'BURNING THE SHIFT', 'mine.start': 'LIGHT THE SHIFT',

@@ -40,8 +40,8 @@ export function Humero() {
   const earned = shiftTotal(player, now);
   const remaining = Math.max(0, Math.ceil((SHIFT_MS - elapsed) / 60000));
   const live = Boolean(player.shiftStartedAt && !finished);
-  return <div className="mine-screen">
-    <div className="mine-hero" aria-hidden="true"><img src={bustArt} alt="" width={640} height={634} fetchPriority="high" /></div>
+  return <><ScreenHero title={t('nav.mine')} art="bust" subtitle={<>{t('mine.subtitle')} <b>$DOGG</b></>} />
+  <div className="mine-screen">
     <section className="mine-stats"><div><span>{t('mine.rate')}</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? t('mine.mining') : finished ? t('mine.ready') : t('mine.paused')}</em></div><div><span>{t('mine.rank')}</span><strong>{t('mine.level', { n: miner.level || 1 })}</strong><em>{miner.name}</em></div></section>
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>{t('mine.claimed')}</span></div>
     <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt={t('mine.coinAlt')} width={640} height={631} /></div></div>
@@ -51,7 +51,7 @@ export function Humero() {
     <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> {t('mine.tasksLink')}</Link></Button>
     <div className="mine-buy"><BuyDedustLink className="buy-green">{t('mine.buy')}</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">{t('mine.price')}</a></div>
     <DedustWebLink />
-  </div>;
+  </div></>;
 }
 
 export function Trabajos() {

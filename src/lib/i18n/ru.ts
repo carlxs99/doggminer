@@ -36,6 +36,7 @@ export const ru: Record<keyof typeof es, string> = {
 
   'mine.rate': 'СКОРОСТЬ МАЙНИНГА', 'mine.mining': 'Майнит', 'mine.ready': 'Урожай готов', 'mine.paused': 'На паузе',
   'mine.rank': 'ТЕКУЩИЙ РАНГ', 'mine.level': 'Уровень {n}',
+  'mine.subtitle': 'Запусти смену и майни',
   'mine.claimed': 'Получено в приложении',
   'mine.coinAlt': 'Официальная монета джеттона $DOGG',
   'mine.processing': 'Обработка…', 'mine.claim': 'ПАФ-ПАФ, ЗАБРАТЬ', 'mine.burning': 'СМЕНА ИДЁТ', 'mine.start': 'ЗАПУСТИТЬ СМЕНУ',
