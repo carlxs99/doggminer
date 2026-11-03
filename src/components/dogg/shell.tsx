@@ -1,7 +1,7 @@
 import { ClientOnly, Link, useLocation } from '@tanstack/react-router';
 import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { setSound, soundOn, scratch } from '@/lib/fx';
-import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume2, VolumeX, CircleHelp, Copy, ExternalLink } from 'lucide-react';
+import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume2, VolumeX, CircleHelp, Copy, ExternalLink, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
@@ -25,7 +25,7 @@ const navigation = [
 ] as const;
 export function Shell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
-  const { player, demo, name, wallet, openWallet } = useDogg();
+  const { player, demo, name, wallet, openWallet, isAdmin } = useDogg();
   const [sound, setSoundState] = useState(false);
   useEffect(() => setSoundState(soundOn()), []);
   const [welcome, setWelcome] = useState(false);
@@ -41,7 +41,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <nav>{navigation.map(({ to, name, subtitle, icon: Icon }) => <Button key={to} asChild variant="ghost" className={`side-link ${pathname === to ? 'selected' : ''}`}><Link to={to} onClick={haptic}><Icon /><span>{name}<small>{subtitle}</small></span>{pathname === to && <span className="active-dot" />}</Link></Button>)}</nav>
       <div className="sidebar-bottom"><div className="club-stamp"><Leaf /><span>GROW TOGETHER.<br />STAY HIGHER.</span></div><span className="network"><i /> TON NETWORK <span>v.1.0</span></span><div className="sidebar-user"><span className="avatar">{name[0]}</span><span>{name}<small>Rookie del hood</small></span><ArrowUpRight size={17} /></div></div>
     </aside>
-    <div className="main-shell"><header className="topbar"><Link to="/" className="mobile-brand" aria-label="$DOGG MINER, inicio"><Logo /></Link><div className="breadcrumb">EL CLUB <span>/</span> <strong>{navigation.find(n => n.to === pathname)?.name.toUpperCase()}</strong></div><div className="header-actions"><Button variant="ghost" size="icon" className="sound-toggle" aria-label={sound ? "Silenciar sonidos" : "Activar sonidos"} onClick={toggleSound}>{sound ? <Volume2 /> : <VolumeX />}</Button><span className="demo-tag">{demo ? 'MODO DEMO' : 'TELEGRAM'}</span><Button variant="outline" className="wallet-connect" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet /><span className="wallet-label">{wallet ? `${wallet.slice(0, 5)}…${wallet.slice(-4)}` : 'Conectar wallet'}</span><ArrowUpRight /></Button></div></header>
+    <div className="main-shell"><header className="topbar"><Link to="/" className="mobile-brand" aria-label="$DOGG MINER, inicio"><Logo /></Link><div className="breadcrumb">EL CLUB <span>/</span> <strong>{navigation.find(n => n.to === pathname)?.name.toUpperCase()}</strong></div><div className="header-actions">{isAdmin && <Button asChild variant="ghost" size="icon" className={`admin-toggle ${pathname === '/admin' ? 'selected' : ''}`}><Link to="/admin" aria-label="Abrir panel de admin" onClick={haptic}><ShieldCheck /></Link></Button>}<Button variant="ghost" size="icon" className="sound-toggle" aria-label={sound ? "Silenciar sonidos" : "Activar sonidos"} onClick={toggleSound}>{sound ? <Volume2 /> : <VolumeX />}</Button><span className="demo-tag">{demo ? 'MODO DEMO' : 'TELEGRAM'}</span><Button variant="outline" className="wallet-connect" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet /><span className="wallet-label">{wallet ? `${wallet.slice(0, 5)}…${wallet.slice(-4)}` : 'Conectar wallet'}</span><ArrowUpRight /></Button></div></header>
       <main key={pathname} className="page-enter">{children}</main>
       <footer className="page-footer"><span><i /> POWERED BY TON. BUILT FOR THE HOOD.</span><Dialog><DialogTrigger asChild><Button variant="ghost" size="sm"><CircleHelp /> Ayuda y enlaces</Button></DialogTrigger><DialogContent className="help-dialog"><DialogHeader><DialogTitle>Ayuda · $DOGG MINER</DialogTitle></DialogHeader>
         <div className="faq">{FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>
