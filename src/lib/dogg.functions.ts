@@ -1,6 +1,7 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
 import { JETTON } from './dogg';
+import { autoUpgradeId } from './mining';
 
 const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional() });
 
@@ -68,6 +69,16 @@ async function currentHold(supabaseAdmin: Admin, telegramId: number) {
   }
 }
 
+/** Parses a dogg_shift result and, if the hold now covers a better miner, switches to it automatically (accrued credit is checkpointed by dogg_shift). */
+async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, hold: number) {
+  const player = PlayerSchema.parse(data);
+  const up = autoUpgradeId(player.minerId, player.balance, hold);
+  if (!up) return { ...player, upgraded: null as string | null };
+  const r = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: `miner:${up}`, p_hold: hold });
+  if (r.error) return { ...player, upgraded: null };
+  return { ...PlayerSchema.parse(r.data), upgraded: up };
+}
+
 export const playerAction = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'checkin', 'select']), minerId: z.string().max(40).optional() }))
   .handler(async ({ data }) => {
@@ -76,7 +87,7 @@ export const playerAction = createServerFn({ method: 'POST' })
     const hold = await currentHold(supabaseAdmin, telegramId);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
-    return PlayerSchema.parse(result.data);
+    return settle(supabaseAdmin, telegramId, result.data, hold);
   });
 
 async function proofSig(telegramId: number, exp: number) {
@@ -160,7 +171,7 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     if (upd.error) throw new Error(upd.error.code === '23505' ? 'Esta wallet ya está vinculada a otra cuenta de Telegram.' : upd.error.message);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
     if (result.error) throw new Error(result.error.message);
-    return PlayerSchema.parse(result.data);
+    return settle(supabaseAdmin, telegramId, result.data, hold);
   });
 
 /** Deducts balance atomically, queues the withdrawal and pays it automatically from the payout wallet. */
@@ -177,5 +188,5 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
     // If the hold can't be read right now, skip the refresh rather than reading with 0 (which would downgrade).
     const hold = await currentHold(supabaseAdmin, telegramId).catch(() => null);
     const player = hold === null ? null : await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
-    return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: !player || player.error ? null : PlayerSchema.parse(player.data) };
+    return { status: row.data?.status ?? 'pending', error: row.data?.error ?? null, player: !player || player.error || hold === null ? null : await settle(supabaseAdmin, telegramId, player.data, hold) };
   });
