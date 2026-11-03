@@ -101,36 +101,13 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     const poll = setInterval(load, 120_000); // withdrawal statuses change without a balance change
     return () => { alive = false; clearTimeout(first); clearInterval(poll); };
   }, [demo, synced, player.balance, ledgerCall]);
-  // Demo: the miner also rises on its own when demo credits cover a better one.
-  useEffect(() => {
-    if (!demo) return;
-    const up = autoUpgradeId(player.minerId, player.balance, 0);
-    if (up) { setPlayer(p => switchMiner(p, up, Date.now())); toast.success(t('toast.levelUp', { name: getMiner(up).name })); }
-  }, [demo, player.balance, player.minerId]);
   const action = async (kind: 'start' | 'claim' | 'checkin') => {
     if (busy) return;
     haptic(); setBusy(true);
     try {
-      if (!demo) {
-        const initData = window.Telegram?.WebApp?.initData;
-        if (!initData) throw new Error(t('err.openTelegram'));
-        { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
-      } else {
-        const today = new Date().toISOString().slice(0, 10);
-        if (kind === 'start') {
-          if (player.shiftStartedAt) return;
-          const start = new Date().toISOString();
-          setPlayer(p => ({ ...p, shiftStartedAt: start, rateChangedAt: start, shiftAccrued: 0 }));
-        } else if (kind === 'claim') {
-          if (!player.shiftStartedAt || Date.now() - Date.parse(player.shiftStartedAt) < SHIFT_MS) throw new Error(t('toast.shift24'));
-          log({ kind: 'mining', label: 'hist.mining', amount: shiftTotal(player, Date.now()) });
-          setPlayer(p => ({ ...p, balance: p.balance + shiftTotal(p, Date.now()), shiftStartedAt: null, rateChangedAt: null, shiftAccrued: 0, claimedShifts: p.claimedShifts + 1 }));
-        } else {
-          if (player.lastCheckin === today) throw new Error(t('toast.checkinDone'));
-          log({ kind: 'task', label: 'hist.checkin', amount: 10 });
-          setPlayer(p => ({ ...p, balance: p.balance + 10, streak: p.streak % 7 + 1, lastCheckin: today }));
-        }
-      }
+      const initData = window.Telegram?.WebApp?.initData;
+      if (!initData) throw new Error(t('err.openTelegram'));
+      { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
       toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'checkin' ? t('toast.checkin') : t('toast.harvest'));
     } catch (e) { toast.error(friendlyError(e, t('toast.actionFail'))); }
@@ -141,14 +118,9 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     haptic(); setBusy(true);
     try {
       const miner = getMiner(id);
-      if (demo) {
-        if (player.balance < miner.hold) throw new Error(t('toast.demoHold', { n: miner.hold.toLocaleString('de-DE') }));
-        setPlayer(p => switchMiner(p, id, Date.now()));
-      } else {
-        const initData = window.Telegram?.WebApp?.initData;
-        if (!initData) throw new Error(t('err.openTelegram'));
-        setPlayer(await call({ data: { initData, action: 'select', minerId: id } }));
-      }
+      const initData = window.Telegram?.WebApp?.initData;
+      if (!initData) throw new Error(t('err.openTelegram'));
+      setPlayer(await call({ data: { initData, action: 'select', minerId: id } }));
       setNow(Date.now()); toast.success(`${miner.name} · ${miner.daily} $DOGG/d`);
     } catch(e) { toast.error(friendlyError(e, t('toast.activateFail'))); }
     finally { setBusy(false); }
@@ -157,26 +129,21 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     if (busy) return; haptic();
     try {
       if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(t('toast.minWithdraw', { n: WITHDRAW_MIN.toLocaleString('de-DE') }));
-      if (demo ? !tcWallet : !player.walletAddress) throw new Error(t('toast.connectToWithdraw'));
+      if (demo) throw new Error(t('err.openTelegram'));
+      if (!player.walletAddress) throw new Error(t('toast.connectToWithdraw'));
       if (!player.withdrawVerified) throw new Error(t('toast.verifyToWithdraw', { n: VERIFY_BUY }));
       if (amount + WITHDRAW_FEE > player.balance) throw new Error(t('toast.insufficient', { n: (amount + WITHDRAW_FEE).toLocaleString('de-DE'), fee: WITHDRAW_FEE }));
-      if (!demo) {
-        const initData = window.Telegram?.WebApp?.initData;
-        if (!initData) throw new Error(t('err.openTelegram'));
-        setBusy(true);
-        try {
-          const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
-          if (r.player) { setPlayer(r.player); notifyLevel(r.player); } else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
-          if (r.status === 'failed') throw new Error(t('toast.wdFailed'));
-          log({ kind: 'withdraw', label: 'hist.withdraw', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
-          coinRain(coinImg); bass(); strongHaptic();
-          toast.success(r.status === 'sent' ? t('toast.wdSent', { n: amount.toLocaleString('de-DE') }) : t('toast.wdOnWay'));
-        } finally { setBusy(false); }
-        return;
-      }
-      setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
-      log({ kind: 'withdraw', label: 'hist.withdraw', amount: -(amount + WITHDRAW_FEE), status: 'review' });
-      toast.success(t('toast.wdReview'));
+      const initData = window.Telegram?.WebApp?.initData;
+      if (!initData) throw new Error(t('err.openTelegram'));
+      setBusy(true);
+      try {
+        const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
+        if (r.player) { setPlayer(r.player); notifyLevel(r.player); } else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
+        if (r.status === 'failed') throw new Error(t('toast.wdFailed'));
+        log({ kind: 'withdraw', label: 'hist.withdraw', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
+        coinRain(coinImg); bass(); strongHaptic();
+        toast.success(r.status === 'sent' ? t('toast.wdSent', { n: amount.toLocaleString('de-DE') }) : t('toast.wdOnWay'));
+      } finally { setBusy(false); }
     } catch (e) { toast.error(friendlyError(e, t('toast.wdFail'))); }
   };
   // Withdrawal verification: the server checks that the linked wallet bought >= 100 $DOGG (one time, permanent).
@@ -184,7 +151,6 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [verifying, setVerifying] = useState(false);
   const verifyBuy = async () => {
     if (verifying) return; haptic();
-    if (demo) { setPlayer(p => ({ ...p, withdrawVerified: true })); toast.success(t('toast.verifyDemo')); return; }
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) { toast.error(t('err.openTelegram')); return; }
     setVerifying(true);
@@ -193,7 +159,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     finally { setVerifying(false); }
   };
   // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +15 (10/day);
-  // the app only polls the result. Demo pays preview credits.
+  // the app only polls the result.
   const [ads, setAds] = useState({ day: '', count: 0 });
   const today = new Date(now || 0).toISOString().slice(0, 10);
   const adsToday = ads.day === today ? ads.count : 0;
@@ -210,13 +176,6 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       const initData = window.Telegram?.WebApp?.initData;
       const day = new Date().toISOString().slice(0, 10);
-      if (demo) {
-        await showRewardedAd();
-        setAds({ day, count: adsToday + 1 });
-        setPlayer(p => ({ ...p, balance: p.balance + AD_REWARD }));
-        paidAd();
-        return;
-      }
       if (!initData) throw new Error(t('err.openTelegram'));
       const { ymid } = await adCall({ data: { initData, action: 'start' } });
       if (!ymid) throw new Error(t('toast.adPrepFail'));
