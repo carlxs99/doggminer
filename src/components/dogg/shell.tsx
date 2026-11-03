@@ -50,7 +50,7 @@ export function Shell({ children }: { children: ReactNode }) {
       </DialogContent></Dialog></footer>
     </div>
     <Dialog open={welcome} onOpenChange={o => { if (!o) closeWelcome(); }}><DialogContent className="welcome-dialog"><DialogHeader><DialogTitle>Bienvenido al hood</DialogTitle></DialogHeader>
-      <ol className="welcome-steps"><li><strong>Mina</strong><span>Prende tu turno de 24 h en el Humero y cobra al terminar.</span></li><li><strong>Sube de minero</strong><span>Conecta tu wallet: tu $DOGG en hold desbloquea mineros más potentes en Grow Ops.</span></li><li><strong>Retira</strong><span>Desde 1.000 $DOGG, directo a tu wallet verificada.</span></li></ol>
+      <ol className="welcome-steps"><li><strong>Mina</strong><span>Prende tu turno de 24 h en el Humero y cobra al terminar. No necesitas wallet.</span></li><li><strong>Sube de minero</strong><span>Conecta tu wallet: tu $DOGG en hold desbloquea mineros más potentes en Grow Ops.</span></li><li><strong>Retira</strong><span>Desde 1.000 $DOGG, directo a tu wallet verificada.</span></li></ol>
       <Button className="start-shift" onClick={closeWelcome}>Vamos allá</Button></DialogContent></Dialog>
     <nav className="bottom-nav">{navigation.map(({ to, name, icon: Icon }) => <Button asChild variant="ghost" key={to} className={pathname === to ? 'selected' : ''}><Link to={to} onClick={haptic}><Icon /><span>{name}</span></Link></Button>)}</nav>
   </div>;

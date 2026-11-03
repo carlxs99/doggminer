@@ -146,7 +146,7 @@ export function Amigos() {
       <Button className="ref-share" onClick={share}><Share2 /> Invitar amigos</Button>
       <section className="ref-stats" aria-label="Tus referidos">
         <div><Users /><strong>{d.total}</strong><small>Invitados</small></div>
-        <div><ShieldCheck /><strong>{d.qualified}</strong><small>Calificados</small></div>
+        <div><ShieldCheck /><strong>{d.qualified}</strong><small>Minando</small></div>
         <div><Coin size={18} /><strong>{formatDogg(d.earned).replace(/,000$/, '')}</strong><small>Ganado</small></div>
       </section>
       <section className="info-row ref-pending"><span className="row-icon gold"><Gift /></span><div><strong>Por reclamar</strong><b className="row-amount">{formatDogg(d.pending)} <Coin /></b><small>+{REF_BONUS} cuando tu homie inicia su primer turno · {REF_SHARE * 100} % de lo que mine</small></div><Button size="sm" onClick={() => void claim()} disabled={claiming || busy || d.pending <= 0}>{claiming ? <RefreshCw className="animate-spin" /> : 'Reclamar'}</Button></section>
