@@ -1,7 +1,8 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
-import { playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { adAction, playerAction, requestWithdraw, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { showRewardedAd, startInAppAds } from '@/lib/ads';
 import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
 import { friendlyError } from '@/lib/dogg';
 import { autoUpgradeId, getMiner, shiftTotal, switchMiner } from '@/lib/mining';
@@ -15,7 +16,7 @@ import coinImg from '@/assets/dogg-coin.png';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => void };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void> };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -151,17 +152,40 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       toast.success('Solicitud de retiro enviada · En revisión');
     } catch (e) { toast.error(friendlyError(e, 'No se pudo retirar')); }
   };
-  // Ads: demo credits only until an ad network with server-side reward confirmation is connected.
+  // Ads: real Monetag rewarded ad; in Telegram the server opens a session before the ad and pays +15 after it (10/day). Demo pays preview credits.
   const [ads, setAds] = useState({ day: '', count: 0 });
   const today = new Date(now || 0).toISOString().slice(0, 10);
   const adsToday = ads.day === today ? ads.count : 0;
-  const rewardAd = () => {
-    if (!demo) { toast.error('Los anuncios con recompensa llegan muy pronto.'); return; }
+  const adCall = useServerFn(adAction);
+  useEffect(() => { void startInAppAds(); }, []);
+  useEffect(() => {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (demo || !initData) return;
+    adCall({ data: { initData, action: 'read' } }).then(r => setAds({ day: new Date().toISOString().slice(0, 10), count: r.adsToday })).catch(() => {});
+  }, [demo, adCall]);
+  const rewardAd = async () => {
     if (adsToday >= AD_DAILY) { toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
-    setAds({ day: today, count: adsToday + 1 });
-    log({ kind: 'task', label: 'Anuncio visto', amount: AD_REWARD });
-    setPlayer(p => ({ ...p, balance: p.balance + AD_REWARD }));
-    scratch(); toast.success(`+${AD_REWARD} $DOGG por ver el anuncio`);
+    haptic();
+    try {
+      const initData = window.Telegram?.WebApp?.initData;
+      if (!demo) {
+        if (!initData) throw new Error('Abre la app desde Telegram.');
+        await adCall({ data: { initData, action: 'start' } });
+      }
+      const userId = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+      await showRewardedAd(userId ? String(userId) : undefined);
+      const day = new Date().toISOString().slice(0, 10);
+      if (!demo && initData) {
+        const r = await adCall({ data: { initData, action: 'claim' } });
+        setAds({ day, count: r.adsToday });
+        setPlayer(p => ({ ...p, balance: r.balance }));
+      } else {
+        setAds({ day, count: adsToday + 1 });
+        setPlayer(p => ({ ...p, balance: p.balance + AD_REWARD }));
+      }
+      log({ kind: 'task', label: 'Anuncio visto', amount: AD_REWARD });
+      scratch(); strongHaptic(); toast.success(`+${AD_REWARD} $DOGG por ver el anuncio`);
+    } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
   };
   return <Context.Provider value={{ history, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd }}>{children}</Context.Provider>;
 }
