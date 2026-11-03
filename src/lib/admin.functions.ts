@@ -157,6 +157,8 @@ export const adminWithdrawalAction = createServerFn({ method: 'POST' })
       const r = await db.from('dogg_withdrawals').update({ status: 'sent', sent_at: new Date().toISOString(), tx_hash: data.txHash || null, error: 'Marcado como enviado por el admin' }).eq('id', data.id).in('status', ['pending', 'sending']);
       if (r.error) throw new Error(r.error.message);
     }
+    const { notifyWithdrawal } = await import('./notify.server');
+    await notifyWithdrawal(db, data.id);
     await log(db, adminId, `withdraw_${data.action}`, { id: data.id, txHash: data.txHash ?? null });
     return { ok: true, summary: '' };
   });

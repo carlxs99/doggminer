@@ -79,6 +79,11 @@ export const playerAction = createServerFn({ method: 'POST' })
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     const player = await settle(supabaseAdmin, telegramId, result.data, hold);
+    // Tell the inviter (once) when this player joins with their link and when they start mining (+100).
+    if (data.action === 'read' || data.action === 'start' || data.action === 'claim') {
+      const { notifyReferral } = await import('./notify.server');
+      await notifyReferral(supabaseAdmin, telegramId);
+    }
     if (data.action !== 'read') return player;
     const { isAdmin } = await import('./telegram.server');
     return { ...player, isAdmin: await isAdmin(supabaseAdmin, telegramId) };

@@ -9,6 +9,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import type { Database } from '@/integrations/supabase/types';
 import { JETTON } from './dogg';
 import { jettonUnits, matchTransfer, queryIdFor, type ChainTransfer } from './payout-match';
+import { notifyWithdrawal } from './notify.server';
 
 type Admin = SupabaseClient<Database>;
 type Ctx = Awaited<ReturnType<typeof setup>>;
@@ -96,6 +97,12 @@ async function outgoing(ctx: Ctx, sinceSec: number): Promise<ChainTransfer[]> {
 
 async function markSent(admin: Admin, id: string, hash: string) {
   await admin.from('dogg_withdrawals').update({ status: 'sent', sent_at: new Date().toISOString(), tx_hash: hash, error: null }).eq('id', id).eq('status', 'sending');
+  await notifyWithdrawal(admin, id);
+}
+
+async function refund(admin: Admin, id: string) {
+  await admin.rpc('dogg_withdraw_fail', { p_id: id, p_error: 'La transferencia fue rechazada en la blockchain; saldo devuelto.' });
+  await notifyWithdrawal(admin, id);
 }
 
 /** Resolves one 'sending' row. Returns true when it may still land (so nothing new may be sent yet). */
