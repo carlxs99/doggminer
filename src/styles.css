@@ -777,4 +777,5 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-stats{padding:8px 12px}
   .mine-coin{width:min(30vw,110px);width:min(30vw,16svh,110px)}
   .mine-claimed span{margin-top:2px;padding:1px 10px}
+  .mine-leaf{width:min(20vw,64px);width:min(20vw,12svh,64px)}
 }
