@@ -17,3 +17,4 @@
 - Pre-optimize shared UI and lazy wallet dependencies and reject outdated optimizer requests so preview updates cannot mix separate React module generations.
 - Real hold = TONAPI jetton balance of the TON Connect wallet linked to the Telegram account plus in-app balance; linking requires a server-verified ton_proof whose payload is HMAC-bound to the Telegram id (a valid proof releases the wallet from any other account), and hold is checked server-side on every action because client balances cannot be trusted.
 - Withdrawals: DB function deducts balance and queues atomically; server sends jetton transfers from the PAYOUT_MNEMONIC hot wallet under a single DB lock (seqno safety) and refunds on send failure; unconfirmed sends stay 'sending' for manual review rather than auto-refunding.
+- Miner tier art is square: each sq-tier-N clip starts and ends on its sq-N still, which doubles as the poster, so playback never jumps or crops.
