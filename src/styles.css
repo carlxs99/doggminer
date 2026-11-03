@@ -715,21 +715,40 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @keyframes splash-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
 @keyframes splash-breathe{0%,100%{transform:scale(.92);opacity:.45}50%{transform:scale(1.05);opacity:.7}}
 @media (prefers-reduced-motion:reduce){.splash-coin,.splash-glow{animation:none}}
-/* Mine on phones: keeps the full look (bust, big coin, leaves) and scales it with screen height so the main button stays above the dock */
+/* Mine on phones: keeps the full look (bust, big coin, leaves); sizes step down with screen height so the main button stays above the dock */
 @media (max-width:600px){
-  .mine-screen{gap:min(12px,1.4svh)}
-  .mine-hero{height:min(150px,17svh);margin-bottom:calc(min(150px,17svh) * -.4)}
-  .mine-hero img{height:min(190px,21svh);margin-top:calc(min(190px,21svh) * -.15);margin-right:-12px}
-  .mine-stats{padding:min(14px,1.8svh) 14px;gap:10px}
-  .mine-stats strong{font-size:min(20px,3svh)}
-  .mine-claimed strong{font-size:min(24px,3.6svh)!important;line-height:1.1}
+  .mine-screen{gap:9px}
+  .mine-hero{height:min(150px,16svh);margin-bottom:calc(min(150px,16svh) * -.5)}
+  .mine-hero img{height:min(190px,21svh);margin-top:calc(min(190px,21svh) * -.16);margin-right:-12px}
+  .mine-stats{padding:10px 14px;gap:10px}
+  .mine-stats strong{font-size:19px}
+  .mine-stats em{margin-top:0}
+  .mine-claimed strong{font-size:22px!important;line-height:1.1}
   .mine-claimed span{margin-top:4px;padding:2px 14px;font-size:12px!important}
-  .mine-coin{padding:8px;width:min(58vw,230px);width:min(58vw,28svh,230px)}
-  .mine-leaf{width:min(32vw,140px);width:min(32vw,17svh,140px)}
-  .mine-live{font-size:clamp(34px,min(12vw,7.4svh),58px)!important}
-  .mine-claim{padding:5px}
-  .mine-claim .start-shift{height:min(50px,7.6svh);min-height:42px}
+  .mine-coin{padding:6px;width:min(56vw,230px);width:min(56vw,calc(42svh - 110px),230px)}
+  .mine-leaf{width:min(32vw,140px);width:min(32vw,calc(26svh - 60px),140px)}
+  .mine-live{font-size:clamp(36px,11vw,54px)!important}
+  .mine-claim{padding:4px}
+  .mine-claim .start-shift{height:50px}
   .mine-wide,.mine-buy a{height:42px}
+}
+@media (max-width:600px) and (max-height:719px){
+  .mine-hero{height:84px;margin-bottom:-46px}
+  .mine-hero img{height:112px;margin-top:-16px;margin-right:-8px}
+  .mine-coin{width:min(44vw,190px);width:min(44vw,calc(40svh - 120px),190px)}
+  .mine-leaf{width:min(26vw,110px);width:min(26vw,calc(22svh - 50px),110px)}
+  .mine-live{font-size:38px!important}
+  .mine-claimed strong{font-size:20px!important}
+}
+@media (max-width:600px) and (max-height:600px){
+  .mine-hero{display:none}
+  .mine-screen{gap:8px}
+  .mine-stats{padding:8px 12px}
+  .mine-stats strong{font-size:17px}
+  .mine-claimed strong{font-size:18px!important}
+  .mine-coin{width:min(34vw,130px);width:min(34vw,19svh,130px)}
+  .mine-leaf{width:min(22vw,72px);width:min(22vw,13svh,72px)}
+  .mine-live{font-size:30px!important}
 }
 .profile-card img.profile-dogg{border-radius:50%;object-fit:contain;filter:drop-shadow(0 0 10px color-mix(in oklch,var(--gold) 45%,transparent))}
 /* Phone density pass: smaller screen headers and tighter cards so content starts higher */
