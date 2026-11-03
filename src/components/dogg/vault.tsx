@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Wallet, RefreshCw, Copy, Check, ShieldCheck, LogOut, Info, Pickaxe, Gift, Users, Percent, Share2, Smartphone, LineChart, Link2 } from 'lucide-react';
+import { ArrowUpRight, Wallet, RefreshCw, Copy, Check, ShieldCheck, LogOut, Info, Pickaxe, Gift, Users, Share2, Smartphone, LineChart, Link2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
