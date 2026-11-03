@@ -1,6 +1,6 @@
 // Bot chat messages: /start webhook setup and one-time notifications (withdrawals, referrals).
 // Each notification first stamps a *_notified_at column with a conditional update, so it is sent at most once.
-import { APP_URL, WEBHOOK_PATH, displayName, referralJoinedMessage, referralQualifiedMessage, withdrawalReturnedMessage, withdrawalSentMessage, type BotMessage } from './bot-messages';
+import { APP_URL, PAYOUTS_CHANNEL, WEBHOOK_PATH, displayName, payoutChannelMessage, payoutUser, referralJoinedMessage, referralQualifiedMessage, withdrawalReturnedMessage, withdrawalSentMessage, type BotMessage } from './bot-messages';
 import { botApi } from './telegram.server';
 
 type Admin = (typeof import('@/integrations/supabase/client.server'))['supabaseAdmin'];
@@ -8,7 +8,7 @@ type Admin = (typeof import('@/integrations/supabase/client.server'))['supabaseA
 const markup = (m: BotMessage) => (m.buttons.length ? { reply_markup: { inline_keyboard: m.buttons } } : {});
 
 /** Sends a message; a user who never opened the bot chat (or blocked it) just doesn't get it. */
-export async function sendBotMessage(chatId: number, m: BotMessage) {
+export async function sendBotMessage(chatId: number | string, m: BotMessage) {
   try { await botApi('sendMessage', { chat_id: chatId, text: m.text, parse_mode: 'HTML', link_preview_options: { is_disabled: true }, ...markup(m) }); return true; }
   catch (e) { console.warn('bot message not delivered', chatId, e instanceof Error ? e.message : e); return false; }
 }
@@ -54,6 +54,20 @@ export async function notifyWithdrawal(admin: Admin, id: string) {
       : withdrawalReturnedMessage({ amount: Number(w.amount), fee: Number(w.fee) });
     await sendBotMessage(Number(w.telegram_id), m);
   } catch (e) { console.error('notifyWithdrawal', e); }
+  await announcePayout(admin, id);
+}
+
+/** Posts a confirmed withdrawal to the public payouts channel, once (stamp first, then send). */
+export async function announcePayout(admin: Admin, id: string) {
+  try {
+    const r = await admin.from('dogg_withdrawals').update({ channel_notified_at: new Date().toISOString() })
+      .eq('id', id).is('channel_notified_at', null).eq('status', 'sent')
+      .select('telegram_id, amount, address, tx_hash').maybeSingle();
+    const w = r.data;
+    if (!w) return;
+    const p = (await admin.from('dogg_players').select('first_name, username').eq('telegram_id', w.telegram_id).maybeSingle()).data;
+    await sendBotMessage(PAYOUTS_CHANNEL, payoutChannelMessage({ user: payoutUser(p?.first_name, p?.username), amount: Number(w.amount), address: w.address, txHash: w.tx_hash }));
+  } catch (e) { console.error('announcePayout', e); }
 }
 
 /** Tells the inviter about this recruit: once when they join, once when they start mining (+100). */
