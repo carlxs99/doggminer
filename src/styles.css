@@ -744,3 +744,4 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-coin{width:min(34vw,130px);width:min(34vw,19svh,130px)}
   .mine-live{font-size:30px!important}
 }
+.profile-card img.profile-dogg{border-radius:50%;object-fit:contain;filter:drop-shadow(0 0 10px color-mix(in oklch,var(--gold) 45%,transparent))}
