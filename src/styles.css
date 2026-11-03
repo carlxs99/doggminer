@@ -607,3 +607,10 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
 /* ===== DeDust: Telegram mini app first, website as a small alternative */
 .buy-web{display:block;text-align:center;font-size:12px;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin:8px auto 0;padding:6px 0;min-height:32px}
+
+/* ===== Language switcher (header) */
+.lang-switch{height:34px;padding:0 8px;gap:4px;font-weight:800;font-size:12px;color:var(--primary);border:1px solid var(--neon-line);border-radius:10px}
+.lang-switch svg{width:15px;height:15px}
+.lang-menu{min-width:150px}
+.lang-menu .lang-code{display:inline-block;width:26px;font-weight:800;color:var(--primary)}
+@media(max-width:360px){.lang-switch svg{display:none}.lang-switch{padding:0 7px}}
