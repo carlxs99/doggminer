@@ -76,6 +76,14 @@ function Overview() {
         {lowTon && <p className="admin-err">{t('admin.lowTon')}</p>}
       </>}
     </section>
+    <section className={`admin-card ${data && !data.monetagUrl ? 'warn' : ''}`}>
+      <h2><Megaphone /> {t('admin.monetag')}</h2>
+      {data?.monetagUrl ? <>
+        <p className="admin-muted">{t('admin.monetagHelp')}</p>
+        <p className="admin-mono">{data.monetagUrl.replace(/secret=[^&]+/, 'secret=••••••')}</p>
+        <Button size="sm" onClick={() => { void navigator.clipboard.writeText(data.monetagUrl!).then(() => toast.success(t('admin.monetagCopied')), () => toast.error(t('admin.monetagCopyFail'))); }}><Check /> {t('admin.monetagCopy')}</Button>
+      </> : <p className="admin-err">{t('admin.monetagMissing')}</p>}
+    </section>
     <section className="admin-card"><h2>{t('admin.lastActions')}</h2>{data?.log.length ? <ul className="admin-log">{data.log.map((l, i) => <li key={i}><b>{l.action}</b><span>{l.details}</span><small>{when(l.at)}</small></li>)}</ul> : <p className="admin-muted">{t('admin.noActions')}</p>}</section>
   </>;
 }

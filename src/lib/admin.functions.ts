@@ -24,7 +24,10 @@ export const adminOverview = createServerFn({ method: 'POST' })
     const { payoutStatus } = await import('./payout.server');
     const wallet = await payoutStatus().then(w => ({ ...w, error: null as string | null })).catch(e => ({ error: e instanceof Error ? e.message : String(e) }));
     const logRows = (await db.from('dogg_admin_log').select('action, details, created_at').order('created_at', { ascending: false }).limit(10)).data ?? [];
-    return { stats: s.data as Record<string, number>, wallet: JSON.parse(JSON.stringify(wallet)) as Record<string, string | number | boolean | null>, log: logRows.map(l => ({ action: l.action, details: JSON.stringify(l.details ?? {}), at: l.created_at })) };
+    // Postback URL to paste in Monetag (shown only to admins): the secret proves the call comes from Monetag.
+    const mSecret = process.env['MONETAG_POSTBACK_SECRET'];
+    const monetagUrl = mSecret ? `https://doggminer.lovable.app/api/public/monetag-postback?secret=${encodeURIComponent(mSecret)}&ymid={ymid}&event_type={event_type}&reward_event_type={reward_event_type}&estimated_price={estimated_price}&telegram_id={telegram_id}&zone_id={zone_id}` : null;
+    return { monetagUrl, stats: s.data as Record<string, number>, wallet: JSON.parse(JSON.stringify(wallet)) as Record<string, string | number | boolean | null>, log: logRows.map(l => ({ action: l.action, details: JSON.stringify(l.details ?? {}), at: l.created_at })) };
   });
 
 // ---------- Tasks ----------
