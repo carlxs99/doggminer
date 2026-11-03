@@ -19,6 +19,7 @@ import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api.public.telegram-webhook'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
+import { Route as ApiPublicJobsChannelPostRouteImport } from './routes/api.public.jobs.channel-post'
 import { Route as ApiPublicJobsPayoutsRouteImport } from './routes/api.public.jobs.payouts'
 
 const IndexRoute = IndexRouteImport.update({
@@ -73,6 +74,12 @@ const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
   path: '/api/public/ton-manifest',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicJobsChannelPostRoute =
+  ApiPublicJobsChannelPostRouteImport.update({
+    id: '/api/public/jobs/channel-post',
+    path: '/api/public/jobs/channel-post',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicJobsPayoutsRoute = ApiPublicJobsPayoutsRouteImport.update({
   id: '/api/public/jobs/payouts',
   path: '/api/public/jobs/payouts',
@@ -90,6 +97,7 @@ export interface FileRoutesByFullPath {
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
+  '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRoutesByTo {
@@ -103,6 +111,7 @@ export interface FileRoutesByTo {
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
+  '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRoutesById {
@@ -117,6 +126,7 @@ export interface FileRoutesById {
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
+  '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRouteTypes {
@@ -132,6 +142,7 @@ export interface FileRouteTypes {
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
+    | '/api/public/jobs/channel-post'
     | '/api/public/jobs/payouts'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
+    | '/api/public/jobs/channel-post'
     | '/api/public/jobs/payouts'
   id:
     | '__root__'
@@ -158,6 +170,7 @@ export interface FileRouteTypes {
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
+    | '/api/public/jobs/channel-post'
     | '/api/public/jobs/payouts'
   fileRoutesById: FileRoutesById
 }
@@ -172,6 +185,7 @@ export interface RootRouteChildren {
   ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
+  ApiPublicJobsChannelPostRoute: typeof ApiPublicJobsChannelPostRoute
   ApiPublicJobsPayoutsRoute: typeof ApiPublicJobsPayoutsRoute
 }
 
@@ -247,6 +261,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTonManifestRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/channel-post': {
+      id: '/api/public/jobs/channel-post'
+      path: '/api/public/jobs/channel-post'
+      fullPath: '/api/public/jobs/channel-post'
+      preLoaderRoute: typeof ApiPublicJobsChannelPostRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/jobs/payouts': {
       id: '/api/public/jobs/payouts'
       path: '/api/public/jobs/payouts'
@@ -268,6 +289,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
+  ApiPublicJobsChannelPostRoute: ApiPublicJobsChannelPostRoute,
   ApiPublicJobsPayoutsRoute: ApiPublicJobsPayoutsRoute,
 }
 export const routeTree = rootRouteImport

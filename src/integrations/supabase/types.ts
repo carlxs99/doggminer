@@ -89,6 +89,36 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_channel_posts: {
+        Row: {
+          chat: string
+          created_at: string
+          error: string | null
+          message_id: number | null
+          post_index: number
+          sent_at: string | null
+          week_key: string
+        }
+        Insert: {
+          chat: string
+          created_at?: string
+          error?: string | null
+          message_id?: number | null
+          post_index: number
+          sent_at?: string | null
+          week_key: string
+        }
+        Update: {
+          chat?: string
+          created_at?: string
+          error?: string | null
+          message_id?: number | null
+          post_index?: number
+          sent_at?: string | null
+          week_key?: string
+        }
+        Relationships: []
+      }
       dogg_ledger: {
         Row: {
           amount: number
