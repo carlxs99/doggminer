@@ -14,4 +14,4 @@
 - [x] Automatic withdrawals (payout wallet configured; real send untested)
 - [x] Compact phone layout matching the reference: paged miner cards (10 per page), stacked task cards, no sideways overflow at 320/360 px.
 - [x] Replace daily check-in with "Ver anuncios" card (+15 $DOGG/ad, 10/day); demo simulates ads.
-- [ ] Connect a rewarded-ad network (e.g. Adsgram) with server-side reward confirmation: waiting on the owner's ad network account / Block ID.
+- [x] Monetag rewarded ads (+15, 10/day) with server-side session + daily cap; auto in-app interstitials; Lovable badge hidden.
