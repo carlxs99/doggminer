@@ -49,29 +49,31 @@ async function jettonHold(address: string) {
   throw new Error(`No se pudo leer tu saldo de $DOGG (${lastStatus}). Inténtalo de nuevo.`);
 }
 
+type Admin = (typeof import('@/integrations/supabase/client.server'))['supabaseAdmin'];
+/** Real hold of the player's linked wallet (45s cache; falls back to last known balance if TONAPI is busy). Every dogg_shift call must pass this — passing 0 would wrongly downgrade the miner. */
+async function currentHold(supabaseAdmin: Admin, telegramId: number) {
+  const row = await supabaseAdmin.from('dogg_players').select('wallet_address, last_hold, last_hold_at').eq('telegram_id', telegramId).maybeSingle();
+  const wallet = row.data?.wallet_address ?? null;
+  if (!wallet) return 0;
+  const cached = row.data?.last_hold == null ? null : Number(row.data.last_hold);
+  const fresh = row.data?.last_hold_at && Date.now() - Date.parse(row.data.last_hold_at) < 45_000;
+  if (fresh && cached !== null) return cached;
+  try {
+    const hold = await jettonHold(wallet);
+    await supabaseAdmin.from('dogg_players').update({ last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
+    return hold;
+  } catch (e) {
+    if (cached === null) throw e;
+    return cached;
+  }
+}
+
 export const playerAction = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'checkin', 'select']), minerId: z.string().max(40).optional() }))
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const row = await supabaseAdmin.from('dogg_players').select('wallet_address, last_hold, last_hold_at').eq('telegram_id', telegramId).maybeSingle();
-    const wallet = row.data?.wallet_address ?? null;
-    const cached = row.data?.last_hold == null ? null : Number(row.data.last_hold);
-    const fresh = row.data?.last_hold_at && Date.now() - Date.parse(row.data.last_hold_at) < 45_000;
-    let hold = 0;
-    if (wallet) {
-      if (fresh && cached !== null) hold = cached;
-      else {
-        try {
-          hold = await jettonHold(wallet);
-          await supabaseAdmin.from('dogg_players').update({ last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
-        } catch (e) {
-          // Balance service busy: fall back to the last known balance instead of failing or downgrading.
-          if (cached === null) throw e;
-          hold = cached;
-        }
-      }
-    }
+    const hold = await currentHold(supabaseAdmin, telegramId);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     return PlayerSchema.parse(result.data);
