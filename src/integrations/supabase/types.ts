@@ -89,6 +89,36 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_ledger: {
+        Row: {
+          amount: number
+          created_at: string
+          id: number
+          kind: string
+          label: string
+          ref: string | null
+          telegram_id: number
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: number
+          kind: string
+          label: string
+          ref?: string | null
+          telegram_id: number
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: number
+          kind?: string
+          label?: string
+          ref?: string | null
+          telegram_id?: number
+        }
+        Relationships: []
+      }
       dogg_payout_lock: {
         Row: {
           id: number
