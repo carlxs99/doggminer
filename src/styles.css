@@ -416,3 +416,4 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .topbar{gap:8px}.mobile-brand{min-width:0;white-space:nowrap}.header-actions{flex-shrink:0;min-width:0}
 @media(max-width:400px){.demo-tag{display:none}.wallet-connect{max-width:140px}}
 .grow-art .grow-badge svg,.grow-badge svg{width:13px!important;height:13px!important;stroke-width:2.5;color:currentColor}
+@media(max-width:600px){.grow-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.grow-card,.miner-category .grow-card{padding:8px}.grow-card h2,.miner-category .grow-card h2{font-size:13px}}
