@@ -26,3 +26,21 @@ describe('i18n', () => {
     expect(translateServer('mensaje desconocido')).toBeNull();
   });
 });
+
+describe('initial language', () => {
+  it('uses Spanish and Russian when the player speaks them', async () => {
+    const { langFromCode } = await import('@/lib/i18n');
+    expect(langFromCode('es')).toBe('es');
+    expect(langFromCode('es-MX')).toBe('es');
+    expect(langFromCode('ru')).toBe('ru');
+    expect(langFromCode('uk')).toBe('ru');
+  });
+  it('falls back to English when the language is unknown or missing', async () => {
+    const { langFromCode } = await import('@/lib/i18n');
+    expect(langFromCode('de')).toBe('en');
+    expect(langFromCode('pt-BR')).toBe('en');
+    expect(langFromCode('')).toBe('en');
+    expect(langFromCode(undefined)).toBe('en');
+    expect(langFromCode('en-US')).toBe('en');
+  });
+});
