@@ -120,7 +120,9 @@ export type Database = {
           rate_changed_at: string | null
           ref_earned: number
           ref_given: number
+          ref_join_notified_at: string | null
           ref_pending: number
+          ref_qualified_notified_at: string | null
           referral_qualified_at: string | null
           referred_by: number | null
           shift_accrued: number
@@ -149,7 +151,9 @@ export type Database = {
           rate_changed_at?: string | null
           ref_earned?: number
           ref_given?: number
+          ref_join_notified_at?: string | null
           ref_pending?: number
+          ref_qualified_notified_at?: string | null
           referral_qualified_at?: string | null
           referred_by?: number | null
           shift_accrued?: number
@@ -178,7 +182,9 @@ export type Database = {
           rate_changed_at?: string | null
           ref_earned?: number
           ref_given?: number
+          ref_join_notified_at?: string | null
           ref_pending?: number
+          ref_qualified_notified_at?: string | null
           referral_qualified_at?: string | null
           referred_by?: number | null
           shift_accrued?: number
@@ -323,6 +329,7 @@ export type Database = {
           error: string | null
           fee: number
           id: string
+          notified_at: string | null
           query_id: string | null
           sent_at: string | null
           seqno: number | null
@@ -339,6 +346,7 @@ export type Database = {
           error?: string | null
           fee?: number
           id?: string
+          notified_at?: string | null
           query_id?: string | null
           sent_at?: string | null
           seqno?: number | null
@@ -355,6 +363,7 @@ export type Database = {
           error?: string | null
           fee?: number
           id?: string
+          notified_at?: string | null
           query_id?: string | null
           sent_at?: string | null
           seqno?: number | null
