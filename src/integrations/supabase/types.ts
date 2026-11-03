@@ -198,38 +198,50 @@ export type Database = {
         Row: {
           address: string
           amount: number
+          attempted_at: string | null
+          attempts: number
           created_at: string
           error: string | null
           fee: number
           id: string
+          query_id: string | null
           sent_at: string | null
           seqno: number | null
           status: string
           telegram_id: number
+          tx_hash: string | null
         }
         Insert: {
           address: string
           amount: number
+          attempted_at?: string | null
+          attempts?: number
           created_at?: string
           error?: string | null
           fee?: number
           id?: string
+          query_id?: string | null
           sent_at?: string | null
           seqno?: number | null
           status?: string
           telegram_id: number
+          tx_hash?: string | null
         }
         Update: {
           address?: string
           amount?: number
+          attempted_at?: string | null
+          attempts?: number
           created_at?: string
           error?: string | null
           fee?: number
           id?: string
+          query_id?: string | null
           sent_at?: string | null
           seqno?: number | null
           status?: string
           telegram_id?: number
+          tx_hash?: string | null
         }
         Relationships: []
       }
