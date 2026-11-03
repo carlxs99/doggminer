@@ -715,34 +715,41 @@ button:disabled{opacity:.5;cursor:not-allowed}
 @keyframes splash-float{0%,100%{transform:translateY(0) rotate(-4deg)}50%{transform:translateY(-10px) rotate(4deg)}}
 @keyframes splash-breathe{0%,100%{transform:scale(.92);opacity:.45}50%{transform:scale(1.05);opacity:.7}}
 @media (prefers-reduced-motion:reduce){.splash-coin,.splash-glow{animation:none}}
-/* Mine on phones: compact enough that the start/claim button sits above the bottom dock */
+/* Mine on phones: keeps the full look (bust, big coin, leaves); sizes step down with screen height so the main button stays above the dock */
 @media (max-width:600px){
-  .mine-screen{gap:10px}
-  .mine-hero{height:96px;margin-bottom:-40px}
-  .mine-hero img{height:132px;margin-top:-22px;margin-right:-10px}
-  .mine-stats{padding:10px 12px;gap:8px}
-  .mine-stats strong{font-size:17px}
-  .mine-stats em{font-size:11px;margin-top:0}
-  .mine-claimed strong{font-size:20px!important;line-height:1.1}
-  .mine-claimed span{margin-top:3px;padding:2px 12px;font-size:11px!important}
-  .mine-coin{padding:6px;width:min(44vw,200px);width:min(44vw,24svh,200px)}
-  .mine-leaf{width:min(26vw,120px);width:min(26vw,15svh,120px)}
-  .mine-live{font-size:clamp(32px,10vw,46px)!important}
-  .turn-badge{height:30px}
-  .mine-claim{padding:5px}
-  .mine-claim .start-shift{height:48px}
+  .mine-screen{gap:9px}
+  .mine-hero{height:min(150px,16svh);margin-bottom:calc(min(150px,16svh) * -.5)}
+  .mine-hero img{height:min(190px,21svh);margin-top:calc(min(190px,21svh) * -.16);margin-right:-12px}
+  .mine-stats{padding:10px 14px;gap:10px}
+  .mine-stats strong{font-size:19px}
+  .mine-stats em{margin-top:0}
+  .mine-claimed strong{font-size:22px!important;line-height:1.1}
+  .mine-claimed span{margin-top:4px;padding:2px 14px;font-size:12px!important}
+  .mine-coin{padding:6px;width:min(56vw,230px);width:min(56vw,calc(42svh - 126px),230px)}
+  .mine-leaf{width:min(32vw,140px);width:min(32vw,calc(26svh - 60px),140px)}
+  .mine-live{font-size:clamp(36px,11vw,54px)!important}
+  .mine-claim{padding:4px}
+  .mine-claim .start-shift{height:50px}
   .mine-wide,.mine-buy a{height:42px}
 }
-/* Short phones: the coin already shows the character, so the bust steps aside */
-@media (max-width:600px) and (max-height:700px){
-  .mine-hero{display:none}
-  .mine-coin{width:min(40vw,170px);width:min(40vw,21svh,170px)}
+@media (max-width:600px) and (max-height:719px){
+  .mine-hero{height:84px;margin-bottom:-50px}
+  .mine-stats{padding:8px 14px}
+  .mine-hero img{height:112px;margin-top:-16px;margin-right:-8px}
+  .mine-coin{width:min(44vw,190px);width:min(44vw,calc(40svh - 142px),190px)}
+  .mine-leaf{width:min(22vw,96px);width:min(22vw,calc(24svh - 82px),96px)}
+  .mine-live{font-size:38px!important}
+  .mine-claimed strong{font-size:20px!important}
 }
 @media (max-width:600px) and (max-height:600px){
+  .mine-hero{display:none}
   .mine-screen{gap:8px}
-  .mine-claimed strong{font-size:18px!important}
-  .mine-coin{width:min(34vw,130px);width:min(34vw,19svh,130px)}
-  .mine-live{font-size:30px!important}
+  .mine-stats{padding:8px 12px}
+  .mine-stats strong{font-size:17px}
+  .mine-claimed strong{font-size:16px!important}
+  .mine-coin{width:min(30vw,130px);width:min(30vw,16svh,130px)}
+  .mine-leaf{width:min(18vw,60px);width:min(18vw,11svh,60px)}
+  .mine-live{font-size:28px!important}
 }
 .profile-card img.profile-dogg{border-radius:50%;object-fit:contain;filter:drop-shadow(0 0 10px color-mix(in oklch,var(--gold) 45%,transparent))}
 /* Phone density pass: smaller screen headers and tighter cards so content starts higher */
@@ -772,10 +779,4 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .screen-hero h1{font-size:min(clamp(32px,10vw,44px),calc(60vw / var(--chars,5)))!important}
   .screen-hero-art{width:34%;max-width:140px}
   .screen-hero.art-leaf .screen-hero-art{width:28%!important}
-}
-@media (max-width:600px) and (max-height:560px){
-  .mine-stats{padding:8px 12px}
-  .mine-coin{width:min(30vw,110px);width:min(30vw,16svh,110px)}
-  .mine-claimed span{margin-top:2px;padding:1px 10px}
-  .mine-leaf{width:min(20vw,64px);width:min(20vw,12svh,64px)}
 }
