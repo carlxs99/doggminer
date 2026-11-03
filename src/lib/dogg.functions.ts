@@ -1,29 +1,12 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import { JETTON, parseRef } from './dogg';
+import { JETTON } from './dogg';
 import { autoUpgradeId } from './mining';
 import { purchasedDogg, type TonapiEvent } from './purchase';
 
 const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional() });
 
-async function verifyTelegramUser(initData: string) {
-  const token = process.env['TELEGRAM_BOT_TOKEN'];
-  if (!token) throw new Error('El bot todavía no está configurado. El minado real no está disponible.');
-  const { createHmac, timingSafeEqual } = await import('node:crypto');
-  const params = new URLSearchParams(initData);
-  const hash = params.get('hash');
-  params.delete('hash');
-  const check = [...params.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([k, v]) => `${k}=${v}`).join('\n');
-  const secret = createHmac('sha256', 'WebAppData').update(token).digest();
-  const expected = createHmac('sha256', secret).update(check).digest();
-  const actual = Buffer.from(hash ?? '', 'hex');
-  const authDate = Number(params.get('auth_date'));
-  const now = Math.floor(Date.now() / 1000);
-  if (actual.length !== expected.length || !timingSafeEqual(actual, expected) || !authDate || now - authDate > 86400 || authDate > now + 30) throw new Error('Abre de nuevo la mini app desde Telegram.');
-  const user = z.object({ id: z.number().int().positive(), first_name: z.string().optional(), username: z.string().optional() }).parse(JSON.parse(params.get('user') ?? '{}'));
-  // start_param is signed inside initData, so the inviter id can't be forged by the client.
-  return { id: user.id, firstName: user.first_name ?? null, username: user.username ?? null, referrer: parseRef(params.get('start_param')) };
-}
+async function verifyTelegramUser(initData: string) { return (await import('./telegram.server')).verifyTelegramUser(initData); }
 async function verifyTelegram(initData: string) { return (await verifyTelegramUser(initData)).id; }
 
 /** Real on-chain $DOGG balance (whole tokens) of a raw/friendly address, read server-side from TONAPI. */
@@ -94,7 +77,10 @@ export const playerAction = createServerFn({ method: 'POST' })
     const hold = await currentHold(supabaseAdmin, telegramId);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
-    return settle(supabaseAdmin, telegramId, result.data, hold);
+    const player = await settle(supabaseAdmin, telegramId, result.data, hold);
+    if (data.action !== 'read') return player;
+    const { isAdmin } = await import('./telegram.server');
+    return { ...player, isAdmin: await isAdmin(supabaseAdmin, telegramId) };
   });
 
 async function proofSig(telegramId: number, exp: number) {
