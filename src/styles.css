@@ -614,3 +614,17 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .lang-menu{min-width:150px}
 .lang-menu .lang-code{display:inline-block;width:26px;font-weight:800;color:var(--primary)}
 @media(max-width:360px){.lang-switch svg{display:none}.lang-switch{padding:0 7px}}
+
+/* ===== Small phones: the logo, language and wallet buttons share the top bar without overlapping */
+@media(max-width:420px){
+  .topbar{grid-template-columns:minmax(0,1fr) auto!important;padding:0 10px 0 46px!important;gap:6px!important}
+  .mobile-brand{grid-column:1;justify-self:center;min-width:0;overflow:visible}
+  .header-actions{grid-column:2;gap:6px!important}
+  .dogg-logo{font-size:clamp(16px,5.4vw,22px)}
+  .dogg-logo img{width:clamp(17px,5.4vw,22px)}
+  .sound-toggle{left:6px!important}
+  .screen-hero.art-leaf .screen-hero-art{width:40%;right:2px}
+}
+@media(max-width:800px){.mobile-brand{min-height:44px;align-items:center}}
+/* Longer screen titles (e.g. Russian «Профиль») shrink with their length so they never run under the artwork */
+.screen-hero h1{font-size:min(clamp(44px,14vw,60px),calc(72vw / var(--chars,5)))!important}
