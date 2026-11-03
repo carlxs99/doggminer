@@ -189,7 +189,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         if (!r) continue;
         if (r.status === 'paid') { setAds({ day, count: r.adsToday }); setPlayer(p => ({ ...p, balance: r.balance })); paidAd(); return; }
         if (r.status === 'capped') { setAds({ day, count: r.adsToday }); toast.error(`Ya viste los ${AD_DAILY} anuncios de hoy. Vuelve mañana.`); return; }
-        if (r.status !== 'pending') { toast.error('Monetag no validó este anuncio, así que no suma $DOGG.'); return; }
+        if (r.status !== 'pending' && r.status !== 'not_valued') { toast.error('Monetag no validó este anuncio, así que no suma $DOGG.'); return; }
       }
       toast.message('Anuncio registrado', { description: `Tus +${AD_REWARD} $DOGG llegarán en cuanto Monetag lo confirme.` });
     } catch (e) { toast.error(friendlyError(e, 'No se pudo completar el anuncio')); }
