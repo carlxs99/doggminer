@@ -31,6 +31,9 @@ export type Database = {
       }
       dogg_players: {
         Row: {
+          ad_count: number
+          ad_day: string | null
+          ad_started_at: string | null
           balance: number
           claimed_shifts: number
           created_at: string
@@ -47,6 +50,9 @@ export type Database = {
           wallet_verified_at: string | null
         }
         Insert: {
+          ad_count?: number
+          ad_day?: string | null
+          ad_started_at?: string | null
           balance?: number
           claimed_shifts?: number
           created_at?: string
@@ -63,6 +69,9 @@ export type Database = {
           wallet_verified_at?: string | null
         }
         Update: {
+          ad_count?: number
+          ad_day?: string | null
+          ad_started_at?: string | null
           balance?: number
           claimed_shifts?: number
           created_at?: string
@@ -124,6 +133,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      dogg_ad: {
+        Args: { p_action: string; p_telegram_id: number }
+        Returns: Json
+      }
       dogg_best_miner: { Args: { p_total: number }; Returns: string }
       dogg_miner_stats: {
         Args: { p_id: string }
