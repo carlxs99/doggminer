@@ -604,3 +604,6 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .admin-locked h1{font-family:var(--font-graffiti);font-size:28px}
 .admin-locked p{font-size:13px;color:var(--muted-foreground)}
 .admin-item>.admin-btns{flex:none;flex-direction:row;gap:0}
+
+/* ===== DeDust: Telegram mini app first, website as a small alternative */
+.buy-web{display:block;text-align:center;font-size:12px;color:var(--muted-foreground);text-decoration:underline;text-underline-offset:3px;margin:8px auto 0;padding:6px 0;min-height:32px}

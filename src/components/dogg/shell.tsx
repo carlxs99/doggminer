@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
 import { Logo } from './hero';
+import { BuyDedustLink } from './buy';
 import { haptic, JETTON, SWAP, PRICE } from '@/lib/dogg';
 import { toast } from 'sonner';
 const TonWallet = lazy(() => import('./ton-wallet'));
@@ -46,7 +47,7 @@ export function Shell({ children }: { children: ReactNode }) {
       <footer className="page-footer"><span><i /> POWERED BY TON. BUILT FOR THE HOOD.</span><Dialog><DialogTrigger asChild><Button variant="ghost" size="sm"><CircleHelp /> Ayuda y enlaces</Button></DialogTrigger><DialogContent className="help-dialog"><DialogHeader><DialogTitle>Ayuda · $DOGG MINER</DialogTitle></DialogHeader>
         <div className="faq">{FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}</div>
         <div className="help-contract"><small>Contrato oficial $DOGG</small><button onClick={() => void navigator.clipboard.writeText(JETTON).then(() => toast.success('Contrato copiado')).catch(() => toast.error('No se pudo copiar'))}><code>{JETTON.slice(0, 8)}…{JETTON.slice(-6)}</code><Copy /></button></div>
-        <div className="help-links"><a href={`https://tonviewer.com/${JETTON}`} target="_blank" rel="noopener">Explorador TON <ExternalLink /></a><a href={PRICE} target="_blank" rel="noopener">Precio <ExternalLink /></a><a href={SWAP} target="_blank" rel="noopener">Comprar <ExternalLink /></a><a href="https://t.me/Doggminerbot" target="_blank" rel="noopener">Bot oficial <ExternalLink /></a></div>
+        <div className="help-links"><a href={`https://tonviewer.com/${JETTON}`} target="_blank" rel="noopener">Explorador TON <ExternalLink /></a><a href={PRICE} target="_blank" rel="noopener">Precio <ExternalLink /></a><BuyDedustLink>Comprar en DeDust <ExternalLink /></BuyDedustLink><a href={SWAP} target="_blank" rel="noopener">DeDust web <ExternalLink /></a><a href="https://t.me/Doggminerbot" target="_blank" rel="noopener">Bot oficial <ExternalLink /></a></div>
       </DialogContent></Dialog></footer>
     </div>
     <Dialog open={welcome} onOpenChange={o => { if (!o) closeWelcome(); }}><DialogContent className="welcome-dialog"><DialogHeader><DialogTitle>Bienvenido al hood</DialogTitle></DialogHeader>

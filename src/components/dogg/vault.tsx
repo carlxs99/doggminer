@@ -6,10 +6,11 @@ import { Input } from '@/components/ui/input';
 import { useDogg, WITHDRAW_FEE, WITHDRAW_MIN, type Entry } from './state';
 import { Title } from './screens';
 import { ScreenHero } from './hero';
-import { JETTON, SWAP, PRICE, REF_BONUS, REF_SHARE, formatDogg, friendlyError, haptic, referralLink } from '@/lib/dogg';
+import { JETTON, PRICE, REF_BONUS, REF_SHARE, formatDogg, friendlyError, haptic, referralLink } from '@/lib/dogg';
 import { referralAction } from '@/lib/dogg.functions';
 import { coinRain, strongHaptic } from '@/lib/fx';
 import { VERIFY_BUY } from '@/lib/purchase';
+import { BuyDedustLink, DedustWebLink } from './buy';
 import { useServerFn } from '@tanstack/react-start';
 import { bestLevel, getMiner } from '@/lib/mining';
 import coin from '@/assets/dogg-coin.webp';
@@ -49,7 +50,8 @@ function WithdrawVerify() {
   return <section className="withdraw-verify">
     <div className="wv-head"><span className="row-icon gold"><ShieldCheck /></span><div><strong>Verifica tu wallet para retirar</strong><small>Compra al menos <b>{VERIFY_BUY} $DOGG</b> en DeDust con tu wallet vinculada. Solo se hace una vez: después podrás retirar siempre.</small></div></div>
     <ol className="wv-steps"><li className={linked ? 'ok' : ''}><Check /> Conecta y vincula tu wallet</li><li><Check /> Compra {VERIFY_BUY} $DOGG o más con ella</li><li><Check /> Toca «Verificar compra»</li></ol>
-    <div className="wv-actions"><Button asChild variant="outline"><a href={SWAP} target="_blank" rel="noopener noreferrer"><RefreshCw /> Comprar en DeDust</a></Button><Button onClick={() => void verifyBuy()} disabled={verifying || !linked}>{verifying ? <RefreshCw className="animate-spin" /> : <ShieldCheck />} Verificar compra</Button></div>
+    <div className="wv-actions"><Button asChild variant="outline"><BuyDedustLink><RefreshCw /> Comprar en DeDust</BuyDedustLink></Button><Button onClick={() => void verifyBuy()} disabled={verifying || !linked}>{verifying ? <RefreshCw className="animate-spin" /> : <ShieldCheck />} Verificar compra</Button></div>
+    <DedustWebLink />
     {!linked && <small className="wv-note">Primero conecta tu wallet arriba y firma la vinculación.</small>}
   </section>;
 }
@@ -95,7 +97,7 @@ export function Billetera() {
     </section>
 
     <h2 className="vault-h">Comprar <Coin size={20} /></h2>
-    <div className="vault-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>Cambiar TON → $DOGG</small></a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>Gráfico en vivo</strong><small>Precio de $DOGG</small></a></div>
+    <div className="vault-buy"><BuyDedustLink className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>Comprar $DOGG en Telegram</small></BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>Gráfico en vivo</strong><small>Precio de $DOGG</small></a></div><DedustWebLink />
     <p className="vault-info"><Info /> Los $DOGG que compras se quedan en tu billetera y cuentan para tu nivel. Ahora estás en el nivel {level}. Vender hace que bajes de nivel.</p>
 
     <h2 className="vault-h">Retirar</h2>
@@ -201,7 +203,7 @@ export function Perfil() {
     <section className="vault-withdraw stacked"><strong>Retirar $DOGG</strong>
       <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={`Mínimo ${WITHDRAW_MIN}`} value={amount} onChange={e => setAmount(e.target.value)} aria-label="Cantidad a retirar" /><small>Mínimo {WITHDRAW_MIN.toLocaleString('de-DE')} $DOGG. Comisión {WITHDRAW_FEE} $DOGG.</small><Button type="submit" disabled={busy || !player.withdrawVerified}><ArrowUpRight /> Solicitar retiro</Button></form></section>
     <section className="vault-list"><h3 className="list-title">Historial de retiros</h3>{withdrawals.length === 0 ? <p className="vault-empty">Aún no hay retiros.</p> : withdrawals.map(e => <div key={e.at + e.label} className="vault-item"><span className="vault-icon withdraw"><ArrowUpRight /></span><div><strong>{e.label}</strong><small>{ago(e.at, now)}</small></div><div className="vault-amount"><strong className="neg">{formatDogg(e.amount)} <Coin size={14} /></strong>{e.status === 'review' && <em>En revisión</em>}</div></div>)}</section>
-    <div className="vault-buy"><a href={SWAP} target="_blank" rel="noopener noreferrer" className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>Cambiar TON → $DOGG</small></a><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>Gráfico en vivo</strong><small>Precio de $DOGG</small></a></div>
+    <div className="vault-buy"><BuyDedustLink className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>Comprar $DOGG en Telegram</small></BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>Gráfico en vivo</strong><small>Precio de $DOGG</small></a></div><DedustWebLink />
     <div className="token-contract"><span className="eyebrow">CONTRATO DEL JETTON</span><code>{JETTON}</code></div>
   </>;
 }
