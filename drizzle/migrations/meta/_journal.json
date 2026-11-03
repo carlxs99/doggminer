@@ -99,6 +99,13 @@
       "when": 1793723003346,
       "tag": "0013_withdraw_purchase_verification",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1793723241243,
+      "tag": "0014_payout_confirmation",
+      "breakpoints": true
     }
   ]
 }
