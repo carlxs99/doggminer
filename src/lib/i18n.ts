@@ -52,6 +52,7 @@ const SERVER: [RegExp, Key][] = [
   [/bot todavía no está configurado/i, 'err.botNotConfigured'],
   [/^Ya tienes un turno activo/i, 'err.shiftActive'],
   [/^El turno todavía no ha terminado/i, 'err.shiftNotDone'],
+  [/^Todavía no hay nada que recoger|^No tienes un turno activo/i, 'err.shiftNotDone'],
   [/^Necesitas ([\d.,]+) \$DOGG entre tu wallet/i, 'err.needHold'],
   [/^Minero no válido/i, 'err.badMiner'],
   [/^Conecta tu wallet antes de retirar/i, 'err.connectToWithdraw'],
