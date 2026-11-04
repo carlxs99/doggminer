@@ -760,3 +760,12 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-claim .start-shift{height:48px;font-size:15px}
   .mine-wide,.mine-buy a{height:42px}
 }
+
+/* Multi-account ban: full-screen lock that blocks the whole app. */
+.ban-screen{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:24px;background:color-mix(in oklab,var(--background) 92%,transparent);backdrop-filter:blur(8px)}
+.ban-card{max-width:360px;text-align:center;padding:28px 22px;border-radius:20px;border:1px solid var(--destructive);background:var(--card);box-shadow:0 0 40px color-mix(in oklab,var(--destructive) 35%,transparent)}
+.ban-icon{font-size:44px;display:block;margin-bottom:8px}
+.ban-card h1{font-family:var(--font-display,inherit);font-size:24px;color:var(--destructive);margin:0 0 12px;letter-spacing:.04em}
+.ban-card p{font-size:14px;line-height:1.5;color:var(--foreground);margin:0 0 12px}
+.ban-card small{font-size:12px;color:var(--muted-foreground)}
+.multi-banned{font-size:10px;padding:2px 6px;border-radius:6px;background:var(--destructive);color:var(--destructive-foreground);margin-right:6px;align-self:center}

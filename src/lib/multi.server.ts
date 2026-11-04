@@ -1,5 +1,5 @@
 // Multi-account detector (server side): stores hashed device/network signals and alerts admins.
-// Informative only — it never blocks anyone; the admin decides in the panel.
+// Scores are informative; only the >5-accounts-per-device rule bans automatically (dogg_auto_ban).
 import { MINI_APP_LINK } from './dogg';
 import { displayName, type BotMessage } from './bot-messages';
 import { sendBotMessage } from './notify.server';
@@ -12,7 +12,7 @@ const REASON_ES: Record<string, string> = {
 
 export function multiAlertMessage(name: string, id: number, score: number, reasons: string[]): BotMessage {
   return {
-    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. No se ha bloqueado nada.`,
+    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. Si hay más de 5 cuentas en el mismo dispositivo se banean automáticamente.`,
     buttons: [[{ text: '🛡️ Abrir el panel', url: MINI_APP_LINK }]],
   };
 }
@@ -36,6 +36,9 @@ export async function recordSignals(admin: Admin, telegramId: number, device: { 
     if (!signals.length) return;
     const r = await admin.rpc('dogg_record_signals', { p_telegram_id: telegramId, p_signals: signals, p_country: country as string });
     if (r.error) { console.error('recordSignals', r.error.message); return; }
+    // Auto-ban: more than 5 accounts on one device bans all of them (admins can unban in the panel).
+    const b = await admin.rpc('dogg_auto_ban', { p_telegram_id: telegramId });
+    if (b.error) console.error('autoBan', b.error.message);
     const res = r.data as { score?: number; reasons?: string[]; alert?: boolean } | null;
     if (!res?.alert) return;
     const admins = (await admin.from('dogg_admins').select('telegram_id')).data ?? [];

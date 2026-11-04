@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDogg } from './state';
-import { adminAdjust, adminOverview, adminSaveTask, adminTaskAction, adminTasks, adminUsers, adminWithdrawalAction, adminWithdrawals, adminMulti, adminMultiReview, type AdminTask, type AdminUser, type AdminWithdrawal, type MultiAccount } from '@/lib/admin.functions';
+import { adminAdjust, adminOverview, adminSaveTask, adminTaskAction, adminTasks, adminUsers, adminWithdrawalAction, adminWithdrawals, adminMulti, adminMultiReview, adminSetBan, type AdminTask, type AdminUser, type AdminWithdrawal, type MultiAccount } from '@/lib/admin.functions';
 import type { TaskKind } from '@/lib/tasks';
 import { useT } from './lang';
 import { currentLang, LOCALE, t as tg, type Key } from '@/lib/i18n';
@@ -227,6 +227,13 @@ type MultiFilter = 'all' | 'high' | 'pending' | 'flagged';
 function MultiAdmin() {
   const call = useServerFn(adminMulti);
   const review = useServerFn(adminMultiReview);
+  const setBan = useServerFn(adminSetBan);
+  const toggleBan = async (id: number, banned: boolean) => {
+    setBusy(id); haptic();
+    try { await setBan({ data: { initData: initData(), telegramId: id, banned } }); toast.success(t('multi.saved')); reload(); }
+    catch (e) { toast.error(friendlyError(e)); }
+    finally { setBusy(null); }
+  };
   const t = useT();
   const { data, loading, reload } = useLoad(() => call({ data: { initData: initData() } }), [call]);
   const [filter, setFilter] = useState<MultiFilter>('all');
@@ -250,7 +257,7 @@ function MultiAdmin() {
       return <section key={r.id} className={`admin-card multi-card ${level(r.score)}`}>
         <div className="multi-head">
           <div><strong>{r.first_name || r.username || 'Homie'}</strong><small>{r.username ? `@${r.username} · ` : ''}ID {r.id}{r.country ? ` · ${r.country}` : ''}</small></div>
-          <em className={`multi-score ${level(r.score)}`}>{r.score}<small>/100</small></em>
+          {r.banned && <b className="multi-banned">{t('multi.banned')}</b>}<em className={`multi-score ${level(r.score)}`}>{r.score}<small>/100</small></em>
         </div>
         <div className="multi-reasons">{r.reasons.map(k => <span key={k}>{REASONS[k]?.icon} {REASONS[k] ? t(REASONS[k].key) : k}</span>)}</div>
         <p className="multi-meta">{t('multi.meta', { b: n(r.balance ?? 0, 2), d: when(r.created_at) })} · {r.has_wallet ? t('multi.wallet') : t('multi.noWallet')}{r.can_withdraw ? ` · ${t('multi.canWithdraw')}` : ''}{r.referred_by ? ` · ${t('multi.invitedBy', { id: r.referred_by })}` : ''}</p>
@@ -260,6 +267,7 @@ function MultiAdmin() {
           <Button size="sm" variant="outline" disabled={busy === r.id} onClick={() => void act(r.id, 'ok')}><Check /> {t('multi.markOk')}</Button>
           <Button size="sm" variant={r.review === 'flagged' ? 'default' : 'outline'} disabled={busy === r.id} onClick={() => void act(r.id, 'flagged')}><ShieldCheck /> {t('multi.markFlag')}</Button>
           {r.review && <Button size="sm" variant="ghost" disabled={busy === r.id} onClick={() => void act(r.id, 'clear')}><Undo2 /> {t('multi.clear')}</Button>}
+          <Button size="sm" variant={r.banned ? 'default' : 'destructive'} disabled={busy === r.id} onClick={() => void toggleBan(r.id, !r.banned)}>{r.banned ? t('multi.unban') : t('multi.ban')}</Button>
         </div>
       </section>;
     })}

@@ -33,7 +33,7 @@ export function Shell({ children }: { children: ReactNode }) {
     const w = window as Window & { requestIdleCallback?: (cb: () => void, o?: { timeout: number }) => number };
     if (w.requestIdleCallback) w.requestIdleCallback(warm, { timeout: 1500 }); else setTimeout(warm, 800);
   }, [router]);
-  const { player, demo, name, wallet, openWallet, isAdmin } = useDogg();
+  const { player, demo, name, wallet, openWallet, isAdmin, banned } = useDogg();
   const t = useT();
   const [sound, setSoundState] = useState(false);
   useEffect(() => setSoundState(soundOn()), []);
@@ -44,6 +44,7 @@ export function Shell({ children }: { children: ReactNode }) {
   const crumb = pathname === '/admin' ? t('nav.admin') : (() => { const n = navigation.find(x => x.to === pathname); return n ? t(n.name).toUpperCase() : ''; })();
   return <div className={`app-layout ${player.shiftStartedAt ? "shift-on" : ""}`}>
     <Splash />
+    {banned && !isAdmin && <div className="ban-screen" role="alertdialog" aria-modal="true" aria-labelledby="ban-title"><div className="ban-card"><span className="ban-icon">🚫</span><h1 id="ban-title">{t('ban.title')}</h1><p>{t('ban.body')}</p><small>{t('ban.contact')}</small></div></div>}
     <div className="smoke-layer" aria-hidden="true"><i /><i /><i /></div>
     <ClientOnly><Suspense fallback={null}><TonWallet /></Suspense></ClientOnly>
     <aside className="sidebar">
