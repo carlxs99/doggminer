@@ -114,18 +114,38 @@ const ProofSchema = z.object({
 });
 
 async function walletPublicKey(address: string, publicKey: string | undefined, stateInit: string | undefined) {
+  // 1) Deployed wallet: ask the chain (TONAPI, then Toncenter get_public_key).
   try {
     const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/publickey`);
     if (r.ok) { const j = await r.json() as { public_key?: string }; if (j.public_key) return j.public_key.toLowerCase(); }
+  } catch { /* next source */ }
+  try {
+    const r = await fetch('https://toncenter.com/api/v2/runGetMethod', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, method: 'get_public_key', stack: [] }) });
+    if (r.ok) {
+      const j = await r.json() as { ok?: boolean; result?: { exit_code?: number; stack?: [string, string][] } };
+      const v = j.ok && j.result?.exit_code === 0 ? j.result.stack?.[0]?.[1] : undefined;
+      if (v) return BigInt(v).toString(16).padStart(64, '0');
+    }
   } catch { /* fall through to stateInit */ }
   if (!publicKey || !stateInit) return null;
-  // Undeployed wallet: stateInit must hash to the address and embed the claimed key.
-  const { Cell, loadStateInit } = await import('@ton/core');
-  const cell = Cell.fromBase64(stateInit);
-  if (cell.hash().toString('hex') !== address.split(':')[1]) return null;
-  const data = loadStateInit(cell.beginParse()).data;
-  if (!data || !data.bits.toString().toLowerCase().includes(publicKey.toLowerCase())) return null;
-  return publicKey.toLowerCase();
+  // 2) New/undeployed wallet: stateInit must hash to the address; read the key from the data cell
+  //    using the standard wallet layouts (V1/V2, V3/V4, V5 beta, V5R1).
+  try {
+    const { Cell, loadStateInit } = await import('@ton/core');
+    const cell = Cell.fromBase64(stateInit);
+    if (cell.hash().toString('hex') !== address.split(':')[1]) return null;
+    const data = loadStateInit(cell.beginParse()).data;
+    if (!data) return null;
+    const want = publicKey.toLowerCase();
+    const layouts: number[] = [32, 64, 1 + 32 + 80, 1 + 32 + 32];
+    for (const skip of layouts) {
+      try {
+        const s = data.beginParse(); s.skip(skip);
+        if (s.loadBuffer(32).toString('hex') === want) return want;
+      } catch { /* try next layout */ }
+    }
+  } catch { /* invalid stateInit */ }
+  return null;
 }
 
 /** Links the wallet only after verifying a TON Connect ownership signature (ton_proof). */
