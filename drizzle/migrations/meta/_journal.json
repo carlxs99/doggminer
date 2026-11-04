@@ -218,6 +218,13 @@
       "when": 1793832547376,
       "tag": "0030_auto_ban_same_phone_fp_ip",
       "breakpoints": true
+    },
+    {
+      "idx": 31,
+      "version": "7",
+      "when": 1793833378858,
+      "tag": "0031_auto_ban_fp_ip_burst_only",
+      "breakpoints": true
     }
   ]
 }
