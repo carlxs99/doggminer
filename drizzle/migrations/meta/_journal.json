@@ -183,6 +183,13 @@
       "when": 1793750778568,
       "tag": "0025_daily_reminders",
       "breakpoints": true
+    },
+    {
+      "idx": 26,
+      "version": "7",
+      "when": 1793751550959,
+      "tag": "0026_claim_anytime_restarts_shift",
+      "breakpoints": true
     }
   ]
 }

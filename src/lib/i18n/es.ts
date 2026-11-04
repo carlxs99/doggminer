@@ -130,7 +130,7 @@ export const es = {
   // Generic errors
   'err.generic': 'Algo salió mal. Inténtalo de nuevo.', 'err.rate': 'Mucho tráfico ahora mismo. Espera unos segundos y vuelve a intentarlo.', 'err.offline': 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', 'err.server': 'El servicio no responde ahora mismo. Inténtalo en un momento.',
   'err.reopen': 'Abre de nuevo la mini app desde Telegram.', 'err.openTelegram': 'Abre la app desde Telegram.', 'err.botNotConfigured': 'El bot todavía no está configurado. El minado real no está disponible.',
-  'err.shiftActive': 'Ya tienes un turno activo.', 'err.shiftNotDone': 'El turno todavía no ha terminado.', 'err.needHold': 'Necesitas {n} $DOGG entre tu wallet verificada y la app para este minero.', 'err.badMiner': 'Minero no válido.',
+  'err.shiftActive': 'Ya tienes un turno activo.', 'err.shiftNotDone': 'Todavía no hay nada que recoger.', 'err.needHold': 'Necesitas {n} $DOGG entre tu wallet verificada y la app para este minero.', 'err.badMiner': 'Minero no válido.',
   'err.connectToWithdraw': 'Conecta tu wallet antes de retirar.', 'err.verifyToWithdraw': 'Verifica tu wallet (con 100 $DOGG o más) para poder retirar.', 'err.minWithdraw': 'El retiro mínimo es 1.000 $DOGG.', 'err.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG (incluye 70 de comisión).',
   'err.adsCap': 'Ya viste los 10 anuncios de hoy. Vuelve mañana.', 'err.adsTooMany': 'Demasiados intentos de anuncio hoy. Vuelve mañana.', 'err.adNotFound': 'Anuncio no encontrado.',
   'err.noRefRewards': 'No tienes recompensas de referidos por reclamar.', 'err.linkWalletFirst': 'Conecta y vincula tu wallet TON primero.',

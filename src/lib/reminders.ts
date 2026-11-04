@@ -25,7 +25,7 @@ export function reminderMessage(p: ReminderPlayer, now: number): BotMessage {
   const lines: string[] = [];
   let cta: string;
   if (state === 'ready') {
-    lines.push(`🌿 <b>Harvest time${name}!</b>`, '', `Your 24h shift is done and <b>${amount(mined)} $DOGG</b> is waiting for you.`, 'Claim it now and light your next shift so your miner never sleeps 🔥');
+    lines.push(`🌿 <b>Harvest time${name}!</b>`, '', `Your 24h shift is done and <b>${amount(mined)} $DOGG</b> is waiting for you.`, 'Claim it now — your next shift starts automatically 🔥');
     cta = '💰 Claim my $DOGG';
   } else if (state === 'idle') {
     lines.push(`⛏️ <b>Your miner is cooling off${name}</b>`, '', `Light today's 24h shift and stack <b>${amount(getMiner(minerId).daily)} $DOGG</b> while you chill.`, 'One tap and it keeps mining even with the app closed 🌿');
@@ -33,7 +33,7 @@ export function reminderMessage(p: ReminderPlayer, now: number): BotMessage {
   } else {
     const left = Math.max(0, SHIFT_MS - (now - Date.parse(p.shift_started_at ?? '')));
     const h = Math.floor(left / 3600000); const m = Math.floor(left % 3600000 / 60000);
-    lines.push(`🔥 <b>Your grow op is cooking${name}</b>`, '', `<b>${amount(mined)} $DOGG</b> stacked so far, ready to claim in <b>${h}h ${m}m</b>.`, 'Pop in for tasks and ads to grab some bonus $DOGG 🎯');
+    lines.push(`🔥 <b>Your grow op is cooking${name}</b>`, '', `<b>${amount(mined)} $DOGG</b> stacked so far, collect anytime (shift ends in <b>${h}h ${m}m</b>).`, 'Pop in for tasks and ads to grab some bonus $DOGG 🎯');
     cta = '⛏️ Open $DOGG MINER';
   }
   const ref = Number(p.ref_pending ?? 0);

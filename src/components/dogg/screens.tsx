@@ -47,7 +47,7 @@ export function Humero() {
     <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt={t('mine.coinAlt')} width={640} height={631} /></div></div>
     <LiveEarned player={player} live={live} fallback={earned} />
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
-    <div className="mine-claim"><Button className="start-shift" disabled={busy || live} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? (finished ? t('mine.claim') : t('mine.burning')) : t('mine.start')}<ArrowRight /></Button></div>
+    <div className="mine-claim"><Button className="start-shift" disabled={busy || (Boolean(player.shiftStartedAt) && earned <= 0)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? t('mine.claim') : t('mine.start')}<ArrowRight /></Button></div>
     <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> {t('mine.tasksLink')}</Link></Button>
     <div className="mine-buy"><BuyDedustLink className="buy-green">{t('mine.buy')}</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">{t('mine.price')}</a></div>
     <DedustWebLink />
