@@ -201,3 +201,12 @@ export const adminMultiReview = createServerFn({ method: 'POST' })
     await log(db, adminId, `multi_${data.status}`, { telegram_id: data.telegramId });
     return { ok: true };
   });
+
+export const adminSetBan = createServerFn({ method: 'POST' })
+  .inputValidator(Init.extend({ telegramId: z.number().int().positive(), banned: z.boolean() }))
+  .handler(async ({ data }) => {
+    const { adminId, db } = await requireAdmin(data.initData);
+    const r = await db.rpc('dogg_admin_set_ban', { p_admin: adminId, p_telegram_id: data.telegramId, p_banned: data.banned });
+    if (r.error) throw new Error(r.error.message);
+    return { ok: true };
+  });

@@ -87,7 +87,8 @@ export const playerAction = createServerFn({ method: 'POST' })
     }
     if (data.action !== 'read') return player;
     const { isAdmin } = await import('./telegram.server');
-    return { ...player, isAdmin: await isAdmin(supabaseAdmin, telegramId) };
+    const ban = await supabaseAdmin.from('dogg_players').select('banned_at').eq('telegram_id', telegramId).maybeSingle();
+    return { ...player, isAdmin: await isAdmin(supabaseAdmin, telegramId), banned: Boolean(ban.data?.banned_at) };
   });
 
 async function proofSig(telegramId: number, exp: number) {
