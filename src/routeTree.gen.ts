@@ -20,6 +20,7 @@ import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.publi
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api.public.telegram-webhook'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
 import { Route as ApiPublicJobsChannelPostRouteImport } from './routes/api.public.jobs.channel-post'
+import { Route as ApiPublicJobsDailyReminderRouteImport } from './routes/api.public.jobs.daily-reminder'
 import { Route as ApiPublicJobsPayoutsRouteImport } from './routes/api.public.jobs.payouts'
 
 const IndexRoute = IndexRouteImport.update({
@@ -80,6 +81,12 @@ const ApiPublicJobsChannelPostRoute =
     path: '/api/public/jobs/channel-post',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicJobsDailyReminderRoute =
+  ApiPublicJobsDailyReminderRouteImport.update({
+    id: '/api/public/jobs/daily-reminder',
+    path: '/api/public/jobs/daily-reminder',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const ApiPublicJobsPayoutsRoute = ApiPublicJobsPayoutsRouteImport.update({
   id: '/api/public/jobs/payouts',
   path: '/api/public/jobs/payouts',
@@ -98,6 +105,7 @@ export interface FileRoutesByFullPath {
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
+  '/api/public/jobs/daily-reminder': typeof ApiPublicJobsDailyReminderRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRoutesByTo {
@@ -112,6 +120,7 @@ export interface FileRoutesByTo {
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
+  '/api/public/jobs/daily-reminder': typeof ApiPublicJobsDailyReminderRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRoutesById {
@@ -127,6 +136,7 @@ export interface FileRoutesById {
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
+  '/api/public/jobs/daily-reminder': typeof ApiPublicJobsDailyReminderRoute
   '/api/public/jobs/payouts': typeof ApiPublicJobsPayoutsRoute
 }
 export interface FileRouteTypes {
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/channel-post'
+    | '/api/public/jobs/daily-reminder'
     | '/api/public/jobs/payouts'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -157,6 +168,7 @@ export interface FileRouteTypes {
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/channel-post'
+    | '/api/public/jobs/daily-reminder'
     | '/api/public/jobs/payouts'
   id:
     | '__root__'
@@ -171,6 +183,7 @@ export interface FileRouteTypes {
     | '/api/public/telegram-webhook'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/channel-post'
+    | '/api/public/jobs/daily-reminder'
     | '/api/public/jobs/payouts'
   fileRoutesById: FileRoutesById
 }
@@ -186,6 +199,7 @@ export interface RootRouteChildren {
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
   ApiPublicJobsChannelPostRoute: typeof ApiPublicJobsChannelPostRoute
+  ApiPublicJobsDailyReminderRoute: typeof ApiPublicJobsDailyReminderRoute
   ApiPublicJobsPayoutsRoute: typeof ApiPublicJobsPayoutsRoute
 }
 
@@ -268,6 +282,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicJobsChannelPostRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/jobs/daily-reminder': {
+      id: '/api/public/jobs/daily-reminder'
+      path: '/api/public/jobs/daily-reminder'
+      fullPath: '/api/public/jobs/daily-reminder'
+      preLoaderRoute: typeof ApiPublicJobsDailyReminderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/jobs/payouts': {
       id: '/api/public/jobs/payouts'
       path: '/api/public/jobs/payouts'
@@ -290,6 +311,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
   ApiPublicJobsChannelPostRoute: ApiPublicJobsChannelPostRoute,
+  ApiPublicJobsDailyReminderRoute: ApiPublicJobsDailyReminderRoute,
   ApiPublicJobsPayoutsRoute: ApiPublicJobsPayoutsRoute,
 }
 export const routeTree = rootRouteImport
