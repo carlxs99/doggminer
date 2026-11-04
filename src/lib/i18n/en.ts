@@ -121,7 +121,7 @@ export const en: Record<keyof typeof es, string> = {
 
   'err.generic': 'Something went wrong. Please try again.', 'err.rate': 'Lots of traffic right now. Wait a few seconds and try again.', 'err.offline': 'No connection. Check your internet and try again.', 'err.server': "The service isn't responding right now. Try again in a moment.",
   'err.reopen': 'Open the mini app again from Telegram.', 'err.openTelegram': 'Open the app from Telegram.', 'err.botNotConfigured': 'The bot is not set up yet. Real mining is not available.',
-  'err.shiftActive': 'You already have an active shift.', 'err.shiftNotDone': "The shift hasn't finished yet.", 'err.needHold': 'You need {n} $DOGG between your verified wallet and the app for this miner.', 'err.badMiner': 'Invalid miner.',
+  'err.shiftActive': 'You already have an active shift.', 'err.shiftNotDone': 'Nothing to collect yet.', 'err.needHold': 'You need {n} $DOGG between your verified wallet and the app for this miner.', 'err.badMiner': 'Invalid miner.',
   'err.connectToWithdraw': 'Connect your wallet before withdrawing.', 'err.verifyToWithdraw': 'Verify your wallet (holding 100+ $DOGG) to withdraw.', 'err.minWithdraw': 'The minimum withdrawal is 1,000 $DOGG.', 'err.insufficient': 'Not enough balance: you need {n} $DOGG (includes the 70 fee).',
   'err.adsCap': "You've watched today's 10 ads. Come back tomorrow.", 'err.adsTooMany': 'Too many ad attempts today. Come back tomorrow.', 'err.adNotFound': 'Ad not found.',
   'err.noRefRewards': 'You have no referral rewards to claim.', 'err.linkWalletFirst': 'Connect and link your TON wallet first.',
