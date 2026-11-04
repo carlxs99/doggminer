@@ -12,7 +12,7 @@ const REASON_ES: Record<string, string> = {
 
 export function multiAlertMessage(name: string, id: number, score: number, reasons: string[]): BotMessage {
   return {
-    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. No se ha bloqueado nada.`,
+    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. Si hay más de 5 cuentas en el mismo dispositivo se banean automáticamente.`,
     buttons: [[{ text: '🛡️ Abrir el panel', url: MINI_APP_LINK }]],
   };
 }
