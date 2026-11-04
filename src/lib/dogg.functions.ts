@@ -173,8 +173,8 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     const { getRequestHeader } = await import('@tanstack/react-start/server');
     const host = (getRequestHeader('host') ?? '').split(':')[0];
     if (proof.domain.value !== host && proof.domain.value !== 'doggminer.lovable.app') throw new Error('Firma de otro dominio.');
-    const pk = await walletPublicKey(address, data.publicKey, data.stateInit);
-    if (!pk) throw new Error('No se pudo comprobar la clave de tu wallet. Haz al menos una transacción con ella e inténtalo de nuevo.');
+    const pks = await walletPublicKeys(address, data.publicKey, data.stateInit);
+    if (!pks.length) throw new Error('La firma de la wallet no es válida.');
     const { Buffer } = await import('node:buffer');
     const { createHash } = await import('node:crypto');
     const { signVerify } = await import('@ton/crypto');
@@ -184,7 +184,9 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     const ts = Buffer.alloc(8); ts.writeBigUInt64LE(BigInt(proof.timestamp));
     const msg = Buffer.concat([Buffer.from('ton-proof-item-v2/'), wcBuf, Buffer.from(hash ?? '', 'hex'), dl, Buffer.from(proof.domain.value), ts, Buffer.from(proof.payload)]);
     const full = Buffer.concat([Buffer.from([0xff, 0xff]), Buffer.from('ton-connect'), createHash('sha256').update(msg).digest()]);
-    const ok = signVerify(createHash('sha256').update(full).digest(), Buffer.from(proof.signature, 'base64'), Buffer.from(pk, 'hex'));
+    const digest = createHash('sha256').update(full).digest();
+    const sig = Buffer.from(proof.signature, 'base64');
+    const ok = pks.some(pk => { try { return signVerify(digest, sig, Buffer.from(pk, 'hex')); } catch { return false; } });
     if (!ok) throw new Error('La firma de la wallet no es válida.');
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const hold = await jettonHold(address);
