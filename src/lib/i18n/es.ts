@@ -37,6 +37,7 @@ export const es = {
   // Mine
   'mine.rate': 'TASA DE MINERÍA', 'mine.mining': 'Minando', 'mine.ready': 'Cosecha lista', 'mine.paused': 'En pausa',
   'mine.rank': 'RANGO ACTUAL', 'mine.level': 'Nivel {n}',
+  'mine.subtitle': 'Prende tu turno y mina',
   'mine.claimed': 'Reclamado en la app',
   'mine.coinAlt': 'Moneda oficial del jetton $DOGG',
   'mine.processing': 'Procesando…', 'mine.claim': 'PUFF PUFF, COBRA', 'mine.burning': 'QUEMANDO EL TURNO', 'mine.start': 'PRENDE EL TURNO',
