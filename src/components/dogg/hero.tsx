@@ -7,9 +7,9 @@ import crown from '@/assets/ui/crown.webp';
 
 const ART = { bust, cap: bustCap, leaf } as const;
 
-/** Graffiti "$DOGG MINER" wordmark with the gold crown. */
+/** Graffiti "$DOGG MINER" wordmark wordmark. */
 export function Logo({ className = '' }: { className?: string }) {
-  return <span className={`dogg-logo ${className}`}><img src={crown} alt="" width={160} height={133} aria-hidden="true" /><span>$DOGG</span> <em>MINER</em></span>;
+  return <span className={`dogg-logo ${className}`}><span>$DOGG</span> <em>MINER</em></span>;
 }
 
 /** Rough title width in Latin-letter units: Cyrillic graffiti letters are wider, so long Russian titles shrink more. */
