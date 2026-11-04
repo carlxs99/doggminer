@@ -105,6 +105,7 @@ export const ru: Record<keyof typeof es, string> = {
 
   'toast.upgraded': 'Твой холд вырос! Теперь майнишь с {name}',
   'toast.downgraded': 'Твой холд $DOGG уменьшился: майнер опустился до лучшего доступного уровня.',
+  'toast.walletUnlinked': 'Кошелёк отключён. Теперь можно подключить другой.', 'toast.walletUnlinkFail': 'Не удалось отключить кошелёк',
   'toast.walletLinked': 'Кошелёк привязан · {n} $DOGG в холде', 'toast.walletLinkFail': 'Не удалось привязать кошелёк',
   'toast.shiftOn': 'Смена запущена. Keep it growing 🌱', 'toast.checkin': 'Ежедневный бонус получен: +10 кредитов', 'toast.harvest': 'Паф-паф… урожай собран 💰', 'toast.actionFail': 'Не удалось выполнить действие',
   'toast.shift24': 'Смена заканчивается через 24 часа.', 'toast.checkinDone': 'Сегодняшний бонус уже получен.',

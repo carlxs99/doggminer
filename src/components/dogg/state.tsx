@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
-import { adAction, ledgerAction, playerAction, requestWithdraw, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { adAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
 import { showRewardedAd } from '@/lib/ads';
 import { deviceSignals } from '@/lib/fingerprint';
@@ -20,7 +20,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; unlink: () => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -62,6 +62,13 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); notifyLevel(p); toast.success(t('toast.walletLinked', { n: (p.hold ?? 0).toLocaleString('de-DE') })); }
     catch (e) { toast.error(friendlyError(e, t('toast.walletLinkFail'))); }
   }, [verifyCall]);
+  const unlinkCall = useServerFn(unlinkWallet);
+  const unlink = useCallback(async () => {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (!initData) return;
+    try { const p = await unlinkCall({ data: { initData } }); setPlayer(p); toast.success(t('toast.walletUnlinked')); }
+    catch (e) { toast.error(friendlyError(e, t('toast.walletUnlinkFail'))); }
+  }, [unlinkCall]);
   useEffect(() => {
     let cleanup = () => {};
     let tries = 0;
@@ -205,7 +212,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   // The wallet linked to the account (server) counts even without a live session, so players never reconnect to mine, verify or withdraw.
   const linkedWallet = !demo && player.walletAddress ? friendlyAddress(player.walletAddress) : null;
   const wallet = (tcWallet ? friendlyAddress(tcWallet) : null) ?? linkedWallet;
-  return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, synced, loaded }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, unlink, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, synced, loaded }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.

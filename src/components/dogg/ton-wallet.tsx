@@ -6,7 +6,7 @@ import { t } from '@/lib/i18n';
 function Bridge() {
   const [ui] = useTonConnectUI();
   const wallet = useTonWallet();
-  const { setWallet, setOpenWallet, verifyProof, getChallenge, demo, player, synced } = useDogg();
+  const { setWallet, setOpenWallet, verifyProof, unlink, getChallenge, demo, player, synced } = useDogg();
   const sent = useRef<string | null>(null);
   // Set when the player taps "connect", so a missing signature after their own connect can be reported.
   const userOpened = useRef(false);
@@ -43,9 +43,14 @@ function Bridge() {
     if (reportFail) toast.error(t('toast.walletLinkFail'));
   }, [wallet, demo, synced, player.walletAddress, verifyProof, ui]);
   useEffect(() => {
-    setOpenWallet(() => { if (ui.connected) { void ui.disconnect(); } else { userOpened.current = true; void ui.openModal(); } });
+    // Disconnect = end the TON Connect session AND unlink the account's wallet, so a different wallet can be linked next.
+    const linked = Boolean(player.walletAddress);
+    setOpenWallet(() => {
+      if (ui.connected || linked) { sent.current = null; void (ui.connected ? ui.disconnect() : Promise.resolve()).catch(() => {}).then(() => linked ? unlink() : undefined); }
+      else { userOpened.current = true; void ui.openModal(); }
+    });
     return () => setOpenWallet(null);
-  }, [ui, setOpenWallet]);
+  }, [ui, setOpenWallet, unlink, player.walletAddress]);
   return null;
 }
 export default function TonWallet() {

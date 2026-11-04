@@ -105,6 +105,7 @@ export const en: Record<keyof typeof es, string> = {
 
   'toast.upgraded': 'Your hold went up! Now mining with {name}',
   'toast.downgraded': 'Your $DOGG hold dropped: your miner went down to the best level your balance covers.',
+  'toast.walletUnlinked': 'Wallet disconnected. You can connect another one now.', 'toast.walletUnlinkFail': 'Could not disconnect the wallet',
   'toast.walletLinked': 'Wallet linked · {n} $DOGG held', 'toast.walletLinkFail': "Couldn't link the wallet",
   'toast.shiftOn': 'Shift lit. Keep it growing 🌱', 'toast.checkin': 'Daily bonus claimed: +10 credits', 'toast.harvest': 'Puff puff… harvest collected 💰', 'toast.actionFail': "Couldn't complete the action",
   'toast.shift24': 'Your shift ends after 24 hours.', 'toast.checkinDone': 'You already claimed today\'s bonus.',
