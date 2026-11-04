@@ -23,20 +23,32 @@ export const Route = createFileRoute('/api/public/telegram-webhook')({
         const { WELCOME_IMAGE, howMessage, inviteMessage, welcomeMessage } = await import('@/lib/bot-messages');
         const { botApi } = await import('@/lib/telegram.server');
 
+        const { REMINDER_OFF, REMINDER_ON, remindersOffMessage, remindersOnMessage } = await import('@/lib/reminders');
+        const { setReminders, clearBlocked } = await import('@/lib/reminders.server');
+        const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+
         const cb = update?.callback_query;
         if (cb) {
           await botApi('answerCallbackQuery', { callback_query_id: cb.id }).catch(() => null);
           if (cb.data === 'invite') await sendBotMessage(cb.from.id, inviteMessage(cb.from.id));
           else if (cb.data === 'how') await sendBotMessage(cb.from.id, howMessage());
+          else if (cb.data === REMINDER_OFF || cb.data === REMINDER_ON) {
+            const on = cb.data === REMINDER_ON;
+            await setReminders(supabaseAdmin, cb.from.id, on).catch(e => console.error('setReminders', e));
+            await sendBotMessage(cb.from.id, on ? remindersOnMessage() : remindersOffMessage());
+          }
           return Response.json({ ok: true });
         }
 
         const msg = update?.message;
         if (!msg?.chat || msg.chat.type !== 'private' || !msg.from || msg.from.is_bot) return Response.json({ ok: true });
+        await clearBlocked(supabaseAdmin, msg.from.id).catch(() => null);
         const [command = '', param] = (msg.text ?? '').trim().split(/\s+/);
         const cmd = command.toLowerCase().replace(/@doggminerbot$/, '');
         if (cmd === '/invite') await sendBotMessage(msg.chat.id, inviteMessage(msg.from.id));
         else if (cmd === '/help') await sendBotMessage(msg.chat.id, howMessage());
+        else if (cmd === '/stop') { await setReminders(supabaseAdmin, msg.from.id, false).catch(() => null); await sendBotMessage(msg.chat.id, remindersOffMessage()); }
+        else if (cmd === '/reminders') { await setReminders(supabaseAdmin, msg.from.id, true).catch(() => null); await sendBotMessage(msg.chat.id, remindersOnMessage()); }
         else await sendBotPhoto(msg.chat.id, WELCOME_IMAGE, welcomeMessage(msg.from.first_name, cmd === '/start' ? param : null));
         return Response.json({ ok: true });
       },

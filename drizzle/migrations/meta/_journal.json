@@ -176,6 +176,13 @@
       "when": 1793746614194,
       "tag": "0024_daily_react_tasks",
       "breakpoints": true
+    },
+    {
+      "idx": 25,
+      "version": "7",
+      "when": 1793750778568,
+      "tag": "0025_daily_reminders",
+      "breakpoints": true
     }
   ]
 }

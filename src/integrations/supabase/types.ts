@@ -233,6 +233,7 @@ export type Database = {
           ad_day: string | null
           ad_started_at: string | null
           balance: number
+          bot_blocked_at: string | null
           claimed_shifts: number
           created_at: string
           first_name: string | null
@@ -249,6 +250,8 @@ export type Database = {
           ref_qualified_notified_at: string | null
           referral_qualified_at: string | null
           referred_by: number | null
+          reminder_sent_at: string | null
+          reminders_off: boolean
           shift_accrued: number
           shift_started_at: string | null
           streak: number
@@ -265,6 +268,7 @@ export type Database = {
           ad_day?: string | null
           ad_started_at?: string | null
           balance?: number
+          bot_blocked_at?: string | null
           claimed_shifts?: number
           created_at?: string
           first_name?: string | null
@@ -281,6 +285,8 @@ export type Database = {
           ref_qualified_notified_at?: string | null
           referral_qualified_at?: string | null
           referred_by?: number | null
+          reminder_sent_at?: string | null
+          reminders_off?: boolean
           shift_accrued?: number
           shift_started_at?: string | null
           streak?: number
@@ -297,6 +303,7 @@ export type Database = {
           ad_day?: string | null
           ad_started_at?: string | null
           balance?: number
+          bot_blocked_at?: string | null
           claimed_shifts?: number
           created_at?: string
           first_name?: string | null
@@ -313,6 +320,8 @@ export type Database = {
           ref_qualified_notified_at?: string | null
           referral_qualified_at?: string | null
           referred_by?: number | null
+          reminder_sent_at?: string | null
+          reminders_off?: boolean
           shift_accrued?: number
           shift_started_at?: string | null
           streak?: number
@@ -562,6 +571,50 @@ export type Database = {
       }
       dogg_admin_stats: { Args: never; Returns: Json }
       dogg_best_miner: { Args: { p_total: number }; Returns: string }
+      dogg_claim_reminders: {
+        Args: { p_limit: number }
+        Returns: {
+          ad_count: number
+          ad_day: string | null
+          ad_started_at: string | null
+          balance: number
+          bot_blocked_at: string | null
+          claimed_shifts: number
+          created_at: string
+          first_name: string | null
+          last_checkin: string | null
+          last_hold: number | null
+          last_hold_at: string | null
+          miner_id: string
+          multi_alerted_at: string | null
+          rate_changed_at: string | null
+          ref_earned: number
+          ref_given: number
+          ref_join_notified_at: string | null
+          ref_pending: number
+          ref_qualified_notified_at: string | null
+          referral_qualified_at: string | null
+          referred_by: number | null
+          reminder_sent_at: string | null
+          reminders_off: boolean
+          shift_accrued: number
+          shift_started_at: string | null
+          streak: number
+          telegram_id: number
+          username: string | null
+          wallet_address: string | null
+          wallet_verified_at: string | null
+          withdraw_verified_amount: number | null
+          withdraw_verified_at: string | null
+          withdraw_verified_wallet: string | null
+        }[]
+        SetofOptions: {
+          from: "*"
+          to: "dogg_players"
+          isOneToOne: false
+          isSetofReturn: true
+        }
+      }
       dogg_miner_stats: {
         Args: { p_id: string }
         Returns: Record<string, unknown>
