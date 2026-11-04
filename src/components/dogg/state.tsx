@@ -191,20 +191,12 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       const { ymid } = await adCall({ data: { initData, action: 'start' } });
       if (!ymid) throw new Error(t('toast.adPrepFail'));
       await showRewardedAd(ymid);
-      // Wait for Monetag's server confirmation (usually a few seconds).
-      const end = Date.now() + 25000;
-      let last = 'pending';
-      while (Date.now() < end) {
-        await new Promise(r => setTimeout(r, 2000));
-        const r = await adCall({ data: { initData, action: 'status', ymid } }).catch(() => null);
-        if (!r) continue;
-        last = r.status ?? 'pending';
-        if (r.status === 'paid') { setAds({ day, count: r.adsToday }); setPlayer(p => ({ ...p, balance: r.balance })); paidAd(); return; }
-        if (r.status === 'capped') { setAds({ day, count: r.adsToday }); toast.error(t('toast.adsCap', { n: AD_DAILY })); return; }
-        if (r.status !== 'pending' && r.status !== 'not_valued') { toast.error(t('toast.adNotValid')); return; }
-      }
-      if (last === 'not_valued') toast.error(t('toast.adNotValued'));
-      else toast.message(t('toast.adPending'), { description: t('toast.adPendingDesc', { r: AD_REWARD }) });
+      // Ad closed: pay right away (server enforces one payment per ad and 10/day).
+      const r = await adCall({ data: { initData, action: 'claim', ymid } });
+      setAds({ day, count: r.adsToday });
+      if (r.status === 'paid') { setPlayer(p => ({ ...p, balance: r.balance })); paidAd(); return; }
+      if (r.status === 'capped') { toast.error(t('toast.adsCap', { n: AD_DAILY })); return; }
+      toast.error(t('toast.adNotValid'));
     } catch (e) { toast.error(friendlyError(e, t('toast.adFail'))); }
   };
   const loaded = readDone && (demo || !synced || (ledgerDone && adsDone));
