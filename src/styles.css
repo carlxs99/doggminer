@@ -746,3 +746,17 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .screen-hero-art{width:34%;max-width:140px}
   .screen-hero.art-leaf .screen-hero-art{width:28%!important}
 }
+/* Mine on phones: balanced proportions */
+@media (max-width:600px){
+  .mine-screen{gap:10px}
+  .mine-coin{width:min(42vw,160px)!important;padding:6px}
+  .mine-leaf{width:min(23vw,88px)!important}
+  .mine-leaf.l{left:14%}.mine-leaf.r{right:14%}
+  .mine-live{font-size:clamp(28px,8.5vw,36px)!important}
+  .mine-claimed strong{font-size:21px!important}
+  .mine-claimed span{font-size:12px!important;padding:2px 12px}
+  .mine-stats{padding:10px 12px}
+  .mine-stats strong{font-size:17px}
+  .mine-claim .start-shift{height:48px;font-size:15px}
+  .mine-wide,.mine-buy a{height:42px}
+}
