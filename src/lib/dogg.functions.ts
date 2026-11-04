@@ -267,3 +267,17 @@ export const ledgerAction = createServerFn({ method: 'POST' })
       entries: rows.map(e => ({ kind: e.kind as 'mining' | 'task' | 'withdraw' | 'team', label: e.label, amount: Number(e.amount), at: Date.parse(e.created_at), ...(e.ref && open.has(e.ref) ? { status: 'review' as const } : {}) })),
     };
   });
+
+/** Unlinks the account's wallet so the player can connect a different one (a new ton_proof is required to link again). */
+export const unlinkWallet = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: null, wallet_verified_at: null, last_hold: null, last_hold_at: null }).eq('telegram_id', telegramId);
+    if (upd.error) throw new Error(upd.error.message);
+    // Without a wallet only the in-app balance counts toward the miner level.
+    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: 0 });
+    if (result.error) throw new Error(result.error.message);
+    return settle(supabaseAdmin, telegramId, result.data, 0);
+  });
