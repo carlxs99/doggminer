@@ -584,6 +584,7 @@ export type Database = {
       }
       dogg_admin_stats: { Args: never; Returns: Json }
       dogg_auto_ban: { Args: { p_telegram_id: number }; Returns: number[] }
+      dogg_ban_group: { Args: { p_ids: number[] }; Returns: number[] }
       dogg_best_miner: { Args: { p_total: number }; Returns: string }
       dogg_claim_reminders: {
         Args: { p_limit: number }
