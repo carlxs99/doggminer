@@ -3,6 +3,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { adAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
+import { withdrawNeeds, withdrawNet } from '@/lib/withdraw';
 import { showRewardedAd } from '@/lib/ads';
 import { deviceSignals } from '@/lib/fingerprint';
 import { friendlyAddress } from '@/lib/address';
@@ -19,7 +20,7 @@ import { bass, coinRain, scratch, strongHaptic } from '@/lib/fx';
 import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
-export const WITHDRAW_MIN = 1000; export const WITHDRAW_FEE = 70;
+export { WITHDRAW_MIN, WITHDRAW_FEE } from '@/lib/withdraw';
 type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; unlink: () => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
@@ -143,17 +144,18 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (demo) throw new Error(t('err.openTelegram'));
       if (!player.walletAddress) throw new Error(t('toast.connectToWithdraw'));
       if (!player.withdrawVerified) throw new Error(t('toast.verifyToWithdraw', { n: VERIFY_BUY }));
-      if (amount + WITHDRAW_FEE > player.balance) throw new Error(t('toast.insufficient', { n: (amount + WITHDRAW_FEE).toLocaleString('de-DE'), fee: WITHDRAW_FEE }));
+      const gross = withdrawNeeds(amount);
+      if (gross > player.balance) throw new Error(t('toast.insufficient', { n: gross.toLocaleString('de-DE') }));
       const initData = window.Telegram?.WebApp?.initData;
       if (!initData) throw new Error(t('err.openTelegram'));
       setBusy(true);
       try {
-        const r = await withdrawCall({ data: { initData, amount: Math.floor(amount) } });
-        if (r.player) { setPlayer(r.player); notifyLevel(r.player); } else setPlayer(p => ({ ...p, balance: p.balance - amount - WITHDRAW_FEE }));
+        const r = await withdrawCall({ data: { initData, amount: gross } });
+        if (r.player) { setPlayer(r.player); notifyLevel(r.player); } else setPlayer(p => ({ ...p, balance: p.balance - gross }));
         if (r.status === 'failed') throw new Error(t('toast.wdFailed'));
-        log({ kind: 'withdraw', label: 'hist.withdraw', amount: -(amount + WITHDRAW_FEE), ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
+        log({ kind: 'withdraw', label: 'hist.withdraw', amount: -gross, ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
         coinRain(coinImg); bass(); strongHaptic();
-        toast.success(r.status === 'sent' ? t('toast.wdSent', { n: amount.toLocaleString('de-DE') }) : t('toast.wdOnWay'));
+        toast.success(r.status === 'sent' ? t('toast.wdSent', { n: withdrawNet(gross).toLocaleString('de-DE') }) : t('toast.wdOnWay'));
       } finally { setBusy(false); }
     } catch (e) { toast.error(friendlyError(e, t('toast.wdFail'))); }
   };
