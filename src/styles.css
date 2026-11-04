@@ -436,7 +436,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .app-layout.shift-on .smoke-layer{opacity:1!important}
 /* Top bar: centered crowned logo */
 .topbar{background:linear-gradient(to bottom,var(--card-deep),color-mix(in oklch,var(--card-deep) 70%,transparent))!important;border-bottom:1px solid var(--neon-soft)}
-.dogg-logo{position:relative;display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-graffiti);font-size:22px;line-height:1;white-space:nowrap;padding-top:10px}
+.dogg-logo{position:relative;display:inline-flex;align-items:baseline;gap:6px;font-family:var(--font-graffiti);font-size:22px;line-height:1;white-space:nowrap;}
 .dogg-logo img{position:absolute;left:50%;top:-6px;width:22px;height:auto;transform:translateX(-50%) rotate(-6deg);filter:drop-shadow(0 2px 4px oklch(0 0 0 / .6))}
 .dogg-logo>span{color:var(--foreground);text-shadow:0 2px 0 oklch(0 0 0 / .7)}
 .dogg-logo em{font-style:normal;color:var(--primary);text-shadow:0 0 12px var(--neon-line),0 2px 0 oklch(0 0 0 / .7)}
@@ -666,7 +666,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .pnl-strip .total{background:color-mix(in oklch,var(--primary) 14%,transparent)}
 .pnl-strip .total b{color:var(--primary)}
 .pnl-hint{font-size:11px;line-height:1.4;color:var(--muted-foreground);margin:0}
-.pnl-chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--border);padding-top:10px}
+.pnl-chart-head{display:flex;align-items:center;justify-content:space-between;gap:8px;border-top:1px solid var(--border);}
 .pnl-chart-head>b{font-size:13px;color:var(--primary);font-variant-numeric:tabular-nums;white-space:nowrap}
 .pnl-ranges{display:flex;gap:2px;background:var(--muted);border-radius:9px;padding:2px}
 .pnl-ranges button{height:30px;min-width:38px;padding:0 6px;border-radius:7px;font-size:11px;font-weight:700;color:var(--muted-foreground)}
