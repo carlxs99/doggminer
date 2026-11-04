@@ -233,6 +233,9 @@ export type Database = {
           ad_day: string | null
           ad_started_at: string | null
           balance: number
+          ban_exempt: boolean
+          ban_reason: string | null
+          banned_at: string | null
           bot_blocked_at: string | null
           claimed_shifts: number
           created_at: string
@@ -268,6 +271,9 @@ export type Database = {
           ad_day?: string | null
           ad_started_at?: string | null
           balance?: number
+          ban_exempt?: boolean
+          ban_reason?: string | null
+          banned_at?: string | null
           bot_blocked_at?: string | null
           claimed_shifts?: number
           created_at?: string
@@ -303,6 +309,9 @@ export type Database = {
           ad_day?: string | null
           ad_started_at?: string | null
           balance?: number
+          ban_exempt?: boolean
+          ban_reason?: string | null
+          banned_at?: string | null
           bot_blocked_at?: string | null
           claimed_shifts?: number
           created_at?: string
@@ -569,7 +578,12 @@ export type Database = {
         }
         Returns: number
       }
+      dogg_admin_set_ban: {
+        Args: { p_admin: number; p_banned: boolean; p_telegram_id: number }
+        Returns: undefined
+      }
       dogg_admin_stats: { Args: never; Returns: Json }
+      dogg_auto_ban: { Args: { p_telegram_id: number }; Returns: number[] }
       dogg_best_miner: { Args: { p_total: number }; Returns: string }
       dogg_claim_reminders: {
         Args: { p_limit: number }
@@ -578,6 +592,9 @@ export type Database = {
           ad_day: string | null
           ad_started_at: string | null
           balance: number
+          ban_exempt: boolean
+          ban_reason: string | null
+          banned_at: string | null
           bot_blocked_at: string | null
           claimed_shifts: number
           created_at: string
