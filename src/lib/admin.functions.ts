@@ -171,7 +171,7 @@ const MultiPeer = z.object({ id: z.coerce.number(), name: z.string(), username: 
 const MultiRow = z.object({
   id: z.coerce.number(), score: z.coerce.number(), reasons: z.array(z.string()), first_name: z.string().nullable(), username: z.string().nullable(),
   balance: z.coerce.number().nullable(), created_at: z.string().nullable(), referred_by: z.coerce.number().nullable(), can_withdraw: z.boolean().nullable(),
-  has_wallet: z.boolean().nullable(), country: z.string().nullable(), peers: z.array(MultiPeer), review: z.enum(['ok', 'flagged']).nullable(),
+  has_wallet: z.boolean().nullable(), banned: z.boolean().nullable().optional(), country: z.string().nullable(), peers: z.array(MultiPeer), review: z.enum(['ok', 'flagged']).nullable(),
   review_score: z.coerce.number().nullable(), review_note: z.string().nullable(),
 });
 export type MultiAccount = z.infer<typeof MultiRow>;
