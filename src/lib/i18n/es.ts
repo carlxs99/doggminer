@@ -113,6 +113,7 @@ export const es = {
   // Toasts from game actions
   'toast.upgraded': '¡Tu hold subió! Ahora minas con {name}',
   'toast.downgraded': 'Tu hold de $DOGG bajó: tu minero descendió al mejor nivel que cubre tu saldo.',
+  'toast.walletUnlinked': 'Wallet desconectada. Ya puedes conectar otra.', 'toast.walletUnlinkFail': 'No se pudo desconectar la wallet',
   'toast.walletLinked': 'Wallet vinculada · {n} $DOGG en hold', 'toast.walletLinkFail': 'No se pudo vincular la wallet',
   'toast.shiftOn': 'Turno prendido. Keep it growing 🌱', 'toast.checkin': 'Bonus diario reclamado: +10 créditos', 'toast.harvest': 'Puff puff… cosecha cobrada 💰', 'toast.actionFail': 'No se pudo completar la acción',
   'toast.shift24': 'Tu turno termina en 24 horas.', 'toast.checkinDone': 'Ya reclamaste el bonus de hoy.',

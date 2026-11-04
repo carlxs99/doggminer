@@ -59,7 +59,7 @@ function WithdrawVerify() {
 }
 
 export function Billetera() {
-  const { wallet, walletLive, openWallet, player, history, withdraw, now, busy, demo } = useDogg();
+  const { wallet, openWallet, player, history, withdraw, now, busy, demo } = useDogg();
   const t = useT();
   const [refresh, setRefresh] = useState(0);
   const [amount, setAmount] = useState('');
@@ -90,7 +90,7 @@ export function Billetera() {
     <section className="vault-row">
       <span className="vault-icon"><Wallet /></span>
       <div><strong>{wallet ? t('vault.connected') : t('vault.notConnected')}</strong>{wallet ? <button className="vault-addr" onClick={() => void navigator.clipboard.writeText(wallet).then(() => toast.success(t('vault.addrCopied'))).catch(() => toast.error(t('shell.copyFail')))}>{short(wallet)} <Copy /></button> : <small>{t('vault.connectHint')}</small>}</div>
-      <Button size="icon" variant={walletLive ? 'outline' : 'default'} aria-label={walletLive ? t('vault.disconnect') : t('shell.connect')} onClick={() => openWallet?.()} disabled={!openWallet}>{walletLive ? <LogOut /> : <ArrowUpRight />}</Button>
+      <Button size="icon" variant={wallet ? 'outline' : 'default'} aria-label={wallet ? t('vault.disconnect') : t('shell.connect')} onClick={() => openWallet?.()} disabled={!openWallet}>{wallet ? <LogOut /> : <ArrowUpRight />}</Button>
     </section>
     {balances && <p className="vault-note">TON: {balances.ton.toLocaleString('de-DE', { maximumFractionDigits: 4 })}</p>}
     {error && <p role="alert" className="text-destructive text-sm mt-2">{t('vault.readFail')}</p>}
