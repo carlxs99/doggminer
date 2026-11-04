@@ -30,7 +30,7 @@ export const en: Record<keyof typeof es, string> = {
   'faq.q1': 'How do I mine $DOGG?', 'faq.a1': 'Tap "Light the shift" in the Smokehouse. For 24 h you stack $DOGG at your miner\'s power; when it ends, collect it and start another.',
   'faq.q2': 'How do I unlock better miners?', 'faq.a2': 'Each miner needs a minimum hold. It counts the $DOGG in your verified wallet plus what you mined in the app. If your balance drops, your miner drops to the level you cover.',
   'faq.q3': 'Why do I sign when connecting my wallet?', 'faq.a3': "It's a free signature that moves no funds. It proves the wallet is yours so nobody can use someone else's.",
-  'faq.q4': 'How do I withdraw?', 'faq.a4': 'From 1,000 $DOGG, with a 70 $DOGG fee. First, verify your wallet once: it must hold at least 100 $DOGG. The transfer reaches your wallet in a few minutes.',
+  'faq.q4': 'How do I withdraw?', 'faq.a4': 'From 1,000 $DOGG; the 70 $DOGG fee is taken from the withdrawal (withdraw 1,000, receive 930). First, verify your wallet once: it must hold at least 100 $DOGG. The transfer reaches your wallet in a few minutes.',
   'faq.q5': 'Where do I play?', 'faq.a5': 'Always from @Doggminerbot on Telegram: your account, mining, referrals and withdrawals are saved there.',
   'hero.alt': 'DOGG, the $DOGG MINER character',
 
@@ -98,7 +98,7 @@ export const en: Record<keyof typeof es, string> = {
 
   'profile.title': 'Profile', 'profile.walletOn': 'Wallet connected · {a}', 'profile.holdWallet': 'Hold wallet', 'profile.refresh': 'Refresh balance',
   'profile.miningWallet': 'Mining wallet', 'profile.linked': 'Linked to your account', 'profile.ready': 'Ready to withdraw',
-  'profile.withdraw': 'Withdraw $DOGG', 'profile.minPh': 'Minimum {n}', 'profile.minNote': 'Minimum {min} $DOGG. Fee {fee} $DOGG.', 'profile.request': 'Request withdrawal',
+  'profile.withdraw': 'Withdraw $DOGG', 'profile.minPh': 'Minimum {n}', 'profile.minNote': 'Minimum {min} $DOGG. The {fee} fee is taken from the withdrawal.', 'profile.youGet': 'You will receive {n} $DOGG ({fee} fee deducted).', 'profile.request': 'Request withdrawal',
   'profile.wdHistory': 'Withdrawal history', 'profile.wdEmpty': 'No withdrawals yet.',
 
   'hist.mining': 'Mining payout', 'hist.withdraw': 'Withdrawal', 'hist.ad': 'Ad watched', 'hist.ref': 'Referral reward', 'hist.checkin': 'Daily bonus', 'hist.task': 'Task completed', 'hist.refund': 'Withdrawal returned', 'hist.admin': 'Admin adjustment',
@@ -111,7 +111,7 @@ export const en: Record<keyof typeof es, string> = {
   'toast.shift24': 'Your shift ends after 24 hours.', 'toast.checkinDone': 'You already claimed today\'s bonus.',
   'toast.levelUp': 'You moved up to {name}!', 'toast.activateFail': "Couldn't activate",
   'toast.minWithdraw': 'The minimum withdrawal is {n} $DOGG.', 'toast.connectToWithdraw': 'Connect your TON wallet to withdraw.', 'toast.verifyToWithdraw': 'Verify your wallet (holding {n}+ $DOGG) to withdraw.',
-  'toast.insufficient': 'Not enough balance: you need {n} $DOGG (includes {fee} fee).',
+  'toast.insufficient': 'Not enough balance: you need {n} $DOGG.',
   'toast.wdFailed': 'The transfer failed and your balance was returned. Try again later.', 'toast.wdSent': '{n} $DOGG sent to your wallet!', 'toast.wdOnWay': 'Withdrawal on its way · it will arrive in a few minutes', 'toast.wdFail': "Couldn't withdraw",
   'toast.adPaid': '+{r} $DOGG for watching the ad', 'toast.adsCap': "You've watched today's {n} ads. Come back tomorrow.", 'toast.adPrepFail': "Couldn't prepare the ad.",
   'toast.adNotValid': "Monetag didn't validate this ad, so it adds no $DOGG.", 'toast.adNotValued': "Monetag didn't count this ad as valid, so it adds no $DOGG. Try another one.",
@@ -123,7 +123,7 @@ export const en: Record<keyof typeof es, string> = {
   'err.generic': 'Something went wrong. Please try again.', 'err.rate': 'Lots of traffic right now. Wait a few seconds and try again.', 'err.offline': 'No connection. Check your internet and try again.', 'err.server': "The service isn't responding right now. Try again in a moment.",
   'err.reopen': 'Open the mini app again from Telegram.', 'err.openTelegram': 'Open the app from Telegram.', 'err.botNotConfigured': 'The bot is not set up yet. Real mining is not available.',
   'err.shiftActive': 'You already have an active shift.', 'err.shiftNotDone': 'Nothing to collect yet.', 'err.needHold': 'You need {n} $DOGG between your verified wallet and the app for this miner.', 'err.badMiner': 'Invalid miner.',
-  'err.connectToWithdraw': 'Connect your wallet before withdrawing.', 'err.verifyToWithdraw': 'Verify your wallet (holding 100+ $DOGG) to withdraw.', 'err.minWithdraw': 'The minimum withdrawal is 1,000 $DOGG.', 'err.insufficient': 'Not enough balance: you need {n} $DOGG (includes the 70 fee).',
+  'err.connectToWithdraw': 'Connect your wallet before withdrawing.', 'err.verifyToWithdraw': 'Verify your wallet (holding 100+ $DOGG) to withdraw.', 'err.minWithdraw': 'The minimum withdrawal is 1,000 $DOGG.', 'err.insufficient': 'Not enough balance: you need {n} $DOGG.',
   'err.adsCap': "You've watched today's 10 ads. Come back tomorrow.", 'err.adsTooMany': 'Too many ad attempts today. Come back tomorrow.', 'err.adNotFound': 'Ad not found.',
   'err.noRefRewards': 'You have no referral rewards to claim.', 'err.linkWalletFirst': 'Connect and link your TON wallet first.',
   'err.noPurchase': "We can't see your $DOGG yet: your wallet holds {n} $DOGG and you need 100. If you just bought, wait a minute and verify again.",

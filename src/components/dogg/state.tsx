@@ -3,7 +3,7 @@ import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { adAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
-import { withdrawNeeds, withdrawNet } from '@/lib/withdraw';
+import { WITHDRAW_MIN, withdrawNeeds, withdrawNet } from '@/lib/withdraw';
 import { showRewardedAd } from '@/lib/ads';
 import { deviceSignals } from '@/lib/fingerprint';
 import { friendlyAddress } from '@/lib/address';

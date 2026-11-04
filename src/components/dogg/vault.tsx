@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDogg, WITHDRAW_FEE, WITHDRAW_MIN, type Entry } from './state';
+import { withdrawNet } from '@/lib/withdraw';
 import { Title } from './screens';
 import { ScreenHero } from './hero';
 import { JETTON, PRICE, REF_BONUS, REF_SHARE, formatDogg, friendlyError, haptic, referralLink } from '@/lib/dogg';
@@ -208,7 +209,7 @@ export function Perfil() {
     {error && <p role="alert" className="text-destructive text-sm mt-2">{t('vault.readFail')}</p>}
     <WithdrawVerify />
     <section className="vault-withdraw stacked"><strong>{t('profile.withdraw')}</strong>
-      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={t('profile.minPh', { n: WITHDRAW_MIN })} value={amount} onChange={e => setAmount(e.target.value)} aria-label={t('vault.amount')} /><small>{t('profile.minNote', { min: WITHDRAW_MIN.toLocaleString('de-DE'), fee: WITHDRAW_FEE })}</small><Button type="submit" disabled={busy || !player.withdrawVerified}><ArrowUpRight /> {t('profile.request')}</Button></form></section>
+      <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={t('profile.minPh', { n: WITHDRAW_MIN })} value={amount} onChange={e => setAmount(e.target.value)} aria-label={t('vault.amount')} /><small>{Number(amount) >= WITHDRAW_MIN ? t('profile.youGet', { n: withdrawNet(Number(amount)).toLocaleString('de-DE'), fee: WITHDRAW_FEE }) : t('profile.minNote', { min: WITHDRAW_MIN.toLocaleString('de-DE'), fee: WITHDRAW_FEE })}</small><Button type="submit" disabled={busy || !player.withdrawVerified}><ArrowUpRight /> {t('profile.request')}</Button></form></section>
     <section className="vault-list"><h3 className="list-title">{t('profile.wdHistory')}</h3>{withdrawals.length === 0 ? <p className="vault-empty">{t('profile.wdEmpty')}</p> : withdrawals.map(e => <div key={e.at + e.label} className="vault-item"><span className="vault-icon withdraw"><ArrowUpRight /></span><div><strong>{tLabel(e.label, t.lang)}</strong><small>{ago(e.at, now)}</small></div><div className="vault-amount"><strong className="neg">{formatDogg(e.amount)} <Coin size={14} /></strong>{e.status === 'review' && <em>{t('vault.review')}</em>}</div></div>)}</section>
     <div className="vault-buy"><BuyDedustLink className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>{t('vault.buyTg')}</small></BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>{t('vault.chart')}</strong><small>{t('vault.chartSub')}</small></a></div><DedustWebLink />
     <div className="token-contract"><span className="eyebrow">{t('vault.contract')}</span><code>{JETTON}</code></div>

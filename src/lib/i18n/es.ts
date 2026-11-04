@@ -30,7 +30,7 @@ export const es = {
   'faq.q1': '¿Cómo mino $DOGG?', 'faq.a1': 'Pulsa "Prende el turno" en el Humero. Durante 24 h acumulas $DOGG según la potencia de tu minero; al terminar, cóbralo y empieza otro.',
   'faq.q2': '¿Cómo desbloqueo mejores mineros?', 'faq.a2': 'Cada minero pide un hold mínimo. Cuenta el $DOGG de tu wallet verificada más lo minado en la app. Si tu saldo baja, tu minero baja al nivel que cubras.',
   'faq.q3': '¿Por qué tengo que firmar al conectar la wallet?', 'faq.a3': 'Es una firma gratuita que no mueve fondos. Demuestra que la wallet es tuya para que nadie use la de otro.',
-  'faq.q4': '¿Cómo retiro?', 'faq.a4': 'Desde 1.000 $DOGG, con una comisión de 70 $DOGG. Antes, verifica tu wallet una sola vez: debe tener al menos 100 $DOGG. El envío llega a tu wallet en unos minutos.',
+  'faq.q4': '¿Cómo retiro?', 'faq.a4': 'Desde 1.000 $DOGG; la comisión de 70 $DOGG se descuenta del retiro (retiras 1.000 y recibes 930). Antes, verifica tu wallet una sola vez: debe tener al menos 100 $DOGG. El envío llega a tu wallet en unos minutos.',
   'faq.q5': '¿Dónde se juega?', 'faq.a5': 'Siempre desde @Doggminerbot en Telegram: ahí se guardan tu cuenta, tu minado, tus referidos y tus retiros.',
   'hero.alt': 'DOGG, el personaje de $DOGG MINER',
 
@@ -104,7 +104,7 @@ export const es = {
   // Profile
   'profile.title': 'Perfil', 'profile.walletOn': 'Wallet conectada · {a}', 'profile.holdWallet': 'Billetera de hold', 'profile.refresh': 'Actualizar saldo',
   'profile.miningWallet': 'Billetera de minería', 'profile.linked': 'Vinculada a tu cuenta', 'profile.ready': 'Lista para retirar',
-  'profile.withdraw': 'Retirar $DOGG', 'profile.minPh': 'Mínimo {n}', 'profile.minNote': 'Mínimo {min} $DOGG. Comisión {fee} $DOGG.', 'profile.request': 'Solicitar retiro',
+  'profile.withdraw': 'Retirar $DOGG', 'profile.minPh': 'Mínimo {n}', 'profile.minNote': 'Mínimo {min} $DOGG. La comisión de {fee} se descuenta del retiro.', 'profile.youGet': 'Recibirás {n} $DOGG ({fee} de comisión descontados).', 'profile.request': 'Solicitar retiro',
   'profile.wdHistory': 'Historial de retiros', 'profile.wdEmpty': 'Aún no hay retiros.',
 
   // History labels
@@ -119,7 +119,7 @@ export const es = {
   'toast.shift24': 'Tu turno termina en 24 horas.', 'toast.checkinDone': 'Ya reclamaste el bonus de hoy.',
   'toast.levelUp': '¡Subiste a {name}!', 'toast.activateFail': 'No se pudo activar',
   'toast.minWithdraw': 'El mínimo de retiro es {n} $DOGG.', 'toast.connectToWithdraw': 'Conecta tu wallet TON para retirar.', 'toast.verifyToWithdraw': 'Verifica tu wallet (con {n} $DOGG o más) para poder retirar.',
-  'toast.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG (incluye {fee} de comisión).',
+  'toast.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG.',
   'toast.wdFailed': 'El envío falló y se te devolvió el saldo. Inténtalo más tarde.', 'toast.wdSent': '¡{n} $DOGG enviados a tu wallet!', 'toast.wdOnWay': 'Retiro en camino a tu wallet · llegará en unos minutos', 'toast.wdFail': 'No se pudo retirar',
   'toast.adPaid': '+{r} $DOGG por ver el anuncio', 'toast.adsCap': 'Ya viste los {n} anuncios de hoy. Vuelve mañana.', 'toast.adPrepFail': 'No se pudo preparar el anuncio.',
   'toast.adNotValid': 'Monetag no validó este anuncio, así que no suma $DOGG.', 'toast.adNotValued': 'Monetag no contó este anuncio como válido, así que no suma $DOGG. Prueba con otro.',
@@ -132,7 +132,7 @@ export const es = {
   'err.generic': 'Algo salió mal. Inténtalo de nuevo.', 'err.rate': 'Mucho tráfico ahora mismo. Espera unos segundos y vuelve a intentarlo.', 'err.offline': 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', 'err.server': 'El servicio no responde ahora mismo. Inténtalo en un momento.',
   'err.reopen': 'Abre de nuevo la mini app desde Telegram.', 'err.openTelegram': 'Abre la app desde Telegram.', 'err.botNotConfigured': 'El bot todavía no está configurado. El minado real no está disponible.',
   'err.shiftActive': 'Ya tienes un turno activo.', 'err.shiftNotDone': 'Todavía no hay nada que recoger.', 'err.needHold': 'Necesitas {n} $DOGG entre tu wallet verificada y la app para este minero.', 'err.badMiner': 'Minero no válido.',
-  'err.connectToWithdraw': 'Conecta tu wallet antes de retirar.', 'err.verifyToWithdraw': 'Verifica tu wallet (con 100 $DOGG o más) para poder retirar.', 'err.minWithdraw': 'El retiro mínimo es 1.000 $DOGG.', 'err.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG (incluye 70 de comisión).',
+  'err.connectToWithdraw': 'Conecta tu wallet antes de retirar.', 'err.verifyToWithdraw': 'Verifica tu wallet (con 100 $DOGG o más) para poder retirar.', 'err.minWithdraw': 'El retiro mínimo es 1.000 $DOGG.', 'err.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG.',
   'err.adsCap': 'Ya viste los 10 anuncios de hoy. Vuelve mañana.', 'err.adsTooMany': 'Demasiados intentos de anuncio hoy. Vuelve mañana.', 'err.adNotFound': 'Anuncio no encontrado.',
   'err.noRefRewards': 'No tienes recompensas de referidos por reclamar.', 'err.linkWalletFirst': 'Conecta y vincula tu wallet TON primero.',
   'err.noPurchase': 'Aún no vemos tus $DOGG: tu wallet tiene {n} $DOGG y necesitas 100. Si acabas de comprar, espera un minuto y vuelve a verificar.',

@@ -219,7 +219,7 @@ export function writerInstructions() {
     '- The miner level is automatic: it follows the $DOGG the player holds (connected TON wallet + app balance). Hold more = better miner; sell = it drops to the level covered.',
     `- Ads: up to ${AD_DAILY} rewarded ads per day, +${AD_REWARD} $DOGG each. Tasks tab: join channels/bots for extra rewards.`,
     `- Referrals: +${REF_BONUS} $DOGG when an invited friend starts their first shift, plus ${pct}% of everything they mine, for life; the friend keeps 100%.`,
-    `- Withdrawals: from 1,000 $DOGG (70 $DOGG fee) straight to the player's TON wallet, sent automatically on-chain; one-time check that the wallet holds at least ${VERIFY_BUY} $DOGG. Mining never needs a wallet, only withdrawing does.`,
+    `- Withdrawals: from 1,000 $DOGG (the 70 $DOGG fee is taken from the amount: withdraw 1,000, receive 930) straight to the player's TON wallet, sent automatically on-chain; one-time check that the wallet holds at least ${VERIFY_BUY} $DOGG. Mining never needs a wallet, only withdrawing does.`,
     '- $DOGG can be bought on DeDust (there is a button under the post). The app is in English, Spanish and Russian. The bot sends notifications for withdrawals and new recruits.',
     '',
     'RULES:',
