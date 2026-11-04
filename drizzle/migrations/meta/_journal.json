@@ -211,6 +211,13 @@
       "when": 1793791294219,
       "tag": "0029_multi_report_banned",
       "breakpoints": true
+    },
+    {
+      "idx": 30,
+      "version": "7",
+      "when": 1793832547376,
+      "tag": "0030_auto_ban_same_phone_fp_ip",
+      "breakpoints": true
     }
   ]
 }
