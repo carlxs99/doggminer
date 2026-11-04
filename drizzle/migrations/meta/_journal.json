@@ -204,6 +204,13 @@
       "when": 1793791261722,
       "tag": "0028_auto_ban_multi_accounts",
       "breakpoints": true
+    },
+    {
+      "idx": 29,
+      "version": "7",
+      "when": 1793791294219,
+      "tag": "0029_multi_report_banned",
+      "breakpoints": true
     }
   ]
 }
