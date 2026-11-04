@@ -113,39 +113,44 @@ const ProofSchema = z.object({
   signature: z.string().max(200),
 });
 
-async function walletPublicKey(address: string, publicKey: string | undefined, stateInit: string | undefined) {
-  // 1) Deployed wallet: ask the chain (TONAPI, then Toncenter get_public_key).
+/** Candidate public keys for the wallet. The stateInit must hash to the address, so any key read from it is bound
+ *  to that address; the ton_proof signature then picks the right one. No prior transaction or client publicKey needed. */
+async function walletPublicKeys(address: string, publicKey: string | undefined, stateInit: string | undefined): Promise<string[]> {
+  const keys: string[] = [];
+  const add = (k: string) => { const v = k.toLowerCase(); if (/^[0-9a-f]{64}$/.test(v) && !keys.includes(v)) keys.push(v); };
+  // 1) stateInit (works for new and deployed wallets: V1–V4, V5 beta, W5/V5R1).
+  if (stateInit) {
+    try {
+      const { Cell, loadStateInit } = await import('@ton/core');
+      const cell = Cell.fromBase64(stateInit);
+      if (cell.hash().toString('hex') === address.split(':')[1]) {
+        const data = loadStateInit(cell.beginParse()).data;
+        if (data) {
+          const want = publicKey?.toLowerCase();
+          const found: string[] = [];
+          for (const skip of [64, 1 + 32 + 32, 32, 1 + 32 + 80]) {
+            try { const s = data.beginParse(); s.skip(skip); found.push(s.loadBuffer(32).toString('hex')); } catch { /* next layout */ }
+          }
+          if (want && found.includes(want)) add(want);
+          found.forEach(add);
+        }
+      }
+    } catch { /* invalid stateInit */ }
+  }
+  // 2) On-chain key (deployed wallets).
   try {
     const r = await fetch(`https://tonapi.io/v2/accounts/${encodeURIComponent(address)}/publickey`);
-    if (r.ok) { const j = await r.json() as { public_key?: string }; if (j.public_key) return j.public_key.toLowerCase(); }
+    if (r.ok) { const j = await r.json() as { public_key?: string }; if (j.public_key) add(j.public_key); }
   } catch { /* next source */ }
-  try {
+  if (!keys.length) try {
     const r = await fetch('https://toncenter.com/api/v2/runGetMethod', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ address, method: 'get_public_key', stack: [] }) });
     if (r.ok) {
       const j = await r.json() as { ok?: boolean; result?: { exit_code?: number; stack?: [string, string][] } };
       const v = j.ok && j.result?.exit_code === 0 ? j.result.stack?.[0]?.[1] : undefined;
-      if (v) return BigInt(v).toString(16).padStart(64, '0');
+      if (v) add(BigInt(v).toString(16).padStart(64, '0'));
     }
-  } catch { /* fall through to stateInit */ }
-  if (!publicKey || !stateInit) return null;
-  // 2) New/undeployed wallet: stateInit must hash to the address; read the key from the data cell
-  //    using the standard wallet layouts (V1/V2, V3/V4, V5 beta, V5R1).
-  try {
-    const { Cell, loadStateInit } = await import('@ton/core');
-    const cell = Cell.fromBase64(stateInit);
-    if (cell.hash().toString('hex') !== address.split(':')[1]) return null;
-    const data = loadStateInit(cell.beginParse()).data;
-    if (!data) return null;
-    const want = publicKey.toLowerCase();
-    const layouts: number[] = [32, 64, 1 + 32 + 80, 1 + 32 + 32];
-    for (const skip of layouts) {
-      try {
-        const s = data.beginParse(); s.skip(skip);
-        if (s.loadBuffer(32).toString('hex') === want) return want;
-      } catch { /* try next layout */ }
-    }
-  } catch { /* invalid stateInit */ }
-  return null;
+  } catch { /* none */ }
+  return keys;
 }
 
 /** Links the wallet only after verifying a TON Connect ownership signature (ton_proof). */
@@ -168,8 +173,8 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     const { getRequestHeader } = await import('@tanstack/react-start/server');
     const host = (getRequestHeader('host') ?? '').split(':')[0];
     if (proof.domain.value !== host && proof.domain.value !== 'doggminer.lovable.app') throw new Error('Firma de otro dominio.');
-    const pk = await walletPublicKey(address, data.publicKey, data.stateInit);
-    if (!pk) throw new Error('No se pudo comprobar la clave de tu wallet. Haz al menos una transacción con ella e inténtalo de nuevo.');
+    const pks = await walletPublicKeys(address, data.publicKey, data.stateInit);
+    if (!pks.length) throw new Error('La firma de la wallet no es válida.');
     const { Buffer } = await import('node:buffer');
     const { createHash } = await import('node:crypto');
     const { signVerify } = await import('@ton/crypto');
@@ -179,7 +184,9 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     const ts = Buffer.alloc(8); ts.writeBigUInt64LE(BigInt(proof.timestamp));
     const msg = Buffer.concat([Buffer.from('ton-proof-item-v2/'), wcBuf, Buffer.from(hash ?? '', 'hex'), dl, Buffer.from(proof.domain.value), ts, Buffer.from(proof.payload)]);
     const full = Buffer.concat([Buffer.from([0xff, 0xff]), Buffer.from('ton-connect'), createHash('sha256').update(msg).digest()]);
-    const ok = signVerify(createHash('sha256').update(full).digest(), Buffer.from(proof.signature, 'base64'), Buffer.from(pk, 'hex'));
+    const digest = createHash('sha256').update(full).digest();
+    const sig = Buffer.from(proof.signature, 'base64');
+    const ok = pks.some(pk => { try { return signVerify(digest, sig, Buffer.from(pk, 'hex')); } catch { return false; } });
     if (!ok) throw new Error('La firma de la wallet no es válida.');
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     const hold = await jettonHold(address);
