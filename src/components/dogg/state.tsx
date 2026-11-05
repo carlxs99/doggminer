@@ -120,7 +120,10 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       const initData = window.Telegram?.WebApp?.initData;
       if (!initData) throw new Error(t('err.openTelegram'));
-      { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
+      // Turbo 420: the player watches a rewarded ad first; the server only accepts the ad view it opened.
+      let ymid: string | undefined;
+      if (kind === 'turbo') { ymid = (await turboAdCall({ data: { initData } })).ymid; await showRewardedAd(ymid); }
+      { const p = await call({ data: { initData, action: kind, ...(ymid ? { ymid } : {}) } }); setPlayer(p); notifyLevel(p); }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
       toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'turbo' ? t('toast.turbo') : t('toast.harvest'));
     } catch (e) { toast.error(friendlyError(e, t('toast.actionFail'))); }

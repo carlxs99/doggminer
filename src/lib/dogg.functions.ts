@@ -67,7 +67,7 @@ async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, h
 }
 
 export const playerAction = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'turbo', 'select']), minerId: z.string().max(40).optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional() }))
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'turbo', 'select']), minerId: z.string().max(40).optional(), ymid: z.string().uuid().optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional() }))
   .handler(async ({ data }) => {
     const tg = await verifyTelegramUser(data.initData);
     const telegramId = tg.id;
@@ -77,7 +77,7 @@ export const playerAction = createServerFn({ method: 'POST' })
     // Multi-account detector: hashed device + network signals on every open (informative only, never blocks).
     if (data.action === 'read') { const { recordSignals } = await import('./multi.server'); await recordSignals(supabaseAdmin, telegramId, data.device, tg); }
     const hold = await currentHold(supabaseAdmin, telegramId);
-    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action, p_hold: hold });
+    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action === 'turbo' ? `turbo:${data.ymid ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     const player = await settle(supabaseAdmin, telegramId, result.data, hold);
     // Tell the inviter (once) when this player joins with their link and when they start mining (+100).
@@ -233,6 +233,17 @@ export const adAction = createServerFn({ method: 'POST' })
     return z.object({ adsToday: z.number(), balance: z.number(), ymid: z.string().optional(), status: z.string().optional() }).parse(r.data);
   });
 
+
+/** Turbo 420: opens a server-side ad view (purpose turbo, never pays $DOGG) whose ymid the client shows, then passes to playerAction 'turbo'. */
+export const turboAdAction = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.rpc('dogg_turbo_ad', { p_telegram_id: telegramId });
+    if (r.error) throw new Error(r.error.message);
+    return { ymid: z.string().uuid().parse(r.data) };
+  });
 
 const FriendSchema = z.object({ name: z.string(), username: z.string().nullable(), joinedAt: z.string(), qualified: z.boolean(), given: z.number() });
 /** Referrals: stats, recent recruits and claiming the pot (+100 per qualified recruit, 10% of their mining). */
