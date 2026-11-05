@@ -46,12 +46,37 @@ export function Humero() {
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>{t('mine.claimed')}</span></div>
     <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt={t('mine.coinAlt')} width={640} height={631} /></div></div>
     <LiveEarned player={player} live={live} fallback={earned} />
+    <NextMiner player={player} demo={demo} />
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || (Boolean(player.shiftStartedAt) && earned <= 0)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? t('mine.claim') : t('mine.start')}<ArrowRight /></Button></div>
     <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> {t('mine.tasksLink')}</Link></Button>
     <div className="mine-buy"><BuyDedustLink className="buy-green">{t('mine.buy')}</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">{t('mine.price')}</a></div>
     <DedustWebLink />
   </div></>;
+}
+
+/** Progress toward the next miner the player's total (app balance + wallet hold) unlocks; celebrates each rank up once. */
+function NextMiner({ player, demo }: { player: Player; demo: boolean }) {
+  const t = useT();
+  const total = player.balance + (demo ? 0 : player.hold ?? 0);
+  const level = getMiner(player.minerId).level || 1;
+  const top = bestLevel(total);
+  const prev = useRef(level);
+  useEffect(() => {
+    if (level > prev.current) { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); const m = getMiner(player.minerId); toast.success(t('up.title'), { description: t('up.body', { name: m.name, d: m.daily }) }); }
+    prev.current = level;
+  }, [level, player.minerId, t]);
+  if (top >= 500) return <div className="next-miner"><span>{t('up.max')}</span></div>;
+  const cur = minerAt(top), next = minerAt(top + 1);
+  const pct = Math.min(100, Math.max(0, (total - cur.hold) / Math.max(1, next.hold - cur.hold) * 100));
+  return <div className="next-miner"><div><span>{t('up.next', { n: next.level, d: next.daily })}</span><b>{t('up.left', { x: formatDogg(Math.max(0, next.hold - total)) })}</b></div><div className="next-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}><i style={{ width: `${pct}%` }} /></div></div>;
+}
+const SIM_STEPS = [100, 500, 1000, 5000];
+function HoldSim() {
+  const t = useT();
+  return <section className="hold-sim"><div className="hold-sim-top"><b>{t('sim.title')}</b><small>{t('sim.sub')}</small></div>
+    <div className="hold-sim-grid">{SIM_STEPS.map(x => { const m = minerAt(bestLevel(x)); return <div key={x}><strong>{x.toLocaleString('de-DE')} $DOGG</strong><span>{t('sim.row', { n: m.level, d: m.daily })}</span></div>; })}</div>
+    <BuyDedustLink className="buy-green">{t('sim.buy')}</BuyDedustLink></section>;
 }
 
 export function Trabajos() {
@@ -138,7 +163,7 @@ export function GrowOps() {
   const shown = inTier.slice(page * PAGE, page * PAGE + PAGE);
   const pickTier = (t: string) => { haptic(); setTier(t); const i = MINERS.filter(m => m.category === t).findIndex(m => m.id === player.minerId); setPage(i >= 0 ? Math.floor(i / PAGE) : 0); };
   const go = (d: number) => { haptic(); setPage(p => Math.min(pages - 1, Math.max(0, p + d))); };
-  return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><h2 className="vault-h">{t('boost.packs')}</h2>
+  return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><HoldSim /><h2 className="vault-h">{t('boost.packs')}</h2>
     <div className="grow-notice"><ShieldCheck /><span>{player.walletAddress ? t('boost.noticeLinked', { n: (player.hold ?? 0).toLocaleString('de-DE') }) : t('boost.noticeConnect')}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((tierLabel, i) => <button key={tierLabel} role="tab" aria-selected={tier === tierLabel} className={`rank-${i + 1} ${tier === tierLabel ? 'active' : ''}`} onClick={() => pickTier(tierLabel)}><small>{t('boost.tierRange', { a: i * 50 + 1, b: i * 50 + 50 })}</small>{tierName(tierLabel, t)}</button>)}</div>
     <section className="miner-category">
