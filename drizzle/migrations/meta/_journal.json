@@ -253,6 +253,13 @@
       "when": 1793843145952,
       "tag": "0035_auto_ban_evasion_and_network_farms",
       "breakpoints": true
+    },
+    {
+      "idx": 36,
+      "version": "7",
+      "when": 1793846164520,
+      "tag": "0036_reminders_skip_banned",
+      "breakpoints": true
     }
   ]
 }
