@@ -15,8 +15,8 @@ import { PNL_RANGES, pnlSeries, pnlToday, type PnlRange } from '@/lib/pnl';
 import { BuyDedustLink, DedustWebLink } from './buy';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal, liveStreak, streakBoost, TURBO_MS } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
-const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
-const TIER_CLIP = Array.from({ length: 10 }, (_, index) => Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/sq-tier-${index + 1}.mp4.asset.json`))?.[1].url);
+const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/lvl-tier-*.mp4.asset.json', { eager: true, import: 'default' });
+const TIER_CLIP = Array.from({ length: 10 }, (_, index) => Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/lvl-tier-${index + 1}.mp4.asset.json`))?.[1].url);
 const SQUARE_ART = import.meta.glob<string>('@/assets/tiers/sq-[0-9]*.webp', { eager: true, import: 'default' });
 const TIER_ART = Array.from({ length: 10 }, (_, index) => Object.entries(SQUARE_ART).find(([path]) => path.endsWith(`/sq-${index + 1}.webp`))?.[1] ?? '');
 function Title({ label, title, accent, description }: { label: string; title: string; accent: string; description: string }) { return <div className="page-heading"><span className="eyebrow"><span />{label}</span><h1>{title} <em>{accent}</em><span className="heading-period">.</span></h1><p>{description}</p></div>; }
