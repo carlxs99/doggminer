@@ -322,7 +322,6 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .mine-coin{width:min(64vw,260px);aspect-ratio:1;border-radius:50%;padding:10px;background:radial-gradient(circle,color-mix(in oklch,var(--primary) 30%,transparent),transparent 70%);filter:drop-shadow(0 0 30px color-mix(in oklch,var(--primary) 45%,transparent))}.mine-coin img{width:100%;height:100%;object-fit:contain}
 .mine-live{font-family:var(--font-display);font-size:clamp(38px,11vw,56px);font-weight:700;color:var(--primary);text-shadow:0 0 18px color-mix(in oklch,var(--primary) 55%,transparent);font-variant-numeric:tabular-nums;line-height:1}
 .mine-claim{width:100%;padding:8px;border-radius:18px;background:var(--card);border:1px solid var(--border)}.mine-claim .start-shift{height:54px;font-size:16px;border-radius:12px}
-.mine-wide{width:100%;height:46px;border-radius:14px}
 .mine-buy{width:100%;display:grid;grid-template-columns:1fr 1fr;gap:12px}.mine-buy a{height:46px;border-radius:14px;display:grid;place-items:center;font-weight:700;font-size:14px}
 .buy-green{background:var(--primary);color:var(--primary-foreground)}.buy-gold{background:var(--gold);color:var(--background)}
 .mine-note{font-size:12px;color:var(--muted-foreground);text-align:center}
@@ -394,7 +393,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .mine-live{font-size:clamp(32px,10vw,48px)}
 .mine-claim{padding:6px;border-radius:16px}
 .mine-claim .start-shift{height:50px;font-size:15px}
-.mine-wide,.mine-buy a{height:44px;font-size:13px}
+.mine-buy a{height:44px;font-size:13px}
 .boost-head{padding:14px;border-radius:14px}
 .boost-level strong{font-size:24px}
 .boost-chart{height:110px}
@@ -758,7 +757,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mine-stats{padding:10px 12px}
   .mine-stats strong{font-size:17px}
   .mine-claim .start-shift{height:48px;font-size:15px}
-  .mine-wide,.mine-buy a{height:42px}
+  .mine-buy a{height:42px}
 }
 
 /* Multi-account ban: full-screen lock that blocks the whole app. */
