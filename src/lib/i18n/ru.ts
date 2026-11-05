@@ -166,4 +166,6 @@ export const ru: Record<keyof typeof es, string> = {
   'admin.confirmRefund': 'Вернуть {n} $DOGG пользователю {u}? Делай это, только если уверен, что перевод НЕ ушёл.', 'admin.txPrompt': 'Хэш или ссылка на транзакцию (необязательно):',
   'admin.refunded': 'Баланс возвращён', 'admin.markedSent': 'Отмечен как отправленный', 'admin.noWd': 'Здесь нет выводов.',
   'admin.wdUser': 'Пользователь {u} · {d}', 'admin.attempts': ' · попыток: {n}', 'admin.to': 'На {a}', 'admin.markSent': 'Отметить отправленным', 'admin.refund': 'Вернуть',
+  'up.next': 'Далее: уровень {n} · {d} $DOGG/д', 'up.max': 'Максимальный уровень', 'up.left': 'Осталось {x} $DOGG',
+  'up.title': 'Новый ранг!', 'up.body': 'Теперь ты майнишь с {name}: {d} $DOGG/день', 'sim.title': 'Калькулятор холда', 'sim.sub': 'Если бы у тебя было всего…', 'sim.row': 'Уровень {n} · {d} $DOGG/д', 'sim.buy': 'Купить на DeDust',
 };
