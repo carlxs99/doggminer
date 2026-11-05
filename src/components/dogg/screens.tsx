@@ -86,7 +86,7 @@ function BoostBar({ player, now, busy, onTurbo }: { player: Player; now: number;
   const mm = `${Math.floor(turboLeft / 60000)}:${String(Math.floor(turboLeft % 60000 / 1000)).padStart(2, '0')}`;
   return <div className="boost-bar">
     <div className="streak-chip"><b>🔥 {streak ? t('streak.label', { n: streak, m: mult.toFixed(2) }) : t('streak.none')}</b><small>{goal ? t('streak.next', { k: goal - streak, m: streakBoost(goal).toFixed(2) }) : t('streak.max')}</small></div>
-    <Button className={`turbo-btn ${turboLeft ? 'on' : ''}`} disabled={busy || turboLeft > 0 || used || !active} onClick={onTurbo}><Zap />{turboLeft ? `${t('turbo.on')} · ${mm}` : used ? t('turbo.used') : active ? t('turbo.btn') : t('turbo.needShift')}</Button>
+    <Button className={`turbo-btn ${turboLeft ? 'on' : ''}`} disabled={busy || turboLeft > 0 || used || !active} onClick={onTurbo}><Zap />{turboLeft ? `${t('turbo.on')} · ${mm}` : used ? t('turbo.used') : active ? t('turbo.ad') : t('turbo.needShift')}</Button>
   </div>;
 }
 

@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
-import { adAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { adAction, turboAdAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
 import { WITHDRAW_MIN, withdrawNeeds, withdrawNet } from '@/lib/withdraw';
 import { showRewardedAd } from '@/lib/ads';
@@ -50,6 +50,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [openWallet, storeOpenWallet] = useState<(() => void) | null>(null);
   const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
   const call = useServerFn(playerAction);
+  const turboAdCall = useServerFn(turboAdAction);
   const verifyCall = useServerFn(verifyWallet);
   const withdrawCall = useServerFn(requestWithdraw);
   const challengeCall = useServerFn(walletChallenge);
