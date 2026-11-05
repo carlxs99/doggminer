@@ -274,6 +274,13 @@
       "when": 1793847863229,
       "tag": "0038_visible_miner_steps",
       "breakpoints": true
+    },
+    {
+      "idx": 39,
+      "version": "7",
+      "when": 1793848255466,
+      "tag": "0039_raise_miner_hold",
+      "breakpoints": true
     }
   ]
 }
