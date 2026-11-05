@@ -260,6 +260,13 @@
       "when": 1793846164520,
       "tag": "0036_reminders_skip_banned",
       "breakpoints": true
+    },
+    {
+      "idx": 37,
+      "version": "7",
+      "when": 1793847021694,
+      "tag": "0037_stepped_miner_curve",
+      "breakpoints": true
     }
   ]
 }
