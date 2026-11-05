@@ -225,6 +225,13 @@
       "when": 1793833378858,
       "tag": "0031_auto_ban_fp_ip_burst_only",
       "breakpoints": true
+    },
+    {
+      "idx": 32,
+      "version": "7",
+      "when": 1793841030047,
+      "tag": "0032_streak_turbo_420",
+      "breakpoints": true
     }
   ]
 }
