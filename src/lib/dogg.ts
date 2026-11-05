@@ -3,7 +3,7 @@ export const JETTON = 'EQCnT_6nreJHUaxbZw7g64gkP5vx6LvSXWFboW5tYsCpLS7I';
 export const SWAP = `https://dedust.io/swap/GRAM/${JETTON}`;
 export const PRICE = `https://dedust.io/coins/${JETTON}`;
 export const SHIFT_MS = 86400000;
-export const AD_REWARD = 15; export const AD_DAILY = 10;
+export const AD_REWARD = 5; export const AD_DAILY = 10;
 export const REF_BONUS = 100; export const REF_SHARE = 0.1;
 /** Direct link of the mini app in @Doggminerbot; ?startapp= reaches the app as the signed start_param. */
 export const MINI_APP_LINK = 'https://t.me/Doggminerbot/miner';
