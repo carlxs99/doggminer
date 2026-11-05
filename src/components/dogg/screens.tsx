@@ -13,7 +13,7 @@ import { ClubTasks } from './club-tasks';
 import { useT } from './lang';
 import { PNL_RANGES, pnlSeries, pnlToday, type PnlRange } from '@/lib/pnl';
 import { BuyDedustLink, DedustWebLink } from './buy';
-import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal } from '@/lib/mining';
+import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal, liveStreak, streakBoost, TURBO_MS } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/sq-tier-*.mp4.asset.json', { eager: true, import: 'default' });
 const TIER_CLIP = Array.from({ length: 10 }, (_, index) => Object.entries(CLIP_ASSETS).find(([path]) => path.endsWith(`/sq-tier-${index + 1}.mp4.asset.json`))?.[1].url);
@@ -44,9 +44,10 @@ export function Humero() {
   <div className="mine-screen">
     <section className="mine-stats"><div><span>{t('mine.rate')}</span><strong>{miner.power} TH/s</strong><em className={live ? 'on' : ''}><i />{live ? t('mine.mining') : finished ? t('mine.ready') : t('mine.paused')}</em></div><div><span>{t('mine.rank')}</span><strong>{t('mine.level', { n: miner.level || 1 })}</strong><em>{miner.name}</em></div></section>
     <div className="mine-claimed"><strong>{formatDogg(player.balance)} $DOGG</strong><span>{t('mine.claimed')}</span></div>
-    <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''}`}><img className="dogg-coin" src={coin} alt={t('mine.coinAlt')} width={640} height={631} /></div></div>
+    <div className="mine-coin-wrap"><img className="mine-leaf l" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><img className="mine-leaf r" src={leafArt} alt="" width={291} height={320} aria-hidden="true" /><div className={`mine-coin ${live ? 'spinning' : ''} ${live && player.turboAt && now < Date.parse(player.turboAt) + TURBO_MS ? 'turbo' : ''}`}><img className="dogg-coin" src={coin} alt={t('mine.coinAlt')} width={640} height={631} /></div></div>
     <LiveEarned player={player} live={live} fallback={earned} />
     <NextMiner player={player} demo={demo} />
+    <BoostBar player={player} now={now} busy={busy} onTurbo={() => void action('turbo')} />
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || (Boolean(player.shiftStartedAt) && earned <= 0)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? t('mine.claim') : t('mine.start')}<ArrowRight /></Button></div>
     <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> {t('mine.tasksLink')}</Link></Button>
@@ -71,12 +72,22 @@ function NextMiner({ player, demo }: { player: Player; demo: boolean }) {
   const pct = Math.min(100, Math.max(0, (total - cur.hold) / Math.max(1, next.hold - cur.hold) * 100));
   return <div className="next-miner"><div><span>{t('up.next', { n: next.level, d: next.daily })}</span><b>{t('up.left', { x: formatDogg(Math.max(0, next.hold - total)) })}</b></div><div className="next-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}><i style={{ width: `${pct}%` }} /></div></div>;
 }
-const SIM_STEPS = [100, 500, 1000, 5000];
-function HoldSim() {
+/** Daily streak multiplier + Turbo 420 (x2 for 15 min once a day); both are enforced and paid by the server. */
+function BoostBar({ player, now, busy, onTurbo }: { player: Player; now: number; busy: boolean; onTurbo: () => void }) {
   const t = useT();
-  return <section className="hold-sim"><div className="hold-sim-top"><b>{t('sim.title')}</b><small>{t('sim.sub')}</small></div>
-    <div className="hold-sim-grid">{SIM_STEPS.map(x => { const m = minerAt(bestLevel(x)); return <div key={x}><strong>{x.toLocaleString('de-DE')} $DOGG</strong><span>{t('sim.row', { n: m.level, d: m.daily })}</span></div>; })}</div>
-    <BuyDedustLink className="buy-green">{t('sim.buy')}</BuyDedustLink></section>;
+  const streak = liveStreak(player.streak, player.lastCheckin, now);
+  const mult = player.shiftStartedAt ? player.shiftBoost ?? 1 : streakBoost(streak);
+  const goal = streak < 3 ? 3 : streak < 7 ? 7 : 0;
+  const turboStart = player.turboAt ? Date.parse(player.turboAt) : 0;
+  const turboLeft = Math.max(0, turboStart + TURBO_MS - now);
+  const today = new Date(now).toISOString().slice(0, 10);
+  const used = player.turboDay === today;
+  const active = Boolean(player.shiftStartedAt) && now - Date.parse(player.shiftStartedAt ?? '') < SHIFT_MS;
+  const mm = `${Math.floor(turboLeft / 60000)}:${String(Math.floor(turboLeft % 60000 / 1000)).padStart(2, '0')}`;
+  return <div className="boost-bar">
+    <div className="streak-chip"><b>🔥 {streak ? t('streak.label', { n: streak, m: mult.toFixed(2) }) : t('streak.none')}</b><small>{goal ? t('streak.next', { k: goal - streak, m: streakBoost(goal).toFixed(2) }) : t('streak.max')}</small></div>
+    <Button className={`turbo-btn ${turboLeft ? 'on' : ''}`} disabled={busy || turboLeft > 0 || used || !active} onClick={onTurbo}><Zap />{turboLeft ? `${t('turbo.on')} · ${mm}` : used ? t('turbo.used') : active ? t('turbo.btn') : t('turbo.needShift')}</Button>
+  </div>;
 }
 
 export function Trabajos() {
@@ -163,7 +174,7 @@ export function GrowOps() {
   const shown = inTier.slice(page * PAGE, page * PAGE + PAGE);
   const pickTier = (t: string) => { haptic(); setTier(t); const i = MINERS.filter(m => m.category === t).findIndex(m => m.id === player.minerId); setPage(i >= 0 ? Math.floor(i / PAGE) : 0); };
   const go = (d: number) => { haptic(); setPage(p => Math.min(pages - 1, Math.max(0, p + d))); };
-  return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><HoldSim /><h2 className="vault-h">{t('boost.packs')}</h2>
+  return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><h2 className="vault-h">{t('boost.packs')}</h2>
     <div className="grow-notice"><ShieldCheck /><span>{player.walletAddress ? t('boost.noticeLinked', { n: (player.hold ?? 0).toLocaleString('de-DE') }) : t('boost.noticeConnect')}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((tierLabel, i) => <button key={tierLabel} role="tab" aria-selected={tier === tierLabel} className={`rank-${i + 1} ${tier === tierLabel ? 'active' : ''}`} onClick={() => pickTier(tierLabel)}><small>{t('boost.tierRange', { a: i * 50 + 1, b: i * 50 + 50 })}</small>{tierName(tierLabel, t)}</button>)}</div>
     <section className="miner-category">
