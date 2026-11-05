@@ -3,24 +3,20 @@ export const MINER_TIERS = ['Rookie Rollers', 'Street Sprouts', 'Backyard Grower
 const TIER_NAMES = ['Rookie Roller', 'Street Sprout', 'Backyard Grower', 'West Coast Grower', 'Lowrider Hustler', 'Chronic Roller', 'Gold Chain', 'Smoke King', 'Magma OG', 'OG Kingpin'];
 export const MINERS_PER_TIER = 50;
 export type Miner = { id: string; level: number; name: string; category: string; power: number; daily: number; hold: number };
-// Stepped economy (must match public.dogg_miner_stats): small +0.4% steps inside a tier, then a growing jump when a new tier starts.
-// Hold milestones are reachable by playing daily (app balance counts as hold); buying only speeds it up.
-export const TIER_JUMPS = [1.12, 1.15, 1.18, 1.22, 1.26, 1.3, 1.35, 1.4, 1.5];
-export const TIER_HOLDS = [10, 150, 500, 1200, 2500, 5000, 10000, 20000, 40000, 80000, 150000];
-const STEP = 1.004;
-function rawDaily(tier: number, j: number) {
-  let d = 5;
-  for (let k = 0; k < tier; k++) d = d * STEP ** (MINERS_PER_TIER - 1) * TIER_JUMPS[k]!;
-  return d * STEP ** j;
-}
-function rawHold(tier: number, j: number) {
-  if (tier === 0) return j === 0 ? 0 : TIER_HOLDS[0]! * (TIER_HOLDS[1]! / TIER_HOLDS[0]!) ** ((j - 1) / (MINERS_PER_TIER - 1));
-  return TIER_HOLDS[tier]! * (TIER_HOLDS[tier + 1]! / TIER_HOLDS[tier]!) ** (j / MINERS_PER_TIER);
+// Visible steps (must match public.dogg_miner_stats): every level adds a noticeable amount, from +0.25/day at the start to +1.20/day at level 500.
+// Hold milestones are reachable by playing daily (app balance counts as hold); buying only speeds it up. Hold rises strictly every level.
+export const TIER_HOLDS = [3, 150, 500, 1200, 2500, 5000, 10000, 20000, 40000, 80000, 150000];
+const CURVE = 174.25 / 499 ** 2.72;
+function rawDaily(i: number) { return i === 0 ? 5 : 5 + 0.25 * i + CURVE * i ** 2.72; }
+function rawHold(level: number, tier: number, j: number) {
+  if (level === 1) return 0;
+  const r = tier === 0 ? TIER_HOLDS[0]! * (TIER_HOLDS[1]! / TIER_HOLDS[0]!) ** ((j - 1) / 49) : TIER_HOLDS[tier]! * (TIER_HOLDS[tier + 1]! / TIER_HOLDS[tier]!) ** (j / MINERS_PER_TIER);
+  return Math.max(Math.round(r), level + 1);
 }
 export function minerAt(level: number): Miner {
   const i = level - 1; const tier = Math.floor(i / MINERS_PER_TIER); const j = i % MINERS_PER_TIER;
-  const daily = Math.round(rawDaily(tier, j) * 100) / 100;
-  return { id: level === 1 ? 'rookie-1' : `miner-${level}`, level, name: `${TIER_NAMES[tier]} ${j + 1}`, category: MINER_TIERS[tier] ?? MINER_TIERS[0], power: Math.round(daily / 25 * 1000) / 1000, daily, hold: Math.round(rawHold(tier, j)) };
+  const daily = Math.round(rawDaily(i) * 100) / 100;
+  return { id: level === 1 ? 'rookie-1' : `miner-${level}`, level, name: `${TIER_NAMES[tier]} ${j + 1}`, category: MINER_TIERS[tier] ?? MINER_TIERS[0], power: Math.round(daily / 25 * 1000) / 1000, daily, hold: rawHold(level, tier, j) };
 }
 export const MINERS: Miner[] = Array.from({ length: MINER_TIERS.length * MINERS_PER_TIER }, (_, i) => minerAt(i + 1));
 // Pre-catalog ids kept so existing players keep their rate.
