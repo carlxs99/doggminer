@@ -40,7 +40,6 @@ export const ru: Record<keyof typeof es, string> = {
   'mine.claimed': 'Получено в приложении',
   'mine.coinAlt': 'Официальная монета джеттона $DOGG',
   'mine.processing': 'Обработка…', 'mine.claim': 'ПАФ-ПАФ, ЗАБРАТЬ', 'mine.burning': 'СМЕНА ИДЁТ', 'mine.start': 'ЗАПУСТИТЬ СМЕНУ',
-  'mine.tasksLink': 'Смотри рекламу и выполняй задания',
   'mine.buy': 'Купить на DeDust', 'mine.price': 'Цена',
   'mine.note': 'Покупать и продавать $DOGG можно и в Tonkeeper. Всё, что лежит на кошельке, учитывается в твоём ранге.',
 
