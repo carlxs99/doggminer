@@ -21,7 +21,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export { WITHDRAW_MIN, WITHDRAW_FEE } from '@/lib/withdraw';
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'checkin') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; unlink: () => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; banned: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'turbo') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; unlink: () => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; banned: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -114,7 +114,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     const poll = setInterval(load, 120_000); // withdrawal statuses change without a balance change
     return () => { alive = false; clearTimeout(first); clearInterval(poll); };
   }, [demo, synced, player.balance, ledgerCall]);
-  const action = async (kind: 'start' | 'claim' | 'checkin') => {
+  const action = async (kind: 'start' | 'claim' | 'turbo') => {
     if (busy) return;
     haptic(); setBusy(true);
     try {
@@ -122,7 +122,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!initData) throw new Error(t('err.openTelegram'));
       { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
-      toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'checkin' ? t('toast.checkin') : t('toast.harvest'));
+      toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'turbo' ? t('toast.turbo') : t('toast.harvest'));
     } catch (e) { toast.error(friendlyError(e, t('toast.actionFail'))); }
     finally { setBusy(false); }
   };

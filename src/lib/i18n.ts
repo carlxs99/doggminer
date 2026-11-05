@@ -51,6 +51,8 @@ const SERVER: [RegExp, Key][] = [
   [/^Abre la app desde Telegram/i, 'err.openTelegram'],
   [/bot todavía no está configurado/i, 'err.botNotConfigured'],
   [/^Ya tienes un turno activo/i, 'err.shiftActive'],
+  [/^Ya usaste el Turbo 420 hoy/i, 'err.turboUsed'],
+  [/^Inicia un turno para activar el Turbo 420/i, 'err.turboShift'],
   [/^Cuenta suspendida/i, 'err.banned'],
   [/^El turno todavía no ha terminado/i, 'err.shiftNotDone'],
   [/^Todavía no hay nada que recoger|^No tienes un turno activo/i, 'err.shiftNotDone'],

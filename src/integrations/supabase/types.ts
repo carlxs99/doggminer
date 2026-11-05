@@ -256,9 +256,12 @@ export type Database = {
           reminder_sent_at: string | null
           reminders_off: boolean
           shift_accrued: number
+          shift_boost: number
           shift_started_at: string | null
           streak: number
           telegram_id: number
+          turbo_at: string | null
+          turbo_day: string | null
           username: string | null
           wallet_address: string | null
           wallet_verified_at: string | null
@@ -294,9 +297,12 @@ export type Database = {
           reminder_sent_at?: string | null
           reminders_off?: boolean
           shift_accrued?: number
+          shift_boost?: number
           shift_started_at?: string | null
           streak?: number
           telegram_id: number
+          turbo_at?: string | null
+          turbo_day?: string | null
           username?: string | null
           wallet_address?: string | null
           wallet_verified_at?: string | null
@@ -332,9 +338,12 @@ export type Database = {
           reminder_sent_at?: string | null
           reminders_off?: boolean
           shift_accrued?: number
+          shift_boost?: number
           shift_started_at?: string | null
           streak?: number
           telegram_id?: number
+          turbo_at?: string | null
+          turbo_day?: string | null
           username?: string | null
           wallet_address?: string | null
           wallet_verified_at?: string | null
@@ -616,9 +625,12 @@ export type Database = {
           reminder_sent_at: string | null
           reminders_off: boolean
           shift_accrued: number
+          shift_boost: number
           shift_started_at: string | null
           streak: number
           telegram_id: number
+          turbo_at: string | null
+          turbo_day: string | null
           username: string | null
           wallet_address: string | null
           wallet_verified_at: string | null
@@ -673,6 +685,7 @@ export type Database = {
         Args: { p_action: string; p_hold?: number; p_telegram_id: number }
         Returns: Json
       }
+      dogg_streak_boost: { Args: { p_streak: number }; Returns: number }
       dogg_task_claim: {
         Args: { p_member: boolean; p_task: string; p_telegram_id: number }
         Returns: Json

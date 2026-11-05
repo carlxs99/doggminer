@@ -167,5 +167,8 @@ export const ru: Record<keyof typeof es, string> = {
   'admin.refunded': 'Баланс возвращён', 'admin.markedSent': 'Отмечен как отправленный', 'admin.noWd': 'Здесь нет выводов.',
   'admin.wdUser': 'Пользователь {u} · {d}', 'admin.attempts': ' · попыток: {n}', 'admin.to': 'На {a}', 'admin.markSent': 'Отметить отправленным', 'admin.refund': 'Вернуть',
   'up.next': 'Далее: уровень {n} · {d} $DOGG/д', 'up.max': 'Максимальный уровень', 'up.left': 'Осталось {x} $DOGG',
-  'up.title': 'Новый ранг!', 'up.body': 'Теперь ты майнишь с {name}: {d} $DOGG/день', 'sim.title': 'Калькулятор холда', 'sim.sub': 'Если бы у тебя было всего…', 'sim.row': 'Уровень {n} · {d} $DOGG/д', 'sim.buy': 'Купить на DeDust',
+  'up.title': 'Новый ранг!', 'up.body': 'Теперь ты майнишь с {name}: {d} $DOGG/день',
+  'err.turboUsed': 'Турбо 420 сегодня уже использован.', 'err.turboShift': 'Начни смену, чтобы включить Турбо 420.', 'toast.turbo': '🔥 Турбо 420 включён: x2 на 15 мин',
+  'turbo.btn': 'Турбо 420 · x2 15 мин', 'turbo.on': 'Турбо x2 активен', 'turbo.used': 'Турбо использован · завтра снова', 'turbo.needShift': 'Начни смену, чтобы включить Турбо',
+  'streak.label': 'Серия {n} дн. · x{m}', 'streak.none': 'Собирай или начинай смену каждый день', 'streak.next': 'Ещё {k} дн. → x{m}', 'streak.max': 'Максимальный бонус серии',
 };

@@ -789,11 +789,12 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .next-miner b{color:var(--primary);font-weight:700}
 .next-bar{height:.45rem;border-radius:999px;background:color-mix(in oklab,var(--primary) 15%,transparent);overflow:hidden}
 .next-bar i{display:block;height:100%;background:var(--primary);box-shadow:0 0 10px var(--primary);transition:width .6s}
-.hold-sim{margin:.75rem 0;padding:.75rem;border:1px solid color-mix(in oklab,var(--primary) 35%,transparent);border-radius:1rem;background:var(--card);display:grid;gap:.6rem}
-.hold-sim-top{display:flex;justify-content:space-between;align-items:baseline;gap:.5rem}
-.hold-sim-top small{color:var(--muted-foreground);font-size:.7rem}
-.hold-sim-grid{display:grid;grid-template-columns:1fr 1fr;gap:.4rem}
-.hold-sim-grid>div{padding:.45rem .55rem;border-radius:.6rem;background:color-mix(in oklab,var(--primary) 8%,transparent);display:grid;font-size:.7rem}
-.hold-sim-grid strong{color:var(--primary);font-size:.78rem}
-.hold-sim-grid span{color:var(--muted-foreground)}
-.hold-sim .buy-green{text-align:center}
+.boost-bar{margin:.55rem auto 0;width:min(100%,22rem);display:grid;grid-template-columns:1fr auto;gap:.45rem;align-items:center}
+.streak-chip{display:grid;line-height:1.2;font-size:.7rem;padding:.4rem .55rem;border-radius:.7rem;border:1px solid color-mix(in oklab,var(--gold, var(--primary)) 40%,transparent);background:color-mix(in oklab,var(--gold, var(--primary)) 8%,transparent)}
+.streak-chip b{color:var(--gold, var(--primary))}
+.streak-chip small{color:var(--muted-foreground);font-size:.62rem}
+.turbo-btn{height:auto;min-height:2.3rem;font-size:.7rem;padding:.35rem .6rem;white-space:normal;max-width:9.5rem}
+.turbo-btn.on{animation:turbo-glow 1s ease-in-out infinite alternate}
+@keyframes turbo-glow{from{box-shadow:0 0 6px var(--primary)}to{box-shadow:0 0 18px var(--primary)}}
+.mine-coin.turbo{filter:drop-shadow(0 0 18px var(--primary)) saturate(1.3)}
+.mine-coin.turbo.spinning{animation-duration:1.2s}

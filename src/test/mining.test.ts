@@ -58,3 +58,27 @@ describe('automatic miner upgrade', () => {
     expect(minerAt(Number(id.split('-')[1])).hold).toBeLessThanOrEqual(5_000);
   });
 });
+
+import { streakBoost, liveStreak, TURBO_MS } from '@/lib/mining';
+describe('daily streak and Turbo 420', () => {
+  it('pays x1.05 from a 3-day streak and x1.15 from 7 days', () => {
+    expect(streakBoost(2)).toBe(1);
+    expect(streakBoost(3)).toBe(1.05);
+    expect(streakBoost(6)).toBe(1.05);
+    expect(streakBoost(7)).toBe(1.15);
+  });
+  it('keeps the streak only if the last start/claim was today or yesterday', () => {
+    expect(liveStreak(5, '2026-10-12', Date.parse('2026-10-13T20:00:00Z'))).toBe(5);
+    expect(liveStreak(5, '2026-10-12', Date.parse('2026-10-14T01:00:00Z'))).toBe(0);
+  });
+  it('applies the streak multiplier to the whole shift', () => {
+    expect(shiftTotal({ ...state, shiftBoost: 1.15 }, start + SHIFT_MS)).toBeCloseTo(5.75);
+  });
+  it('doubles the rate for exactly 15 minutes of turbo, inside the shift only', () => {
+    const turbo = { ...state, turboAt: new Date(start + 3600_000).toISOString() };
+    expect(TURBO_MS).toBe(15 * 60_000);
+    expect(shiftTotal(turbo, start + SHIFT_MS)).toBeCloseTo(5 + 5 * TURBO_MS / SHIFT_MS);
+    const late = { ...state, turboAt: new Date(start + SHIFT_MS - 5 * 60_000).toISOString() };
+    expect(shiftTotal(late, start + SHIFT_MS * 2)).toBeCloseTo(5 + 5 * 5 * 60_000 / SHIFT_MS);
+  });
+});

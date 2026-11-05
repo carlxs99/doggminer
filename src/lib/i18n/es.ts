@@ -177,5 +177,8 @@ export const es = {
   'admin.refunded': 'Saldo devuelto', 'admin.markedSent': 'Marcado como enviado', 'admin.noWd': 'No hay retiros aquí.',
   'admin.wdUser': 'Usuario {u} · {d}', 'admin.attempts': ' · {n} intentos', 'admin.to': 'A {a}', 'admin.markSent': 'Marcar enviado', 'admin.refund': 'Devolver',
   'up.next': 'Siguiente: nivel {n} · {d} $DOGG/d', 'up.max': 'Nivel máximo alcanzado', 'up.left': 'Faltan {x} $DOGG',
-  'up.title': '¡Subiste de rango!', 'up.body': 'Ahora minas con {name}: {d} $DOGG/día', 'sim.title': 'Calculadora de hold', 'sim.sub': 'Si tuvieras en total…', 'sim.row': 'Nivel {n} · {d} $DOGG/d', 'sim.buy': 'Comprar en DeDust',
+  'up.title': '¡Subiste de rango!', 'up.body': 'Ahora minas con {name}: {d} $DOGG/día',
+  'err.turboUsed': 'Ya usaste el Turbo 420 hoy.', 'err.turboShift': 'Inicia un turno para activar el Turbo 420.', 'toast.turbo': '🔥 Turbo 420 encendido: x2 durante 15 min',
+  'turbo.btn': 'Turbo 420 · x2 15 min', 'turbo.on': 'Turbo x2 activo', 'turbo.used': 'Turbo usado · vuelve mañana', 'turbo.needShift': 'Inicia el turno para usar el Turbo',
+  'streak.label': 'Racha {n} días · x{m}', 'streak.none': 'Recoge o inicia cada día para tu racha', 'streak.next': '{k} día(s) más → x{m}', 'streak.max': 'Bonus máximo de racha',
 } as const;

@@ -13,13 +13,27 @@ export const MINERS: Miner[] = Array.from({ length: MINER_TIERS.length * MINERS_
 // Pre-catalog ids kept so existing players keep their rate.
 const LEGACY: Record<string, Miner> = Object.fromEntries(([['rookie-2', 'Rookie Roller II', 6, 10], ['rookie-3', 'Rookie Roller III', 6.75, 100], ['rookie-4', 'Rookie Roller IV', 7.5, 1000], ['og-grower', 'OG Grower', 25, 10000], ['lowrider', 'Lowrider Hustler', 50, 50000], ['magma', 'Magma OG', 125, 100000], ['kingpin', 'OG Kingpin', 250, 250000]] as const).map(([id, name, daily, hold]) => [id, { id, level: 0, name, category: 'Legacy', power: daily / 25, daily, hold }]));
 export const getMiner = (id: string): Miner => LEGACY[id] ?? MINERS.find(m => m.id === id) ?? minerAt(1);
-export type MiningState = { minerId: string; shiftAccrued: number; rateChangedAt: string | null; shiftStartedAt: string | null };
+export type MiningState = { minerId: string; shiftAccrued: number; rateChangedAt: string | null; shiftStartedAt: string | null; shiftBoost?: number | undefined; turboAt?: string | null | undefined };
+/** Turbo 420: x2 rate for 15 minutes, once per UTC day (mirrors public.dogg_shift). */
+export const TURBO_MS = 15 * 60_000;
+/** Streak multiplier frozen at each shift start/claim — mirrors public.dogg_streak_boost. */
+export const streakBoost = (streak: number) => streak >= 7 ? 1.15 : streak >= 3 ? 1.05 : 1;
+/** Streak still alive today (a start/claim today or yesterday, UTC); otherwise the next one starts at 1. */
+export function liveStreak(streak: number, lastCheckin: string | null, now: number) {
+  if (!lastCheckin) return 0;
+  const day = (ms: number) => Math.floor(ms / 86400000);
+  return day(now) - day(Date.parse(lastCheckin)) <= 1 ? streak : 0;
+}
 export function shiftTotal(state: MiningState, now: number): number {
   if (!state.shiftStartedAt) return 0;
   const start = Date.parse(state.shiftStartedAt);
   const segment = state.rateChangedAt ? Date.parse(state.rateChangedAt) : start;
   const end = Math.min(now, start + SHIFT_MS);
-  return state.shiftAccrued + Math.max(0, end - Math.max(start, segment)) / SHIFT_MS * getMiner(state.minerId).daily;
+  const from = Math.max(start, segment);
+  const rate = getMiner(state.minerId).daily * (state.shiftBoost ?? 1);
+  const turbo = state.turboAt ? Date.parse(state.turboAt) : NaN;
+  const bonus = Number.isNaN(turbo) ? 0 : Math.max(0, Math.min(end, turbo + TURBO_MS) - Math.max(from, turbo));
+  return state.shiftAccrued + (Math.max(0, end - from) + bonus) / SHIFT_MS * rate;
 }
 export function switchMiner<T extends MiningState>(state: T, minerId: string, now: number): T {
   return { ...state, shiftAccrued: shiftTotal(state, now), rateChangedAt: state.shiftStartedAt ? new Date(Math.min(now, Date.parse(state.shiftStartedAt) + SHIFT_MS)).toISOString() : null, minerId };

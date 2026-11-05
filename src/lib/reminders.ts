@@ -3,7 +3,7 @@ import { MINI_APP_LINK, SHIFT_MS } from './dogg';
 import { getMiner, shiftTotal } from './mining';
 import type { BotMessage } from './bot-messages';
 
-export type ReminderPlayer = { first_name: string | null; miner_id: string | null; shift_started_at: string | null; shift_accrued: number | string | null; rate_changed_at: string | null; ref_pending: number | string | null };
+export type ReminderPlayer = { first_name: string | null; miner_id: string | null; shift_started_at: string | null; shift_accrued: number | string | null; rate_changed_at: string | null; shift_boost?: number | string | null; turbo_at?: string | null; ref_pending: number | string | null };
 export type ReminderState = 'ready' | 'idle' | 'running';
 
 const esc = (s: string) => s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
@@ -20,7 +20,7 @@ export const REMINDER_ON = 'remind_on';
 export function reminderMessage(p: ReminderPlayer, now: number): BotMessage {
   const name = p.first_name?.trim() ? `, ${esc(p.first_name.trim())}` : '';
   const minerId = p.miner_id ?? 'rookie-1';
-  const mined = shiftTotal({ minerId, shiftAccrued: Number(p.shift_accrued ?? 0), rateChangedAt: p.rate_changed_at, shiftStartedAt: p.shift_started_at }, now);
+  const mined = shiftTotal({ minerId, shiftAccrued: Number(p.shift_accrued ?? 0), rateChangedAt: p.rate_changed_at, shiftStartedAt: p.shift_started_at, shiftBoost: Number(p.shift_boost ?? 1), turboAt: p.turbo_at ?? null }, now);
   const state = reminderState(p, now);
   const lines: string[] = [];
   let cta: string;
