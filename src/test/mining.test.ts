@@ -38,10 +38,10 @@ import { bestLevel } from '@/lib/mining';
 describe('hold unlocks miners', () => {
   it('unlocks levels as hold grows and drops them when it shrinks', () => {
     expect(bestLevel(0)).toBe(1);
-    expect(bestLevel(2)).toBe(1);
-    expect(bestLevel(3)).toBe(2);
-    expect(bestLevel(4)).toBe(3);
-    const rich = bestLevel(927_000);
+    expect(bestLevel(9)).toBe(1);
+    expect(bestLevel(10)).toBe(2);
+    expect(bestLevel(11)).toBe(3);
+    const rich = bestLevel(600_000);
     expect(rich).toBe(500);
     expect(bestLevel(1_000)).toBeLessThan(bestLevel(10_000));
     expect(minerAt(bestLevel(5_000)).hold).toBeLessThanOrEqual(5_000);
@@ -52,7 +52,7 @@ describe('hold unlocks miners', () => {
 import { autoUpgradeId } from '@/lib/mining';
 describe('automatic miner upgrade', () => {
   it('rises to the best miner the hold covers, never down', () => {
-    expect(autoUpgradeId('rookie-1', 0, 927_000)).toBe('miner-500');
+    expect(autoUpgradeId('rookie-1', 0, 600_000)).toBe('miner-500');
     expect(autoUpgradeId('rookie-1', 1, 1)).toBeNull();
     expect(autoUpgradeId('miner-500', 0, 5)).toBeNull();
     const id = autoUpgradeId('rookie-1', 1_000, 4_000)!;
