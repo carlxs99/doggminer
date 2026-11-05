@@ -166,4 +166,6 @@ export const en: Record<keyof typeof es, string> = {
   'admin.confirmRefund': 'Return {n} $DOGG to user {u}? Only do this if you are sure it was NOT sent.', 'admin.txPrompt': 'Transaction hash or link (optional):',
   'admin.refunded': 'Balance returned', 'admin.markedSent': 'Marked as sent', 'admin.noWd': 'No withdrawals here.',
   'admin.wdUser': 'User {u} · {d}', 'admin.attempts': ' · {n} attempts', 'admin.to': 'To {a}', 'admin.markSent': 'Mark as sent', 'admin.refund': 'Refund',
+  'up.next': 'Next: level {n} · {d} $DOGG/d', 'up.max': 'Max level reached', 'up.left': '{x} $DOGG to go',
+  'up.title': 'Rank up!', 'up.body': 'You now mine with {name}: {d} $DOGG/day', 'sim.title': 'Hold calculator', 'sim.sub': 'If you held in total…', 'sim.row': 'Level {n} · {d} $DOGG/d', 'sim.buy': 'Buy on DeDust',
 };

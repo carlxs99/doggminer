@@ -176,4 +176,6 @@ export const es = {
   'admin.confirmRefund': '¿Devolver {n} $DOGG al usuario {u}? Hazlo solo si estás seguro de que NO se envió.', 'admin.txPrompt': 'Hash o enlace de la transacción (opcional):',
   'admin.refunded': 'Saldo devuelto', 'admin.markedSent': 'Marcado como enviado', 'admin.noWd': 'No hay retiros aquí.',
   'admin.wdUser': 'Usuario {u} · {d}', 'admin.attempts': ' · {n} intentos', 'admin.to': 'A {a}', 'admin.markSent': 'Marcar enviado', 'admin.refund': 'Devolver',
+  'up.next': 'Siguiente: nivel {n} · {d} $DOGG/d', 'up.max': 'Nivel máximo alcanzado', 'up.left': 'Faltan {x} $DOGG',
+  'up.title': '¡Subiste de rango!', 'up.body': 'Ahora minas con {name}: {d} $DOGG/día', 'sim.title': 'Calculadora de hold', 'sim.sub': 'Si tuvieras en total…', 'sim.row': 'Nivel {n} · {d} $DOGG/d', 'sim.buy': 'Comprar en DeDust',
 } as const;
