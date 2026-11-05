@@ -246,6 +246,13 @@
       "when": 1793841467165,
       "tag": "0034_turbo_requires_ad",
       "breakpoints": true
+    },
+    {
+      "idx": 35,
+      "version": "7",
+      "when": 1793843145952,
+      "tag": "0035_auto_ban_evasion_and_network_farms",
+      "breakpoints": true
     }
   ]
 }
