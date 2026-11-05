@@ -222,7 +222,7 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
   });
 
 /** Rewarded ads: 'start' opens an ad view and returns its unique ymid for the Monetag SDK; 'status' reads it.
- *  The +15 $DOGG is paid only by the Monetag postback (/api/public/monetag-postback), never by the app. */
+ *  The +5 $DOGG is paid only by the Monetag postback (/api/public/monetag-postback), never by the app. */
 export const adAction = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'status', 'claim']), ymid: z.string().uuid().optional() }))
   .handler(async ({ data }) => {

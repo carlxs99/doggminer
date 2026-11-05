@@ -172,7 +172,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     catch (e) { toast.error(friendlyError(e, t('toast.verifyFail'))); }
     finally { setVerifying(false); }
   };
-  // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +15 (10/day);
+  // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +5 (10/day);
   // the app only polls the result.
   const [ads, setAds] = useState({ day: '', count: 0 });
   const today = new Date(now || 0).toISOString().slice(0, 10);
