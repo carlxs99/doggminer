@@ -23,7 +23,7 @@ async function send(chatId: number, p: ReminderPlayer, now: number): Promise<'se
   return 'failed';
 }
 
-export async function runReminders(admin: Admin, limit = 200) {
+export async function runReminders(admin: Admin, limit = 40) {
   const { data, error } = await admin.rpc('dogg_claim_reminders', { p_limit: limit });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as (ReminderPlayer & { telegram_id: number })[];
