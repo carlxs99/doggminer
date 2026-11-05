@@ -1,0 +1,1 @@
+- Streak and Turbo 420 live in dogg_shift: the streak multiplier is frozen per shift at start/claim (shift_boost) and Turbo is a checkpointed time window that earns the rate twice; src/lib/mining.ts mirrors both (streakBoost, TURBO_MS) so the live counter matches what the server pays.
