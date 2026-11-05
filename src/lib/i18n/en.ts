@@ -40,7 +40,6 @@ export const en: Record<keyof typeof es, string> = {
   'mine.claimed': 'Claimed in the app',
   'mine.coinAlt': 'Official $DOGG jetton coin',
   'mine.processing': 'Processing…', 'mine.claim': 'PUFF PUFF, COLLECT', 'mine.burning': 'BURNING THE SHIFT', 'mine.start': 'LIGHT THE SHIFT',
-  'mine.tasksLink': 'Watch ads and do hood tasks',
   'mine.buy': 'Buy on DeDust', 'mine.price': 'See price',
   'mine.note': 'You can also buy and sell $DOGG from Tonkeeper. What you hold in your wallet counts toward your rank.',
 

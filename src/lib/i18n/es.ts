@@ -41,7 +41,6 @@ export const es = {
   'mine.claimed': 'Reclamado en la app',
   'mine.coinAlt': 'Moneda oficial del jetton $DOGG',
   'mine.processing': 'Procesando…', 'mine.claim': 'PUFF PUFF, COBRA', 'mine.burning': 'QUEMANDO EL TURNO', 'mine.start': 'PRENDE EL TURNO',
-  'mine.tasksLink': 'Mira anuncios y tareas del hood',
   'mine.buy': 'Comprar en DeDust', 'mine.price': 'Ver precio',
   'mine.note': 'También puedes comprar y vender $DOGG desde Tonkeeper. Lo que tengas en tu wallet cuenta para tu rango.',
 
