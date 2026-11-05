@@ -1,5 +1,5 @@
 // Multi-account detector (server side): stores hashed device/network signals and alerts admins.
-// Scores are informative; only the >5-accounts-per-device rule bans automatically (dogg_auto_ban).
+// Scores are informative; only the farm rules in dogg_auto_ban ban automatically.
 import { MINI_APP_LINK } from './dogg';
 import { displayName, type BotMessage } from './bot-messages';
 import { sendBotMessage } from './notify.server';
@@ -12,7 +12,7 @@ const REASON_ES: Record<string, string> = {
 
 export function multiAlertMessage(name: string, id: number, score: number, reasons: string[]): BotMessage {
   return {
-    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. Si hay más de 5 cuentas en el mismo dispositivo se banean automáticamente.`,
+    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. Las granjas (más de 5 cuentas en un dispositivo, en la misma red con el mismo invitador en 1 h, o cuentas nuevas en un móvil ya baneado) se banean automáticamente.`,
     buttons: [[{ text: '🛡️ Abrir el panel', url: MINI_APP_LINK }]],
   };
 }
@@ -36,7 +36,7 @@ export async function recordSignals(admin: Admin, telegramId: number, device: { 
     if (!signals.length) return;
     const r = await admin.rpc('dogg_record_signals', { p_telegram_id: telegramId, p_signals: signals, p_country: country as string });
     if (r.error) { console.error('recordSignals', r.error.message); return; }
-    // Auto-ban: more than 5 accounts on one device bans all of them (admins can unban in the panel).
+    // Auto-ban farm groups (rules in dogg_auto_ban; admins can unban in the panel).
     const b = await admin.rpc('dogg_auto_ban', { p_telegram_id: telegramId });
     if (b.error) console.error('autoBan', b.error.message);
     const res = r.data as { score?: number; reasons?: string[]; alert?: boolean } | null;
