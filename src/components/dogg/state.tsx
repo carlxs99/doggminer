@@ -122,7 +122,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!initData) throw new Error(t('err.openTelegram'));
       { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
-      toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'checkin' ? t('toast.checkin') : t('toast.harvest'));
+      toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'turbo' ? t('toast.turbo') : t('toast.harvest'));
     } catch (e) { toast.error(friendlyError(e, t('toast.actionFail'))); }
     finally { setBusy(false); }
   };
