@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { JETTON } from './dogg';
 import { autoUpgradeId } from './mining';
 
-const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional() });
+const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional(), shiftBoost: z.number().optional(), turboAt: z.string().nullable().optional(), turboDay: z.string().nullable().optional() });
 
 async function verifyTelegramUser(initData: string) { return (await import('./telegram.server')).verifyTelegramUser(initData); }
 async function verifyTelegram(initData: string) { return (await verifyTelegramUser(initData)).id; }
@@ -67,7 +67,7 @@ async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, h
 }
 
 export const playerAction = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'checkin', 'select']), minerId: z.string().max(40).optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional() }))
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'turbo', 'select']), minerId: z.string().max(40).optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional() }))
   .handler(async ({ data }) => {
     const tg = await verifyTelegramUser(data.initData);
     const telegramId = tg.id;
