@@ -239,6 +239,13 @@
       "when": 1793841208088,
       "tag": "0033_ad_reward_5",
       "breakpoints": true
+    },
+    {
+      "idx": 34,
+      "version": "7",
+      "when": 1793841467165,
+      "tag": "0034_turbo_requires_ad",
+      "breakpoints": true
     }
   ]
 }

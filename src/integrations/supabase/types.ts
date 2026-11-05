@@ -21,6 +21,7 @@ export type Database = {
           event_type: string | null
           paid_at: string | null
           postbacks: number
+          purpose: string
           reward_event_type: string | null
           status: string
           telegram_id: number
@@ -32,6 +33,7 @@ export type Database = {
           event_type?: string | null
           paid_at?: string | null
           postbacks?: number
+          purpose?: string
           reward_event_type?: string | null
           status?: string
           telegram_id: number
@@ -43,6 +45,7 @@ export type Database = {
           event_type?: string | null
           paid_at?: string | null
           postbacks?: number
+          purpose?: string
           reward_event_type?: string | null
           status?: string
           telegram_id?: number
@@ -694,6 +697,7 @@ export type Database = {
         Args: { p_task: string; p_telegram_id: number }
         Returns: string
       }
+      dogg_turbo_ad: { Args: { p_telegram_id: number }; Returns: string }
       dogg_verify_withdraw: {
         Args: { p_bought: number; p_telegram_id: number; p_wallet: string }
         Returns: boolean
