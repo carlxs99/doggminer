@@ -167,7 +167,7 @@ export const en: Record<keyof typeof es, string> = {
   'admin.refunded': 'Balance returned', 'admin.markedSent': 'Marked as sent', 'admin.noWd': 'No withdrawals here.',
   'admin.wdUser': 'User {u} · {d}', 'admin.attempts': ' · {n} attempts', 'admin.to': 'To {a}', 'admin.markSent': 'Mark as sent', 'admin.refund': 'Refund',
   'up.next': 'Next: level {n} · {d} $DOGG/d', 'up.max': 'Max level reached', 'up.left': '{x} $DOGG to go',
-  'up.title': 'Rank up!', 'up.body': 'You now mine with {name}: {d} $DOGG/day', 'sim.title': 'Hold calculator', 'sim.sub': 'If you held in total…', 'sim.row': 'Level {n} · {d} $DOGG/d', 'sim.buy': 'Buy on DeDust',
+  'up.title': 'Rank up!', 'up.body': 'You now mine with {name}: {d} $DOGG/day',
   'err.turboUsed': 'You already used Turbo 420 today.', 'err.turboShift': 'Start a shift to fire up Turbo 420.', 'toast.turbo': '🔥 Turbo 420 on: x2 for 15 min',
   'turbo.btn': 'Turbo 420 · x2 15 min', 'turbo.on': 'Turbo x2 active', 'turbo.used': 'Turbo used · back tomorrow', 'turbo.needShift': 'Start your shift to use Turbo',
   'streak.label': '{n}-day streak · x{m}', 'streak.none': 'Claim or start every day to build a streak', 'streak.next': '{k} more day(s) → x{m}', 'streak.max': 'Max streak bonus',
