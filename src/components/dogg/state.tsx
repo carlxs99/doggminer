@@ -1,7 +1,7 @@
 import { createContext, useCallback, useContext, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
-import { adAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
+import { adAction, turboAdAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
 import { WITHDRAW_MIN, withdrawNeeds, withdrawNet } from '@/lib/withdraw';
 import { showRewardedAd } from '@/lib/ads';
@@ -50,6 +50,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const [openWallet, storeOpenWallet] = useState<(() => void) | null>(null);
   const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
   const call = useServerFn(playerAction);
+  const turboAdCall = useServerFn(turboAdAction);
   const verifyCall = useServerFn(verifyWallet);
   const withdrawCall = useServerFn(requestWithdraw);
   const challengeCall = useServerFn(walletChallenge);
@@ -120,7 +121,10 @@ export function DoggProvider({ children }: { children: ReactNode }) {
     try {
       const initData = window.Telegram?.WebApp?.initData;
       if (!initData) throw new Error(t('err.openTelegram'));
-      { const p = await call({ data: { initData, action: kind } }); setPlayer(p); notifyLevel(p); }
+      // Turbo 420: the player watches a rewarded ad first; the server only accepts the ad view it opened.
+      let ymid: string | undefined;
+      if (kind === 'turbo') { ymid = (await turboAdCall({ data: { initData } })).ymid; await showRewardedAd(ymid); }
+      { const p = await call({ data: { initData, action: kind, ...(ymid ? { ymid } : {}) } }); setPlayer(p); notifyLevel(p); }
       if (kind === 'claim') { coinRain(coinImg); bass(); strongHaptic(); } else { scratch(); }
       toast.success(kind === 'start' ? t('toast.shiftOn') : kind === 'turbo' ? t('toast.turbo') : t('toast.harvest'));
     } catch (e) { toast.error(friendlyError(e, t('toast.actionFail'))); }

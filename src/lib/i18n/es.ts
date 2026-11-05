@@ -181,4 +181,5 @@ export const es = {
   'err.turboUsed': 'Ya usaste el Turbo 420 hoy.', 'err.turboShift': 'Inicia un turno para activar el Turbo 420.', 'toast.turbo': '🔥 Turbo 420 encendido: x2 durante 15 min',
   'turbo.btn': 'Turbo 420 · x2 15 min', 'turbo.on': 'Turbo x2 activo', 'turbo.used': 'Turbo usado · vuelve mañana', 'turbo.needShift': 'Inicia el turno para usar el Turbo',
   'streak.label': 'Racha {n} días · x{m}', 'streak.none': 'Recoge o inicia cada día para tu racha', 'streak.next': '{k} día(s) más → x{m}', 'streak.max': 'Bonus máximo de racha',
+  'err.turboAd': 'Mira el anuncio para activar el Turbo 420.', 'turbo.ad': '▶ Ver anuncio · Turbo x2 15 min',
 } as const;
