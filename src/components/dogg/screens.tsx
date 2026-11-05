@@ -50,7 +50,6 @@ export function Humero() {
     <BoostBar player={player} now={now} busy={busy} onTurbo={() => void action('turbo')} />
     <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || (Boolean(player.shiftStartedAt) && earned <= 0)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? t('mine.claim') : t('mine.start')}<ArrowRight /></Button></div>
-    <Button asChild variant="secondary" className="mine-wide"><Link to="/trabajos"><Tv /> {t('mine.tasksLink')}</Link></Button>
     <div className="mine-buy"><BuyDedustLink className="buy-green">{t('mine.buy')}</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">{t('mine.price')}</a></div>
     <DedustWebLink />
   </div></>;
