@@ -344,6 +344,13 @@
       "when": 1793981820955,
       "tag": "0048_referral_farm_instant_ban",
       "breakpoints": true
+    },
+    {
+      "idx": 49,
+      "version": "7",
+      "when": 1793981937063,
+      "tag": "0049_referral_farm_threshold_60",
+      "breakpoints": true
     }
   ]
 }
