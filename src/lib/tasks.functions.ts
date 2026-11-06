@@ -20,7 +20,9 @@ export const listTasks = createServerFn({ method: 'POST' })
       const claimedAt = c?.claimed_at ?? null;
       const done = taskDone(kind, claimedAt, Date.now());
       // A daily task whose window passed shows as new again (opening it starts a fresh round).
-      const fresh = Boolean(claimedAt) && !done;
+      // React tasks must be opened again each round (an open older than 1 h no longer counts).
+      const stale = kind === 'react' && !done && Boolean(c?.started_at) && Date.now() - Date.parse(c!.started_at) > 3600_000;
+      const fresh = (Boolean(claimedAt) && !done) || stale;
       return TaskOut.parse({ ...x, reward: Number(x.reward), startedAt: fresh ? null : c?.started_at ?? null, claimed: done, resetAt: done ? taskResetAt(kind, claimedAt) : null });
     });
   });

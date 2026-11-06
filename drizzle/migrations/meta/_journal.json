@@ -281,6 +281,13 @@
       "when": 1793848255466,
       "tag": "0039_raise_miner_hold",
       "breakpoints": true
+    },
+    {
+      "idx": 40,
+      "version": "7",
+      "when": 1793933066589,
+      "tag": "0040_react_task_reopen_daily",
+      "breakpoints": true
     }
   ]
 }
