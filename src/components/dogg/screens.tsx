@@ -61,11 +61,16 @@ function NextMiner({ player, demo }: { player: Player; demo: boolean }) {
   const total = player.balance + (demo ? 0 : player.hold ?? 0);
   const level = getMiner(player.minerId).level || 1;
   const top = bestLevel(total);
-  const prev = useRef(level);
   useEffect(() => {
-    if (level > prev.current) { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); const m = getMiner(player.minerId); toast.success(t('up.title'), { description: t('up.body', { name: m.name, d: m.daily }) }); }
-    prev.current = level;
-  }, [level, player.minerId, t]);
+    // Remember the last level seen per account so reopening the app (initial data load) never re-announces a rank up.
+    const uid = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    if (demo || !uid) return;
+    const key = `dogg-seen-level-${uid}`;
+    let seen = 0;
+    try { seen = Number(localStorage.getItem(key)) || 0; } catch { /* storage blocked */ }
+    if (seen && level > seen) { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); const m = getMiner(player.minerId); toast.success(t('up.title'), { description: t('up.body', { name: m.name, d: m.daily }) }); }
+    if (level !== seen) { try { localStorage.setItem(key, String(level)); } catch { /* storage blocked */ } }
+  }, [level, player.minerId, t, demo]);
   if (top >= 500) return <div className="next-miner"><span>{t('up.max')}</span></div>;
   const cur = minerAt(top), next = minerAt(top + 1);
   const pct = Math.min(100, Math.max(0, (total - cur.hold) / Math.max(1, next.hold - cur.hold) * 100));
