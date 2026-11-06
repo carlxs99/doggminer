@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import { adAction, turboAdAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
 import { VERIFY_BUY } from '@/lib/purchase';
 import { WITHDRAW_MIN, withdrawNeeds, withdrawNet } from '@/lib/withdraw';
-import { showRewardedAd } from '@/lib/ads';
+import { showRewardedAd, showDirectAd } from '@/lib/ads';
 import { deviceSignals } from '@/lib/fingerprint';
 import { friendlyAddress } from '@/lib/address';
 import { haptic, SHIFT_MS, AD_REWARD, AD_DAILY, type Player } from '@/lib/dogg';
@@ -200,7 +200,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!initData) throw new Error(t('err.openTelegram'));
       const { ymid } = await adCall({ data: { initData, action: 'start' } });
       if (!ymid) throw new Error(t('toast.adPrepFail'));
-      await showRewardedAd(ymid);
+      // Alternate ad formats: even views show the rewarded interstitial, odd views the direct link.
+      if (adsToday % 2 === 1) await showDirectAd(); else await showRewardedAd(ymid);
       // Ad closed: pay right away (server enforces one payment per ad and 10/day).
       const r = await adCall({ data: { initData, action: 'claim', ymid } });
       setAds({ day, count: r.adsToday });
