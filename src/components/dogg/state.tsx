@@ -88,7 +88,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       const timer = setInterval(() => setNow(Date.now()), 1000);
       if (!app?.initData) { setReadDone(true); cleanup = () => clearInterval(timer); return; }
       setDemo(false); setName(app.initDataUnsafe?.user?.first_name || app.initDataUnsafe?.user?.username || 'Homie');
-      const read = (silent: boolean) => deviceSignals().then(device => call({ data: { initData: app.initData!, action: 'read', ...(device ? { device } : {}) } })).then(p => {
+      const read = (silent: boolean) => deviceSignals().then(device => call({ data: { initData: app.initData!, action: 'read', refresh: silent, ...(device ? { device } : {}) } })).then(p => {
         setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); if ('banned' in p) setBanned(Boolean(p.banned)); setSynced(true);
       }).catch(e => { if (!silent) toast.error(friendlyError(e)); }).finally(() => setReadDone(true));
       // First load: one quiet retry before showing an error, so a busy moment doesn't leave the player without admin/wallet data.
@@ -99,7 +99,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       const askWrite = setTimeout(() => {
         try { if (!localStorage.getItem('dogg-write-access')) app.requestWriteAccess?.(ok => localStorage.setItem('dogg-write-access', ok ? '1' : '0')); } catch { /* older clients */ }
       }, 6000);
-      const holdTimer = setInterval(() => read(true), 60000);
+      const holdTimer = setInterval(() => { if (document.visibilityState === 'visible') read(true); }, 90000);
       const onVisible = () => { if (document.visibilityState === 'visible') read(true); };
       document.addEventListener('visibilitychange', onVisible);
       cleanup = () => { clearTimeout(askWrite); clearInterval(timer); clearInterval(holdTimer); document.removeEventListener('visibilitychange', onVisible); };

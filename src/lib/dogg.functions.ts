@@ -68,22 +68,24 @@ async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, h
 }
 
 export const playerAction = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'turbo', 'select']), minerId: z.string().max(40).optional(), ymid: z.string().uuid().optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional() }))
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'start', 'claim', 'turbo', 'select']), minerId: z.string().max(40).optional(), ymid: z.string().uuid().optional(), device: z.object({ id: z.string().min(8).max(64), fp: z.string().min(8).max(128) }).optional(), refresh: z.boolean().optional() }))
   .handler(async ({ data }) => {
     const tg = await verifyTelegramUser(data.initData);
+    // Background refreshes (every minute / on return) skip the once-per-open work to keep the backend light under heavy traffic.
+    const opening = data.action === 'read' && !data.refresh;
     const telegramId = tg.id;
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
     // On open: create the player, keep its Telegram name and attach the inviter (only for brand-new accounts).
-    if (data.action === 'read') await supabaseAdmin.rpc('dogg_register', { p_telegram_id: telegramId, p_referrer: tg.referrer as number, p_first_name: tg.firstName as string, p_username: tg.username as string });
+    if (opening) await supabaseAdmin.rpc('dogg_register', { p_telegram_id: telegramId, p_referrer: tg.referrer as number, p_first_name: tg.firstName as string, p_username: tg.username as string });
     // Multi-account detector: hashed device + network signals on every open (informative only, never blocks).
     // Signals and the hold read run side by side so opening the app doesn't wait for one after the other.
-    const signals = data.action === 'read' ? import('./multi.server').then(m => m.recordSignals(supabaseAdmin, telegramId, data.device, tg)) : Promise.resolve();
+    const signals = opening ? import('./multi.server').then(m => m.recordSignals(supabaseAdmin, telegramId, data.device, tg)) : Promise.resolve();
     const [hold] = await Promise.all([currentHold(supabaseAdmin, telegramId), signals]);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action === 'turbo' ? `turbo:${data.ymid ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     const player = await settle(supabaseAdmin, telegramId, result.data, hold);
     // Tell the inviter (once) when this player joins with their link and when they start mining (+100).
-    if (data.action === 'read' || data.action === 'start' || data.action === 'claim') {
+    if (opening || data.action === 'start' || data.action === 'claim') {
       const { notifyReferral } = await import('./notify.server');
       await notifyReferral(supabaseAdmin, telegramId).catch(e => console.error('notifyReferral', e));
     }
