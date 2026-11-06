@@ -91,6 +91,7 @@ export const en: Record<keyof typeof es, string> = {
   'friends.h3': 'Earn for life', 'friends.h3d': 'You get {p}% of every shift they collect, forever, with no expiry. They lose nothing.',
   'friends.latest': 'Latest invited friends', 'friends.empty': 'No recruits yet. Share your link: each homie counts when they start their first mining shift.',
   'friends.notMining': 'Not mining yet',
+  'friends.page': 'Page {p} of {n}', 'friends.prev': 'Previous', 'friends.next': 'Next',
   'friends.openTg': 'Open the app from Telegram to get your link.', 'friends.copied': 'Invite copied', 'friends.copyFail': "Couldn't copy the invite",
   'friends.shareText': '🐶👑 Join my crew on $DOGG MINER: mine $DOGG for free every day on Telegram 🌿',
   'friends.claimTg': 'Open the app from Telegram to claim your rewards.', 'friends.claimed': '+{n} $DOGG from your crew', 'friends.claimFail': "Couldn't claim", 'friends.loadFail': "Couldn't load your referrals",

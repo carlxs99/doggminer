@@ -668,7 +668,7 @@ export type Database = {
         Returns: Json
       }
       dogg_referral: {
-        Args: { p_action: string; p_telegram_id: number }
+        Args: { p_action: string; p_page?: number; p_telegram_id: number }
         Returns: Json
       }
       dogg_referral_qualify: {

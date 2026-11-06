@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Wallet, RefreshCw, Copy, Check, ShieldCheck, LogOut, Info, Pickaxe, Gift, Users, Share2, Smartphone, LineChart, Link2 } from 'lucide-react';
+import { ArrowUpRight, Wallet, RefreshCw, Copy, Check, ShieldCheck, LogOut, Info, Pickaxe, Gift, Users, Share2, Smartphone, LineChart, Link2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -7,7 +7,7 @@ import { useDogg, WITHDRAW_FEE, WITHDRAW_MIN, type Entry } from './state';
 import { withdrawNet } from '@/lib/withdraw';
 import { Title } from './screens';
 import { ScreenHero } from './hero';
-import { JETTON, PRICE, REF_BONUS, REF_SHARE, formatDogg, friendlyError, haptic, referralLink } from '@/lib/dogg';
+import { JETTON, PRICE, REF_BONUS, REF_PAGE, REF_SHARE, formatDogg, friendlyError, haptic, refPages, referralLink } from '@/lib/dogg';
 import { referralAction } from '@/lib/dogg.functions';
 import { coinRain, strongHaptic } from '@/lib/fx';
 import { VERIFY_BUY } from '@/lib/purchase';
@@ -129,26 +129,31 @@ function useReferral() {
   useEffect(() => { setId(window.Telegram?.WebApp?.initDataUnsafe?.user?.id ?? null); }, []);
   return id ? referralLink(id) : null;
 }
-type RefData = { total: number; qualified: number; pending: number; earned: number; walletLinked: boolean; friends: { name: string; username: string | null; joinedAt: string; qualified: boolean; given: number }[] };
+type RefData = { total: number; qualified: number; pending: number; earned: number; walletLinked: boolean; page: number; pages: number; friends: { name: string; username: string | null; joinedAt: string; qualified: boolean; given: number }[] };
 
-let refCache: RefData | null = null;
+const refCache = new Map<number, RefData>();
 export function Amigos() {
   const { demo, busy, applyBalance } = useDogg();
   const t = useT();
   const link = useReferral();
   const refCall = useServerFn(referralAction);
   const [copied, setCopied] = useState(false);
-  const [data, setDataState] = useState<RefData | null>(refCache);
-  const setData = (d: RefData) => { refCache = d; setDataState(d); };
+  const [page, setPage] = useState(0);
+  const [paging, setPaging] = useState(false);
+  const [data, setDataState] = useState<RefData | null>(refCache.get(0) ?? null);
+  const setData = (d: RefData, p: number) => { refCache.set(p, d); setDataState(d); };
   const [claiming, setClaiming] = useState(false);
   const [now] = useState(() => Date.now());
   useEffect(() => {
     const initData = window.Telegram?.WebApp?.initData;
     if (demo || !initData) return;
+    const cached = refCache.get(page);
+    if (cached) { setDataState(cached); return; }
     let active = true;
-    refCall({ data: { initData, action: 'read' } }).then(r => { if (active) setData(r); }).catch(e => { if (active) toast.error(friendlyError(e, t('friends.loadFail'))); });
+    setPaging(true);
+    refCall({ data: { initData, action: 'read', page } }).then(r => { if (active) setData(r, page); }).catch(e => { if (active) toast.error(friendlyError(e, t('friends.loadFail'))); }).finally(() => { if (active) setPaging(false); });
     return () => { active = false; };
-  }, [demo, refCall]);
+  }, [demo, refCall, page]);
   async function copy() { haptic(); if (!link) { toast.info(t('friends.openTg')); return; } try { await navigator.clipboard.writeText(link); setCopied(true); setTimeout(() => setCopied(false), 2000); toast.success(t('friends.copied')); } catch { toast.error(t('friends.copyFail')); } }
   function share() { haptic(); if (!link) { toast.info(t('friends.openTg')); return; } const url = `https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(t('friends.shareText'))}`; const tg = window.Telegram?.WebApp; if (tg?.openTelegramLink) tg.openTelegramLink(url); else window.open(url, '_blank', 'noopener'); }
   async function claim() {
@@ -157,13 +162,15 @@ export function Amigos() {
     if (demo || !initData) { toast.info(t('friends.claimTg')); return; }
     setClaiming(true);
     try {
-      const r = await refCall({ data: { initData, action: 'claim' } });
-      setData(r); applyBalance(r.balance, { kind: 'team', label: 'hist.ref', amount: r.claimed });
+      const r = await refCall({ data: { initData, action: 'claim', page } });
+      setData(r, page); applyBalance(r.balance, { kind: 'team', label: 'hist.ref', amount: r.claimed });
       coinRain(coin); strongHaptic(); toast.success(t('friends.claimed', { n: formatDogg(r.claimed) }));
     } catch (e) { toast.error(friendlyError(e, t('friends.claimFail'))); }
     finally { setClaiming(false); }
   }
-  const d = data ?? { total: 0, qualified: 0, pending: 0, earned: 0, walletLinked: false, friends: [] };
+  const d = data ?? { total: 0, qualified: 0, pending: 0, earned: 0, walletLinked: false, page: 0, pages: 1, friends: [] };
+  const pages = Math.max(1, d.pages || refPages(d.total));
+  const at = Math.min(page + 1, pages);
   return <>
     <ScreenHero title={t('nav.friends')} art="cap" subtitle={t('friends.subtitle')} />
     <div className="row-list">
@@ -186,6 +193,7 @@ export function Amigos() {
     {d.friends.length === 0
       ? <section className="vault-list empty"><Smartphone /><p>{t('friends.empty')}</p></section>
       : <section className="vault-list">{d.friends.map((f, i) => <div key={f.joinedAt + i} className="vault-item"><span className="credential-avatar ref-avatar">{f.name.slice(0, 1).toUpperCase()}</span><div><strong>{f.name}</strong><small>{f.username ? `@${f.username} · ` : ''}{ago(Date.parse(f.joinedAt), now)}</small></div><div className="vault-amount">{f.qualified ? <strong>+{formatDogg(f.given + REF_BONUS)} <Coin size={12} /></strong> : null}<em className={f.qualified ? 'ok' : ''}>{f.qualified ? t('friends.mining') : t('friends.notMining')}</em></div></div>)}</section>}
+    {d.total > REF_PAGE && <div className="ref-pager"><Button size="sm" variant="outline" onClick={() => { haptic(); setPage(p => Math.max(0, p - 1)); }} disabled={at <= 1 || paging} aria-label={t('friends.prev')}><ChevronLeft /></Button><span>{t('friends.page', { p: at, n: pages })}</span><Button size="sm" variant="outline" onClick={() => { haptic(); setPage(p => Math.min(pages - 1, p + 1)); }} disabled={at >= pages || paging} aria-label={t('friends.next')}><ChevronRight /></Button></div>}
   </>;
 }
 

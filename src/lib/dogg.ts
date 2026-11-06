@@ -5,6 +5,9 @@ export const PRICE = `https://dedust.io/coins/${JETTON}`;
 export const SHIFT_MS = 86400000;
 export const AD_REWARD = 5; export const AD_DAILY = 10;
 export const REF_BONUS = 100; export const REF_SHARE = 0.1;
+// Recruits shown per page in the friends list; must match the LIMIT/OFFSET in public.dogg_referral.
+export const REF_PAGE = 20;
+export const refPages = (total: number) => Math.max(1, Math.ceil(Math.max(0, total) / REF_PAGE));
 /** Direct link of the mini app in @Doggminerbot; ?startapp= reaches the app as the signed start_param. */
 export const MINI_APP_LINK = 'https://t.me/Doggminerbot/miner';
 export const referralLink = (telegramId: number) => `${MINI_APP_LINK}?startapp=ref_${telegramId}`;

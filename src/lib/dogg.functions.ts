@@ -253,15 +253,15 @@ export const turboAdAction = createServerFn({ method: 'POST' })
   });
 
 const FriendSchema = z.object({ name: z.string(), username: z.string().nullable(), joinedAt: z.string(), qualified: z.boolean(), given: z.number() });
-/** Referrals: stats, recent recruits and claiming the pot (+100 per qualified recruit, 10% of their mining). */
+/** Referrals: stats, one page of recruits (REF_PAGE per page) and claiming the pot (+100 per qualified recruit, 10% of their mining). */
 export const referralAction = createServerFn({ method: 'POST' })
-  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'claim']) }))
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), action: z.enum(['read', 'claim']), page: z.number().int().min(0).max(500).default(0) }))
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const r = await supabaseAdmin.rpc('dogg_referral', { p_telegram_id: telegramId, p_action: data.action });
+    const r = await supabaseAdmin.rpc('dogg_referral', { p_telegram_id: telegramId, p_action: data.action, p_page: data.page });
     if (r.error) throw new Error(r.error.message);
-    return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), friends: z.array(FriendSchema) }).parse(r.data);
+    return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), page: z.number(), pages: z.number(), friends: z.array(FriendSchema) }).parse(r.data);
   });
 
 /** One-time withdrawal verification: the linked wallet must hold >= 100 $DOGG on-chain (read server-side). Once passed, it's permanent. */

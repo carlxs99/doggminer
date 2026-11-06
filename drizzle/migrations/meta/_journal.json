@@ -288,6 +288,13 @@
       "when": 1793933066589,
       "tag": "0040_react_task_reopen_daily",
       "breakpoints": true
+    },
+    {
+      "idx": 41,
+      "version": "7",
+      "when": 1793933251159,
+      "tag": "0041_referral_friends_pages",
+      "breakpoints": true
     }
   ]
 }

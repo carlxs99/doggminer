@@ -96,6 +96,7 @@ export const es = {
   'friends.h3': 'Gana de por vida', 'friends.h3d': 'Recibes el {p} % de cada turno que cobre, para siempre y sin caducidad. Él no pierde nada.',
   'friends.latest': 'Últimos amigos invitados', 'friends.empty': 'Aún no tienes reclutas. Comparte tu enlace: cada homie cuenta cuando inicia su primer turno de minería.',
   'friends.notMining': 'Sin minar aún',
+  'friends.page': 'Página {p} de {n}', 'friends.prev': 'Anteriores', 'friends.next': 'Siguientes',
   'friends.openTg': 'Abre la app desde Telegram para tener tu enlace.', 'friends.copied': 'Invitación copiada', 'friends.copyFail': 'No se pudo copiar la invitación',
   'friends.shareText': '🐶👑 Únete a mi crew en $DOGG MINER: mina $DOGG gratis cada día en Telegram 🌿',
   'friends.claimTg': 'Abre la app desde Telegram para reclamar tus recompensas.', 'friends.claimed': '+{n} $DOGG de tu crew', 'friends.claimFail': 'No se pudo reclamar', 'friends.loadFail': 'No se pudieron cargar tus referidos',

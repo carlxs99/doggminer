@@ -91,6 +91,7 @@ export const ru: Record<keyof typeof es, string> = {
   'friends.h3': 'Зарабатывай навсегда', 'friends.h3d': 'Ты получаешь {p}% с каждой собранной им смены — навсегда и без срока. Он ничего не теряет.',
   'friends.latest': 'Последние приглашённые', 'friends.empty': 'Пока нет рефералов. Поделись ссылкой: друг засчитывается, когда запускает первую смену майнинга.',
   'friends.notMining': 'Ещё не майнит',
+  'friends.page': 'Страница {p} из {n}', 'friends.prev': 'Назад', 'friends.next': 'Вперёд',
   'friends.openTg': 'Открой приложение из Telegram, чтобы получить ссылку.', 'friends.copied': 'Приглашение скопировано', 'friends.copyFail': 'Не удалось скопировать приглашение',
   'friends.shareText': '🐶👑 Вступай в мою банду в $DOGG MINER: майни $DOGG бесплатно каждый день в Telegram 🌿',
   'friends.claimTg': 'Открой приложение из Telegram, чтобы забрать награды.', 'friends.claimed': '+{n} $DOGG от твоей банды', 'friends.claimFail': 'Не удалось забрать', 'friends.loadFail': 'Не удалось загрузить рефералов',
