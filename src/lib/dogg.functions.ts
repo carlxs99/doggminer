@@ -264,7 +264,7 @@ export const referralAction = createServerFn({ method: 'POST' })
     return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), page: z.number(), pages: z.number(), friends: z.array(FriendSchema) }).parse(r.data);
   });
 
-/** One-time withdrawal verification: the linked wallet must hold >= 100 $DOGG on-chain (read server-side). Once passed, it's permanent. */
+/** One-time withdrawal verification: the linked wallet must hold >= 1 $DOGG on-chain (read server-side). Once passed, it's permanent. */
 export const verifyPurchase = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
   .handler(async ({ data }) => {

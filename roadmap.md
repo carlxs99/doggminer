@@ -1,4 +1,5 @@
 # DOGG mini app
+- [x] Lower withdrawal verification to 1 DOGG; 14 tests pass, database rollback checks reject NULL/0/<1, accept exactly 1, preserve permanent verification and wallet exclusivity. Real Telegram wallet verification remains untested.
 - [x] Replace fixed mining with selectable miners, four-decimal live total and 24-hour badges.
 - [x] Accrue each part of a shift at its active miner rate without retroactive recalculation; freeze production at 24h. Secure database logic updated; Telegram flow remains unverified without bot credentials.
 - [x] Verify available/locked/active states and mid-shift switching in demo through the UI; four calculation tests pass, no browser errors, build OK.
