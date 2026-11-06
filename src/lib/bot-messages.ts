@@ -71,7 +71,7 @@ export function inviteMessage(telegramId: number): BotMessage {
     text: [
       '👥 <b>Invite friends, stack $DOGG</b>',
       '',
-      `🎁 <b>+${REF_BONUS} $DOGG</b> for every friend who starts mining`,
+      `🎁 <b>+${REF_BONUS} $DOGG</b> for every friend who mines and claims their first shift`,
       `♾️ <b>${pct}%</b> of everything they mine — for life`,
       '',
       'Your personal link:',
@@ -86,14 +86,14 @@ export function inviteMessage(telegramId: number): BotMessage {
 
 export function referralJoinedMessage(recruit: string): BotMessage {
   return {
-    text: `🎉 <b>New recruit!</b>\n\n${recruit} just joined $DOGG MINER with your link.\nYou'll get <b>+${REF_BONUS} $DOGG</b> as soon as they start their first mining shift ⛏️`,
+    text: `🎉 <b>New recruit!</b>\n\n${recruit} just joined $DOGG MINER with your link.\nYou'll get <b>+${REF_BONUS} $DOGG</b> once they mine at least 1 hour and claim their first shift ⛏️`,
     buttons: [[{ text: '👥 Invite more friends', callback_data: 'invite' }]],
   };
 }
 
 export function referralQualifiedMessage(recruit: string): BotMessage {
   return {
-    text: `💰 <b>+${REF_BONUS} $DOGG earned!</b>\n\n${recruit} started mining, so your bonus is waiting in your referral pot.\nYou also get <b>${pct}%</b> of everything they mine — forever ♾️\n\nOpen <b>Friends</b> in the app to claim it 👇`,
+    text: `💰 <b>+${REF_BONUS} $DOGG earned!</b>\n\n${recruit} claimed their first mining shift, so your bonus is waiting in your referral pot.\nYou also get <b>${pct}%</b> of everything they mine — forever ♾️\n\nOpen <b>Friends</b> in the app to claim it 👇`,
     buttons: [[{ text: '💰 Claim my $DOGG', url: MINI_APP_LINK }]],
   };
 }
