@@ -327,3 +327,14 @@ export const unlinkWallet = createServerFn({ method: 'POST' })
     if (result.error) throw new Error(result.error.message);
     return settle(supabaseAdmin, telegramId, result.data, 0);
   });
+
+/** Records the miner level the player has been shown and returns the previous one, so a rank up is announced once per account on any device (UX only; no balances). */
+export const markSeenLevel = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), level: z.number().int().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const id = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.rpc('dogg_mark_level', { p_id: id, p_level: data.level });
+    if (r.error) throw new Error(r.error.message);
+    return { prev: Number(r.data) || 0 };
+  });

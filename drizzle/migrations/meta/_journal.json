@@ -372,6 +372,13 @@
       "when": 1793989343681,
       "tag": "0052_referral_farm_three_heavy_seconds",
       "breakpoints": true
+    },
+    {
+      "idx": 53,
+      "version": "7",
+      "when": 1794008140645,
+      "tag": "0053_dogg_seen_level",
+      "breakpoints": true
     }
   ]
 }

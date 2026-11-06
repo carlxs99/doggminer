@@ -377,6 +377,24 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_seen_levels: {
+        Row: {
+          level: number
+          telegram_id: number
+          updated_at: string
+        }
+        Insert: {
+          level: number
+          telegram_id: number
+          updated_at?: string
+        }
+        Update: {
+          level?: number
+          telegram_id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       dogg_signals: {
         Row: {
           country: string | null
@@ -647,6 +665,10 @@ export type Database = {
           isOneToOne: false
           isSetofReturn: true
         }
+      }
+      dogg_mark_level: {
+        Args: { p_id: number; p_level: number }
+        Returns: number
       }
       dogg_miner_stats: {
         Args: { p_id: string }

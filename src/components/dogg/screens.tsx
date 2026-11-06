@@ -6,6 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { toast } from 'sonner';
 import { useDogg } from './state';
 import type { Player } from '@/lib/dogg';
+import { markSeenLevel } from '@/lib/dogg.functions';
 import { SHIFT_MS, formatDogg, JETTON, SWAP, PRICE, haptic, AD_REWARD, AD_DAILY } from '@/lib/dogg';
 import coin from '@/assets/dogg-coin.webp';
 import { ScreenHero, leafArt } from './hero';
@@ -63,13 +64,15 @@ function NextMiner({ player, demo }: { player: Player; demo: boolean }) {
   const top = bestLevel(total);
   useEffect(() => {
     // Remember the last level seen per account so reopening the app (initial data load) never re-announces a rank up.
-    const uid = window.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-    if (demo || !uid) return;
-    const key = `dogg-seen-level-${uid}`;
-    let seen = 0;
-    try { seen = Number(localStorage.getItem(key)) || 0; } catch { /* storage blocked */ }
-    if (seen && level > seen) { window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); const m = getMiner(player.minerId); toast.success(t('up.title'), { description: t('up.body', { name: m.name, d: m.daily }) }); }
-    if (level !== seen) { try { localStorage.setItem(key, String(level)); } catch { /* storage blocked */ } }
+    // The last announced level is stored per account on the server, so any device announces a real rank up once.
+    const initData = window.Telegram?.WebApp?.initData;
+    if (demo || !initData) return;
+    let gone = false;
+    markSeenLevel({ data: { initData, level } }).then(({ prev }) => {
+      if (gone || !prev || level <= prev) return;
+      window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred('success'); const m = getMiner(player.minerId); toast.success(t('up.title'), { description: t('up.body', { name: m.name, d: m.daily }) });
+    }).catch(() => {});
+    return () => { gone = true; };
   }, [level, player.minerId, t, demo]);
   if (top >= 500) return <div className="next-miner"><span>{t('up.max')}</span></div>;
   const cur = minerAt(top), next = minerAt(top + 1);
