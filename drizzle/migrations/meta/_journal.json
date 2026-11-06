@@ -337,6 +337,13 @@
       "when": 1793965450851,
       "tag": "0047_referral_bonus_on_start_or_claim_no_cap",
       "breakpoints": true
+    },
+    {
+      "idx": 48,
+      "version": "7",
+      "when": 1793981820955,
+      "tag": "0048_referral_farm_instant_ban",
+      "breakpoints": true
     }
   ]
 }
