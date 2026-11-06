@@ -15,7 +15,7 @@ async function send(chatId: number, p: ReminderPlayer, now: number): Promise<'se
       const msg = e instanceof Error ? e.message : String(e);
       if (GONE.test(msg)) return 'gone';
       const wait = /retry after (\d+)/i.exec(msg);
-      if (wait && attempt === 0) { await sleep(Math.min(30, Number(wait[1])) * 1000 + 200); continue; }
+      if (wait && attempt === 0 && Number(wait[1]) <= 3) { await sleep(Number(wait[1]) * 1000 + 200); continue; }
       console.warn('reminder not delivered', chatId, msg);
       return 'failed';
     }
@@ -23,19 +23,27 @@ async function send(chatId: number, p: ReminderPlayer, now: number): Promise<'se
   return 'failed';
 }
 
-export async function runReminders(admin: Admin, limit = 40) {
+/**
+ * One run sends up to `limit` reminders in parallel waves of ~25 per second (Telegram's broadcast limit is ~30/s),
+ * so a run fits the ~30 s background window and stays under the Worker's subrequest cap.
+ */
+export async function runReminders(admin: Admin, limit = 600) {
   const { data, error } = await admin.rpc('dogg_claim_reminders', { p_limit: limit });
   if (error) throw new Error(error.message);
   const rows = (data ?? []) as (ReminderPlayer & { telegram_id: number })[];
   const out = { claimed: rows.length, sent: 0, gone: 0, failed: 0 };
   const now = Date.now();
-  for (const row of rows) {
-    const r = await send(Number(row.telegram_id), row, now);
-    out[r]++;
-    // Blocked the bot (or never opened it): stop messaging them until they /start again.
-    if (r === 'gone') await admin.from('dogg_players').update({ bot_blocked_at: new Date().toISOString() }).eq('telegram_id', row.telegram_id);
-    await sleep(50); // well under Telegram's ~30 messages/second
+  const gone: number[] = [];
+  for (let i = 0; i < rows.length; i += 25) {
+    const started = Date.now();
+    const wave = rows.slice(i, i + 25);
+    const results = await Promise.all(wave.map(row => send(Number(row.telegram_id), row, now)));
+    results.forEach((r, k) => { out[r]++; if (r === 'gone') gone.push(Number(wave[k]!.telegram_id)); });
+    const rest = 1000 - (Date.now() - started);
+    if (rest > 0 && i + 25 < rows.length) await sleep(rest);
   }
+  // Blocked the bot (or never opened it): stop messaging them until they /start again.
+  if (gone.length) await admin.from('dogg_players').update({ bot_blocked_at: new Date().toISOString() }).in('telegram_id', gone);
   return out;
 }
 
