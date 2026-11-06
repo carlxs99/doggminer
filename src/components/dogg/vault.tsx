@@ -17,6 +17,7 @@ import { useT } from './lang';
 import { t as tg, tLabel } from '@/lib/i18n';
 import { bestLevel, getMiner } from '@/lib/mining';
 import coin from '@/assets/dogg-coin.webp';
+import { useDoggUsd, formatUsdt } from '@/lib/usd-price';
 
 const Coin = ({ size = 16 }: { size?: number }) => <img src={coin} width={size} height={size} alt="" className="inline-coin" />;
 const short = (a: string) => `${a.slice(0, 4)}…${a.slice(-4)}`;
@@ -203,6 +204,7 @@ export function Perfil() {
   const [refresh, setRefresh] = useState(0);
   const [amount, setAmount] = useState('');
   const { balances, error, loading } = useOnchain(wallet, refresh);
+  const usd = useDoggUsd();
   const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user : undefined;
   const [withdrawPage, setWithdrawPage] = useState(0);
   const withdrawals = history.filter(e => e.kind === 'withdraw' && e.amount < 0);
@@ -216,8 +218,8 @@ export function Perfil() {
     <section className="info-row profile-card"><span className="credential-avatar">{name.slice(0, 1).toUpperCase()}</span><div><strong>{name}</strong>{tg?.username && <small>@{tg.username}</small>}<small>{tg?.id ? `ID ${tg.id}` : ''}</small></div><img className="profile-dogg" src={coin} alt="$DOGG" width={56} height={56} /></section>
     <Button className="wallet-pill" onClick={() => openWallet?.()} disabled={!openWallet}><Wallet />{wallet ? t('profile.walletOn', { a: short(wallet) }) : t('shell.connect')}</Button>
     <div className="row-list">
-      <section className="info-row"><div><strong>{t('profile.holdWallet')}</strong><small>$DOGG on-chain {wallet && <button className="inline-refresh" aria-label={t('profile.refresh')} onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</small></div><b className="row-amount">{wallet ? (loading && !balances ? '…' : formatDogg(balances?.dogg ?? 0)) : '—'} <Coin /></b></section>
-      <section className="info-row"><div><strong>{t('profile.miningWallet')}</strong><small>{player.walletAddress ? t('profile.linked') : t('profile.ready')}</small></div><b className="row-amount">{formatDogg(player.balance)} <Coin /></b></section>
+      <section className="info-row"><div><strong>{t('profile.holdWallet')}</strong><small>$DOGG on-chain {wallet && <button className="inline-refresh" aria-label={t('profile.refresh')} onClick={() => setRefresh(r => r + 1)}><RefreshCw className={loading ? 'animate-spin' : ''} /></button>}</small></div><div className="row-amount-wrap"><b className="row-amount">{wallet ? (loading && !balances ? '…' : formatDogg(balances?.dogg ?? 0)) : '—'} <Coin /></b>{wallet && balances && usd != null && <small className="row-usd">{formatUsdt((balances.dogg ?? 0) * usd)}</small>}</div></section>
+      <section className="info-row"><div><strong>{t('profile.miningWallet')}</strong><small>{player.walletAddress ? t('profile.linked') : t('profile.ready')}</small></div><div className="row-amount-wrap"><b className="row-amount">{formatDogg(player.balance)} <Coin /></b>{usd != null && <small className="row-usd">{formatUsdt(player.balance * usd)}</small>}</div></section>
     </div>
     {error && <p role="alert" className="text-destructive text-sm mt-2">{t('vault.readFail')}</p>}
     <WithdrawVerify />
