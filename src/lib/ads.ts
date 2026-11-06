@@ -31,24 +31,20 @@ export async function showRewardedAd(ymid?: string) {
   }
 }
 
-/** Monetag Direct Link ad, alternated with the rewarded interstitial. Opens outside the app and resolves when
- *  the player comes back; leaving for less than DIRECT_MIN_MS counts as not watched. */
+/** Monetag Direct Link ad, alternated with the rewarded interstitial. Opens the link and resolves once the player
+ *  is back in the app and at least DIRECT_MIN_MS have passed (the server pays right after). Telegram does not always
+ *  hide the app while the link is open, so it never depends only on visibility events. */
 export const DIRECT_AD_URL = 'https://uplcm.com/4/12201689';
 const DIRECT_MIN_MS = 8000;
 export async function showDirectAd() {
   const opened = Date.now();
-  const tg = window.Telegram?.WebApp as unknown as { openLink?: (u: string) => void } | undefined;
-  if (tg?.openLink) tg.openLink(DIRECT_AD_URL); else window.open(DIRECT_AD_URL, '_blank');
+  const tg = window.Telegram?.WebApp as unknown as { openLink?: (u: string, o?: { try_instant_view?: boolean }) => void } | undefined;
+  if (tg?.openLink) tg.openLink(DIRECT_AD_URL, { try_instant_view: false }); else window.open(DIRECT_AD_URL, '_blank');
   await new Promise<void>(resolve => {
-    let left = false;
-    const back = () => {
-      if (document.visibilityState === 'hidden') { left = true; return; }
-      if (left || Date.now() - opened > DIRECT_MIN_MS) done();
-    };
-    const timer = setTimeout(() => { if (document.visibilityState === 'visible') done(); }, 90000);
-    function done() { document.removeEventListener('visibilitychange', back); window.removeEventListener('focus', back); clearTimeout(timer); resolve(); }
-    document.addEventListener('visibilitychange', back);
-    window.addEventListener('focus', back);
+    const check = () => { if (document.visibilityState === 'visible' && Date.now() - opened >= DIRECT_MIN_MS) { stop(); resolve(); } };
+    const timer = setInterval(check, 500);
+    function stop() { clearInterval(timer); document.removeEventListener('visibilitychange', check); window.removeEventListener('focus', check); }
+    document.addEventListener('visibilitychange', check);
+    window.addEventListener('focus', check);
   });
-  if (Date.now() - opened < DIRECT_MIN_MS) throw new Error(t('toast.adNone'));
 }
