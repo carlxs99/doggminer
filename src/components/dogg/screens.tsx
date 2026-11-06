@@ -66,7 +66,8 @@ function NextMiner({ player, demo }: { player: Player; demo: boolean }) {
     // Remember the last level seen per account so reopening the app (initial data load) never re-announces a rank up.
     // The last announced level is stored per account on the server, so any device announces a real rank up once.
     const initData = window.Telegram?.WebApp?.initData;
-    if (demo || !initData) return;
+    // Level 1 is the placeholder before data loads (and never a rank up), so it is not recorded.
+    if (demo || !initData || level <= 1) return;
     let gone = false;
     markSeenLevel({ data: { initData, level } }).then(({ prev }) => {
       if (gone || !prev || level <= prev) return;
