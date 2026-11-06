@@ -1,21 +1,9 @@
-// Multi-account detector (server side): stores hashed device/network signals and alerts admins.
-// Scores are informative; only the farm rules in dogg_auto_ban ban automatically.
-import { MINI_APP_LINK } from './dogg';
-import { displayName, type BotMessage } from './bot-messages';
-import { sendBotMessage } from './notify.server';
+// Multi-account detector (server side): stores hashed device/network signals and runs the farm rules.
+// Scores are informative only — the admin reviews them in Admin → Multicuentas; no bot alerts are sent.
+// Only the farm rules in dogg_auto_ban ban automatically.
+import { displayName } from './bot-messages';
 
 type Admin = (typeof import('@/integrations/supabase/client.server'))['supabaseAdmin'];
-
-const REASON_ES: Record<string, string> = {
-  device: '📱 mismo dispositivo', fp: '🧬 misma huella del móvil', ip: '🌐 misma red', wallet: '👛 wallet compartida', selfref: '🔁 se refirió a sí mismo',
-};
-
-export function multiAlertMessage(name: string, id: number, score: number, reasons: string[]): BotMessage {
-  return {
-    text: `🚨 <b>Posible multicuenta</b>\n\n${name} · <code>${id}</code>\nRiesgo: <b>${score}/100</b>\n${reasons.map(r => REASON_ES[r] ?? r).join('\n')}\n\nRevísalo en Admin → Multicuentas. Las granjas (más de 5 cuentas en un dispositivo, en la misma red con el mismo invitador en 1 h, o cuentas nuevas en un móvil ya baneado) se banean automáticamente.`,
-    buttons: [[{ text: '🛡️ Abrir el panel', url: MINI_APP_LINK }]],
-  };
-}
 
 async function hmac(value: string) {
   const secret = process.env['DOGG_PROOF_SECRET'];
@@ -24,7 +12,7 @@ async function hmac(value: string) {
   return createHmac('sha256', secret).update(`multi:${value}`).digest('hex').slice(0, 40);
 }
 
-/** Records this visit's signals (device id, device fingerprint, network) and alerts admins the first time risk reaches 70. */
+/** Records this visit's signals (device id, device fingerprint, network) and applies the auto-ban farm rules. */
 export async function recordSignals(admin: Admin, telegramId: number, device: { id: string; fp: string } | undefined, who: { firstName: string | null; username: string | null }) {
   try {
     const { getRequestHeader } = await import('@tanstack/react-start/server');
@@ -39,10 +27,8 @@ export async function recordSignals(admin: Admin, telegramId: number, device: { 
     // Auto-ban farm groups (rules in dogg_auto_ban; admins can unban in the panel).
     const b = await admin.rpc('dogg_auto_ban', { p_telegram_id: telegramId });
     if (b.error) console.error('autoBan', b.error.message);
-    const res = r.data as { score?: number; reasons?: string[]; alert?: boolean } | null;
-    if (!res?.alert) return;
-    const admins = (await admin.from('dogg_admins').select('telegram_id')).data ?? [];
-    const msg = multiAlertMessage(displayName(who.firstName, who.username), telegramId, Number(res.score ?? 0), res.reasons ?? []);
-    for (const a of admins) await sendBotMessage(Number(a.telegram_id), msg);
+    // Risk scores stay in the database for the admin panel; nobody is messaged about them.
+    const res = r.data as { score?: number; reasons?: string[] } | null;
+    if (res?.score) console.log(`multi-score ${displayName(who.firstName, who.username)} (${telegramId}): ${res.score}`, res.reasons ?? []);
   } catch (e) { console.error('recordSignals', e); }
 }
