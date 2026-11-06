@@ -351,6 +351,13 @@
       "when": 1793981937063,
       "tag": "0049_referral_farm_threshold_60",
       "breakpoints": true
+    },
+    {
+      "idx": 50,
+      "version": "7",
+      "when": 1793982391919,
+      "tag": "0050_referral_farm_speed_signature",
+      "breakpoints": true
     }
   ]
 }
