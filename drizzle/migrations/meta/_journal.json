@@ -330,6 +330,13 @@
       "when": 1793965089532,
       "tag": "0046_referral_bonus_after_real_mining",
       "breakpoints": true
+    },
+    {
+      "idx": 47,
+      "version": "7",
+      "when": 1793965450851,
+      "tag": "0047_referral_bonus_on_start_or_claim_no_cap",
+      "breakpoints": true
     }
   ]
 }
