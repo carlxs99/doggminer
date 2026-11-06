@@ -30,7 +30,7 @@ export const en: Record<keyof typeof es, string> = {
   'faq.q1': 'How do I mine $DOGG?', 'faq.a1': 'Tap "Light the shift" in the Smokehouse. For 24 h you stack $DOGG at your miner\'s power; when it ends, collect it and start another.',
   'faq.q2': 'How do I unlock better miners?', 'faq.a2': 'Each miner needs a minimum hold. It counts the $DOGG in your verified wallet plus what you mined in the app. If your balance drops, your miner drops to the level you cover.',
   'faq.q3': 'Why do I sign when connecting my wallet?', 'faq.a3': "It's a free signature that moves no funds. It proves the wallet is yours so nobody can use someone else's.",
-  'faq.q4': 'How do I withdraw?', 'faq.a4': 'From 1,000 $DOGG; the 70 $DOGG fee is taken from the withdrawal (withdraw 1,000, receive 930). First, verify your wallet once: it must hold at least 100 $DOGG. The transfer reaches your wallet in a few minutes.',
+  'faq.q4': 'How do I withdraw?', 'faq.a4': 'From 1,000 $DOGG; the 70 $DOGG fee is taken from the withdrawal (withdraw 1,000, receive 930). First, verify your wallet once: it must hold at least 1,000 $DOGG. The transfer reaches your wallet in a few minutes.',
   'faq.q5': 'Where do I play?', 'faq.a5': 'Always from @Doggminerbot on Telegram: your account, mining, referrals and withdrawals are saved there.',
   'hero.alt': 'DOGG, the $DOGG MINER character',
 
