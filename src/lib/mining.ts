@@ -23,8 +23,8 @@ export const MINERS: Miner[] = Array.from({ length: MINER_TIERS.length * MINERS_
 const LEGACY: Record<string, Miner> = Object.fromEntries(([['rookie-2', 'Rookie Roller II', 6, 10], ['rookie-3', 'Rookie Roller III', 6.75, 100], ['rookie-4', 'Rookie Roller IV', 7.5, 1000], ['og-grower', 'OG Grower', 25, 10000], ['lowrider', 'Lowrider Hustler', 50, 50000], ['magma', 'Magma OG', 125, 100000], ['kingpin', 'OG Kingpin', 250, 250000]] as const).map(([id, name, daily, hold]) => [id, { id, level: 0, name, category: 'Legacy', power: daily / 25, daily, hold }]));
 export const getMiner = (id: string): Miner => LEGACY[id] ?? MINERS.find(m => m.id === id) ?? minerAt(1);
 export type MiningState = { minerId: string; shiftAccrued: number; rateChangedAt: string | null; shiftStartedAt: string | null; shiftBoost?: number | undefined; turboAt?: string | null | undefined };
-/** Turbo 420: x2 rate for 15 minutes, once per UTC day (mirrors public.dogg_shift). */
-export const TURBO_MS = 15 * 60_000;
+/** Turbo 420: x2 rate for 5 minutes, once per UTC day (mirrors public.dogg_shift). */
+export const TURBO_MS = 5 * 60_000;
 /** Streak multiplier frozen at each shift start/claim — mirrors public.dogg_streak_boost. */
 export const streakBoost = (streak: number) => streak >= 7 ? 1.15 : streak >= 3 ? 1.05 : 1;
 /** Streak still alive today (a start/claim today or yesterday, UTC); otherwise the next one starts at 1. */

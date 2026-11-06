@@ -71,7 +71,7 @@ function NextMiner({ player, demo }: { player: Player; demo: boolean }) {
   const pct = Math.min(100, Math.max(0, (total - cur.hold) / Math.max(1, next.hold - cur.hold) * 100));
   return <div className="next-miner"><div><span>{t('up.next', { n: next.level, d: next.daily })}</span><b>{t('up.left', { x: formatDogg(Math.max(0, next.hold - total)) })}</b></div><div className="next-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={Math.round(pct)}><i style={{ width: `${pct}%` }} /></div></div>;
 }
-/** Daily streak multiplier + Turbo 420 (x2 for 15 min once a day); both are enforced and paid by the server. */
+/** Daily streak multiplier + Turbo 420 (x2 for 5 min once a day); both are enforced and paid by the server. */
 function BoostBar({ player, now, busy, onTurbo }: { player: Player; now: number; busy: boolean; onTurbo: () => void }) {
   const t = useT();
   const streak = liveStreak(player.streak, player.lastCheckin, now);

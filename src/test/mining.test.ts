@@ -75,9 +75,9 @@ describe('daily streak and Turbo 420', () => {
   it('applies the streak multiplier to the whole shift', () => {
     expect(shiftTotal({ ...state, shiftBoost: 1.15 }, start + SHIFT_MS)).toBeCloseTo(5.75);
   });
-  it('doubles the rate for exactly 15 minutes of turbo, inside the shift only', () => {
+  it('doubles the rate for exactly 5 minutes of turbo, inside the shift only', () => {
     const turbo = { ...state, turboAt: new Date(start + 3600_000).toISOString() };
-    expect(TURBO_MS).toBe(15 * 60_000);
+    expect(TURBO_MS).toBe(5 * 60_000);
     expect(shiftTotal(turbo, start + SHIFT_MS)).toBeCloseTo(5 + 5 * TURBO_MS / SHIFT_MS);
     const late = { ...state, turboAt: new Date(start + SHIFT_MS - 5 * 60_000).toISOString() };
     expect(shiftTotal(late, start + SHIFT_MS * 2)).toBeCloseTo(5 + 5 * 5 * 60_000 / SHIFT_MS);

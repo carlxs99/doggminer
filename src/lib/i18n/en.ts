@@ -168,8 +168,8 @@ export const en: Record<keyof typeof es, string> = {
   'admin.wdUser': 'User {u} · {d}', 'admin.attempts': ' · {n} attempts', 'admin.to': 'To {a}', 'admin.markSent': 'Mark as sent', 'admin.refund': 'Refund',
   'up.next': 'Next: level {n} · {d} $DOGG/d', 'up.max': 'Max level reached', 'up.left': '{x} $DOGG to go',
   'up.title': 'Rank up!', 'up.body': 'You now mine with {name}: {d} $DOGG/day',
-  'err.turboUsed': 'You already used Turbo 420 today.', 'err.turboShift': 'Start a shift to fire up Turbo 420.', 'toast.turbo': '🔥 Turbo 420 on: x2 for 15 min',
-  'turbo.btn': 'Turbo 420 · x2 15 min', 'turbo.on': 'Turbo x2 active', 'turbo.used': 'Turbo used · back tomorrow', 'turbo.needShift': 'Start your shift to use Turbo',
+  'err.turboUsed': 'You already used Turbo 420 today.', 'err.turboShift': 'Start a shift to fire up Turbo 420.', 'toast.turbo': '🔥 Turbo 420 on: x2 for 5 min',
+  'turbo.btn': 'Turbo 420 · x2 5 min', 'turbo.on': 'Turbo x2 active', 'turbo.used': 'Turbo used · back tomorrow', 'turbo.needShift': 'Start your shift to use Turbo',
   'streak.label': '{n}-day streak · x{m}', 'streak.none': 'Claim or start every day to build a streak', 'streak.next': '{k} more day(s) → x{m}', 'streak.max': 'Max streak bonus',
-  'err.turboAd': 'Watch the ad to fire up Turbo 420.', 'turbo.ad': '▶ Watch ad · Turbo x2 15 min',
+  'err.turboAd': 'Watch the ad to fire up Turbo 420.', 'turbo.ad': '▶ Watch ad · Turbo x2 5 min',
 };
