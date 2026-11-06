@@ -204,7 +204,12 @@ export function Perfil() {
   const [amount, setAmount] = useState('');
   const { balances, error, loading } = useOnchain(wallet, refresh);
   const tg = typeof window !== 'undefined' ? window.Telegram?.WebApp?.initDataUnsafe?.user : undefined;
+  const [withdrawPage, setWithdrawPage] = useState(0);
   const withdrawals = history.filter(e => e.kind === 'withdraw' && e.amount < 0);
+  const withdrawPages = Math.max(1, Math.ceil(withdrawals.length / REF_PAGE));
+  const currentWithdrawPage = Math.min(withdrawPage, withdrawPages - 1);
+  const visibleWithdrawals = withdrawals.slice(currentWithdrawPage * REF_PAGE, (currentWithdrawPage + 1) * REF_PAGE);
+  useEffect(() => { setWithdrawPage(p => Math.min(p, withdrawPages - 1)); }, [withdrawPages]);
   const now = Date.now();
   return <>
     <ScreenHero title={t('profile.title')} crowned art="bust" />
@@ -218,7 +223,8 @@ export function Perfil() {
     <WithdrawVerify />
     <section className="vault-withdraw stacked"><strong>{t('profile.withdraw')}</strong>
       <form onSubmit={e => { e.preventDefault(); void withdraw(Number(amount)).then(() => setAmount('')); }}><Input inputMode="decimal" type="number" min={WITHDRAW_MIN} placeholder={t('profile.minPh', { n: WITHDRAW_MIN })} value={amount} onChange={e => setAmount(e.target.value)} aria-label={t('vault.amount')} /><small>{Number(amount) >= WITHDRAW_MIN ? t('profile.youGet', { n: withdrawNet(Number(amount)).toLocaleString('de-DE'), fee: WITHDRAW_FEE }) : t('profile.minNote', { min: WITHDRAW_MIN.toLocaleString('de-DE'), fee: WITHDRAW_FEE })}</small><Button type="submit" disabled={busy || !player.withdrawVerified}><ArrowUpRight /> {t('profile.request')}</Button></form></section>
-    <section className="vault-list"><h3 className="list-title">{t('profile.wdHistory')}</h3>{withdrawals.length === 0 ? <p className="vault-empty">{t('profile.wdEmpty')}</p> : withdrawals.map(e => <div key={e.at + e.label} className="vault-item"><span className="vault-icon withdraw"><ArrowUpRight /></span><div><strong>{tLabel(e.label, t.lang)}</strong><small>{ago(e.at, now)}</small></div><div className="vault-amount"><strong className="neg">{formatDogg(e.amount)} <Coin size={14} /></strong>{e.status === 'review' && <em>{t('vault.review')}</em>}</div></div>)}</section>
+    <section className="vault-list"><h3 className="list-title">{t('profile.wdHistory')}</h3>{withdrawals.length === 0 ? <p className="vault-empty">{t('profile.wdEmpty')}</p> : visibleWithdrawals.map(e => <div key={e.at + e.label} className="vault-item"><span className="vault-icon withdraw"><ArrowUpRight /></span><div><strong>{tLabel(e.label, t.lang)}</strong><small>{ago(e.at, now)}</small></div><div className="vault-amount"><strong className="neg">{formatDogg(e.amount)} <Coin size={14} /></strong>{e.status === 'review' && <em>{t('vault.review')}</em>}</div></div>)}</section>
+    {withdrawPages > 1 && <div className="ref-pager"><Button size="sm" variant="outline" onClick={() => { haptic(); setWithdrawPage(currentWithdrawPage - 1); }} disabled={currentWithdrawPage === 0} aria-label={t('friends.prev')}><ChevronLeft /></Button><span aria-live="polite">{t('friends.page', { p: currentWithdrawPage + 1, n: withdrawPages })}</span><Button size="sm" variant="outline" onClick={() => { haptic(); setWithdrawPage(currentWithdrawPage + 1); }} disabled={currentWithdrawPage === withdrawPages - 1} aria-label={t('friends.next')}><ChevronRight /></Button></div>}
     <div className="vault-buy"><BuyDedustLink className="buy-swap"><RefreshCw /><strong>DeDust</strong><small>{t('vault.buyTg')}</small></BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-chart"><LineChart /><strong>{t('vault.chart')}</strong><small>{t('vault.chartSub')}</small></a></div><DedustWebLink />
     <div className="token-contract"><span className="eyebrow">{t('vault.contract')}</span><code>{JETTON}</code></div>
   </>;
