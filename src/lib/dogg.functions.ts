@@ -47,7 +47,8 @@ async function currentHold(supabaseAdmin: Admin, telegramId: number) {
   const fresh = row.data?.last_hold_at && Date.now() - Date.parse(row.data.last_hold_at) < 45_000;
   if (fresh && cached !== null) return cached;
   try {
-    const hold = await jettonHold(wallet);
+    // With a known balance, never make the player wait more than 2.5 s for the chain: use the last one and refresh next time.
+    const hold = cached === null ? await jettonHold(wallet) : await Promise.race([jettonHold(wallet), new Promise<never>((_, rej) => setTimeout(() => rej(new Error('slow')), 2500))]);
     await supabaseAdmin.from('dogg_players').update({ last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
     return hold;
   } catch (e) {
@@ -75,20 +76,24 @@ export const playerAction = createServerFn({ method: 'POST' })
     // On open: create the player, keep its Telegram name and attach the inviter (only for brand-new accounts).
     if (data.action === 'read') await supabaseAdmin.rpc('dogg_register', { p_telegram_id: telegramId, p_referrer: tg.referrer as number, p_first_name: tg.firstName as string, p_username: tg.username as string });
     // Multi-account detector: hashed device + network signals on every open (informative only, never blocks).
-    if (data.action === 'read') { const { recordSignals } = await import('./multi.server'); await recordSignals(supabaseAdmin, telegramId, data.device, tg); }
-    const hold = await currentHold(supabaseAdmin, telegramId);
+    // Signals and the hold read run side by side so opening the app doesn't wait for one after the other.
+    const signals = data.action === 'read' ? import('./multi.server').then(m => m.recordSignals(supabaseAdmin, telegramId, data.device, tg)) : Promise.resolve();
+    const [hold] = await Promise.all([currentHold(supabaseAdmin, telegramId), signals]);
     const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action === 'turbo' ? `turbo:${data.ymid ?? ''}` : data.action, p_hold: hold });
     if (result.error) throw new Error(result.error.message);
     const player = await settle(supabaseAdmin, telegramId, result.data, hold);
     // Tell the inviter (once) when this player joins with their link and when they start mining (+100).
     if (data.action === 'read' || data.action === 'start' || data.action === 'claim') {
       const { notifyReferral } = await import('./notify.server');
-      await notifyReferral(supabaseAdmin, telegramId);
+      await notifyReferral(supabaseAdmin, telegramId).catch(e => console.error('notifyReferral', e));
     }
     if (data.action !== 'read') return player;
     const { isAdmin } = await import('./telegram.server');
-    const ban = await supabaseAdmin.from('dogg_players').select('banned_at').eq('telegram_id', telegramId).maybeSingle();
-    return { ...player, isAdmin: await isAdmin(supabaseAdmin, telegramId), banned: Boolean(ban.data?.banned_at) };
+    const [ban, admin] = await Promise.all([
+      supabaseAdmin.from('dogg_players').select('banned_at').eq('telegram_id', telegramId).maybeSingle(),
+      isAdmin(supabaseAdmin, telegramId).catch(() => false),
+    ]);
+    return { ...player, isAdmin: admin, banned: Boolean(ban.data?.banned_at) };
   });
 
 async function proofSig(telegramId: number, exp: number) {

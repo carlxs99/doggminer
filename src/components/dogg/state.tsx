@@ -91,7 +91,10 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       const read = (silent: boolean) => deviceSignals().then(device => call({ data: { initData: app.initData!, action: 'read', ...(device ? { device } : {}) } })).then(p => {
         setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); if ('banned' in p) setBanned(Boolean(p.banned)); setSynced(true);
       }).catch(e => { if (!silent) toast.error(friendlyError(e)); }).finally(() => setReadDone(true));
-      read(false);
+      // First load: one quiet retry before showing an error, so a busy moment doesn't leave the player without admin/wallet data.
+      deviceSignals().then(device => call({ data: { initData: app.initData!, action: 'read', ...(device ? { device } : {}) } })).then(p => {
+        setPlayer(p); notifyLevel(p); if ('isAdmin' in p) setIsAdmin(Boolean(p.isAdmin)); if ('banned' in p) setBanned(Boolean(p.banned)); setSynced(true); setReadDone(true);
+      }).catch(() => setTimeout(() => read(false), 1500));
       // Ask once for permission to message the player (withdrawal and referral notices from the bot).
       const askWrite = setTimeout(() => {
         try { if (!localStorage.getItem('dogg-write-access')) app.requestWriteAccess?.(ok => localStorage.setItem('dogg-write-access', ok ? '1' : '0')); } catch { /* older clients */ }
