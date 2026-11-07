@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { useServerFn } from '@tanstack/react-start';
-import { Bot, Heart, Fingerprint, Megaphone, Users, RefreshCw, Pause, Play, Trash2, Pencil, Search, ArrowUpRight, Wallet, ShieldCheck, ListChecks, LayoutDashboard, Plus, Minus, Check, Undo2, Send } from 'lucide-react';
+import { Bot, Heart, Fingerprint, Megaphone, Users, RefreshCw, Pause, Play, Trash2, Pencil, Search, ArrowUpRight, Wallet, ShieldCheck, ListChecks, LayoutDashboard, Plus, Minus, Check, Undo2, Send, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -235,24 +235,46 @@ function MultiAdmin() {
     finally { setBusy(null); }
   };
   const t = useT();
-  const { data, loading, reload } = useLoad(() => call({ data: { initData: initData() } }), [call]);
   const [filter, setFilter] = useState<MultiFilter>('all');
+  const [page, setPage] = useState(0);
+  const [revision, setRevision] = useState(0);
+  const [data, setData] = useState<Awaited<ReturnType<typeof adminMulti>> | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  const reload = () => setRevision(r => r + 1);
+  useEffect(() => {
+    let current = true;
+    setLoading(true); setError(false); setData(null);
+    call({ data: { initData: initData(), filter, page } }).then(result => {
+      if (!current) return;
+      if (page > 0 && page * 20 >= result.total) { setPage(Math.max(0, Math.ceil(result.total / 20) - 1)); return; }
+      setData(result);
+    }).catch(e => {
+      if (!current) return;
+      setError(true); toast.error(friendlyError(e, tg('admin.loadFail')));
+    }).finally(() => { if (current) setLoading(false); });
+    return () => { current = false; };
+  }, [call, filter, page, revision]);
   const [busy, setBusy] = useState<number | null>(null);
-  const rows = (data ?? []).filter(r => filter === 'all' || (filter === 'high' && r.score >= 70) || (filter === 'flagged' && r.review === 'flagged')
-    || (filter === 'pending' && (!r.review || (r.review === 'ok' && r.score > (r.review_score ?? 0)))));
+  const rows = data?.rows ?? [];
   const act = async (id: number, status: 'ok' | 'flagged' | 'clear') => {
     setBusy(id); haptic();
     try { await review({ data: { initData: initData(), telegramId: id, status } }); toast.success(t('multi.saved')); reload(); }
     catch (e) { toast.error(friendlyError(e)); }
     finally { setBusy(null); }
   };
-  const high = (data ?? []).filter(r => r.score >= 70).length;
+  const pages = Math.max(1, Math.ceil((data?.total ?? 0) / 20));
   return <>
     <div className="admin-bar"><span>{t('multi.title')}</span><Button size="sm" variant="outline" onClick={reload} disabled={loading}><RefreshCw className={loading ? 'animate-spin' : ''} /> {t('admin.refresh')}</Button></div>
     <p className="admin-muted">{t('multi.help')}</p>
-    <div className="admin-stats"><Stat label={t('multi.linked')} value={n(data?.length ?? 0)} /><Stat label={t('multi.highRisk')} value={n(high)} /></div>
-    <div className="admin-chips">{(['all', 'high', 'pending', 'flagged'] as MultiFilter[]).map(f => <button key={f} className={filter === f ? 'on' : ''} onClick={() => { haptic(); setFilter(f); }}>{t(`multi.f_${f}` as Key)}</button>)}</div>
-    {loading && !data ? <p className="admin-muted">…</p> : rows.length === 0 ? <p className="admin-muted">{t('multi.empty')}</p> : rows.map(r => {
+    <div className="admin-stats"><Stat label={t('multi.linked')} value={data ? n(data.linked) : '—'} /><Stat label={t('multi.highRisk')} value={data ? n(data.high) : '—'} /></div>
+    <div className="admin-chips">{(['all', 'high', 'pending', 'flagged'] as MultiFilter[]).map(f => <Button key={f} size="sm" variant={filter === f ? 'default' : 'outline'} className={filter === f ? 'on' : ''} onClick={() => { haptic(); setPage(0); setFilter(f); }}>{t(`multi.f_${f}` as Key)}</Button>)}</div>
+    {data && data.total > 20 && <div className="admin-bar">
+      <Button size="icon" variant="outline" aria-label={t('friends.prev')} disabled={loading || page === 0} onClick={() => setPage(p => p - 1)}><ChevronLeft /></Button>
+      <span>{t('friends.page', { p: page + 1, n: pages })}</span>
+      <Button size="icon" variant="outline" aria-label={t('friends.next')} disabled={loading || page + 1 >= pages} onClick={() => setPage(p => p + 1)}><ChevronRight /></Button>
+    </div>}
+    {loading ? <p className="admin-muted" role="status">…</p> : error ? <p className="admin-muted" role="alert">{t('admin.loadFail')}</p> : rows.length === 0 ? <p className="admin-muted">{t('multi.empty')}</p> : rows.map(r => {
       const changed = r.review === 'ok' && r.score > (r.review_score ?? 0);
       return <section key={r.id} className={`admin-card multi-card ${level(r.score)}`}>
         <div className="multi-head">
@@ -262,6 +284,7 @@ function MultiAdmin() {
         <div className="multi-reasons">{r.reasons.map(k => <span key={k}>{REASONS[k]?.icon} {REASONS[k] ? t(REASONS[k].key) : k}</span>)}</div>
         <p className="multi-meta">{t('multi.meta', { b: n(r.balance ?? 0, 2), d: when(r.created_at) })} · {r.has_wallet ? t('multi.wallet') : t('multi.noWallet')}{r.can_withdraw ? ` · ${t('multi.canWithdraw')}` : ''}{r.referred_by ? ` · ${t('multi.invitedBy', { id: r.referred_by })}` : ''}</p>
         <ul className="multi-peers">{r.peers.map(p => <li key={p.id}><span>{p.name}{p.username ? ` @${p.username}` : ''}<small>ID {p.id} · {n(p.balance, 2)} $DOGG</small></span><b>{p.kinds.map(k => REASONS[k]?.icon ?? '•').join(' ')}</b></li>)}</ul>
+        {r.peer_count > r.peers.length && <p className="multi-meta">{t('multi.peerCount', { shown: r.peers.length, total: n(r.peer_count) })}</p>}
         {r.review && <p className={`multi-review ${r.review}`}>{r.review === 'ok' ? t('multi.reviewedOk') : t('multi.reviewedFlag')}{changed ? ` · ${t('multi.rose', { a: r.review_score ?? 0, b: r.score })}` : ''}</p>}
         <div className="multi-actions">
           <Button size="sm" variant="outline" disabled={busy === r.id} onClick={() => void act(r.id, 'ok')}><Check /> {t('multi.markOk')}</Button>

@@ -166,23 +166,23 @@ export const adminWithdrawalAction = createServerFn({ method: 'POST' })
     return { ok: true, summary: '' };
   });
 
-// ---------- Multi-account detector (informative: nothing is blocked automatically) ----------
+// ---------- Admin-only multi-account report ----------
 const MultiPeer = z.object({ id: z.coerce.number(), name: z.string(), username: z.string().nullable(), kinds: z.array(z.string()), balance: z.coerce.number() });
 const MultiRow = z.object({
   id: z.coerce.number(), score: z.coerce.number(), reasons: z.array(z.string()), first_name: z.string().nullable(), username: z.string().nullable(),
   balance: z.coerce.number().nullable(), created_at: z.string().nullable(), referred_by: z.coerce.number().nullable(), can_withdraw: z.boolean().nullable(),
   has_wallet: z.boolean().nullable(), banned: z.boolean().nullable().optional(), country: z.string().nullable(), peers: z.array(MultiPeer), review: z.enum(['ok', 'flagged']).nullable(),
-  review_score: z.coerce.number().nullable(), review_note: z.string().nullable(),
+  review_score: z.coerce.number().nullable(), review_note: z.string().nullable(), peer_count: z.coerce.number(),
 });
 export type MultiAccount = z.infer<typeof MultiRow>;
 
 export const adminMulti = createServerFn({ method: 'POST' })
-  .inputValidator(Init)
+  .inputValidator(Init.extend({ filter: z.enum(['all', 'high', 'pending', 'flagged']).default('all'), page: z.number().int().min(0).max(100000).default(0) }))
   .handler(async ({ data }) => {
     const { db } = await requireAdmin(data.initData);
-    const r = await db.rpc('dogg_multi_report', { p_min_score: 15 });
+    const r = await db.rpc('dogg_multi_report_page', { p_filter: data.filter, p_offset: data.page * 20, p_limit: 20 });
     if (r.error) throw new Error(r.error.message);
-    return z.array(MultiRow).parse(r.data ?? []);
+    return z.object({ rows: z.array(MultiRow), total: z.coerce.number(), linked: z.coerce.number(), high: z.coerce.number() }).parse(r.data);
   });
 
 export const adminMultiReview = createServerFn({ method: 'POST' })
@@ -194,6 +194,7 @@ export const adminMultiReview = createServerFn({ method: 'POST' })
       if (d.error) throw new Error(d.error.message);
     } else {
       const sc = await db.rpc('dogg_multi_score', { p_telegram_id: data.telegramId });
+      if (sc.error) throw new Error(sc.error.message);
       const score = Number((sc.data as { score?: number } | null)?.score ?? 0);
       const u = await db.from('dogg_multi_reviews').upsert({ telegram_id: data.telegramId, status: data.status, score, note: data.note ?? null, admin_id: adminId, updated_at: new Date().toISOString() });
       if (u.error) throw new Error(u.error.message);

@@ -682,6 +682,10 @@ export type Database = {
         }[]
       }
       dogg_multi_report: { Args: { p_min_score?: number }; Returns: Json }
+      dogg_multi_report_page: {
+        Args: { p_filter?: string; p_limit?: number; p_offset?: number }
+        Returns: Json
+      }
       dogg_multi_score: { Args: { p_telegram_id: number }; Returns: Json }
       dogg_payout_acquire: { Args: never; Returns: boolean }
       dogg_payout_release: { Args: never; Returns: undefined }
