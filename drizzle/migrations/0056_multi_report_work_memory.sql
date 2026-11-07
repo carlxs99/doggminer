@@ -1,0 +1,1 @@
+ALTER FUNCTION public.dogg_multi_report_page(text,integer,integer) SET work_mem = '32MB';
