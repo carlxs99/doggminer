@@ -421,6 +421,13 @@
       "when": 1794050969892,
       "tag": "0059_referral_farm_instant_start_stricter",
       "breakpoints": true
+    },
+    {
+      "idx": 60,
+      "version": "7",
+      "when": 1794051150547,
+      "tag": "0060_referral_farm_instant_start_100",
+      "breakpoints": true
     }
   ]
 }
