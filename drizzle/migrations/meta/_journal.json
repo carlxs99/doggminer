@@ -407,6 +407,20 @@
       "when": 1794017036331,
       "tag": "0057_unban_false_positives_device_only_rule",
       "breakpoints": true
+    },
+    {
+      "idx": 58,
+      "version": "7",
+      "when": 1794050950256,
+      "tag": "0058_referral_farm_instant_start_signature",
+      "breakpoints": true
+    },
+    {
+      "idx": 59,
+      "version": "7",
+      "when": 1794050969892,
+      "tag": "0059_referral_farm_instant_start_stricter",
+      "breakpoints": true
     }
   ]
 }
