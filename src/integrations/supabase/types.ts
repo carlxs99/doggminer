@@ -505,6 +505,24 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_unban_apologies: {
+        Row: {
+          notified_at: string | null
+          telegram_id: number
+          unbanned_at: string
+        }
+        Insert: {
+          notified_at?: string | null
+          telegram_id: number
+          unbanned_at?: string
+        }
+        Update: {
+          notified_at?: string | null
+          telegram_id?: number
+          unbanned_at?: string
+        }
+        Relationships: []
+      }
       dogg_wallet_links: {
         Row: {
           first_at: string
