@@ -1,4 +1,6 @@
 # DOGG mini app
+- [x] Revalidated reported farms; banned wahyuzaiker on two corroborated timing signatures, preserved balances and left seven doubtful operators for manual review.
+- [x] Added conservative paced-farm detection at first qualification, referral claim, withdrawal and payout boundaries; disposable rollback tests and 13 regression tests pass. Real Telegram UI flow remains unverified.
 - [x] Rechecked suspected farms: banned 14 corroborated synchronized operators and 6 exact-device accounts; preserved all balances and doubtful accounts; recorded per-account evidence and verified database results.
 - [x] Repair Multicuentas report timeouts with set-based scoring, server-side filtered pages and error states; admin browser verified loading, page 2 and flagged filter without changing balances or bans; 7 tests pass.
 - [x] Lower withdrawal verification to 1 DOGG; 14 tests pass, database rollback checks reject NULL/0/<1, accept exactly 1, preserve permanent verification and wallet exclusivity. Real Telegram wallet verification remains untested.

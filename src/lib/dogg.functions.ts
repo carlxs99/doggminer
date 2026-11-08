@@ -217,6 +217,9 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    // Commit the evidence-based decision before the withdrawal RPC so a rejected withdrawal cannot roll the ban back.
+    const check = await supabaseAdmin.rpc('dogg_referral_farm_check', { p_referrer: telegramId });
+    if (check.error) throw new Error(check.error.message);
     const w = await supabaseAdmin.rpc('dogg_withdraw', { p_telegram_id: telegramId, p_amount: data.amount });
     if (w.error) throw new Error(w.error.message);
     const { processPayouts } = await import('./payout.server');
@@ -259,6 +262,10 @@ export const referralAction = createServerFn({ method: 'POST' })
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    if (data.action === 'claim') {
+      const check = await supabaseAdmin.rpc('dogg_referral_farm_check', { p_referrer: telegramId });
+      if (check.error) throw new Error(check.error.message);
+    }
     const r = await supabaseAdmin.rpc('dogg_referral', { p_telegram_id: telegramId, p_action: data.action, p_page: data.page });
     if (r.error) throw new Error(r.error.message);
     return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), page: z.number(), pages: z.number(), friends: z.array(FriendSchema) }).parse(r.data);

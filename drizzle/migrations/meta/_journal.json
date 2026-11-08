@@ -428,6 +428,13 @@
       "when": 1794051150547,
       "tag": "0060_referral_farm_instant_start_100",
       "breakpoints": true
+    },
+    {
+      "idx": 61,
+      "version": "7",
+      "when": 1794150993688,
+      "tag": "0061_corroborated_paced_referral_farms",
+      "breakpoints": true
     }
   ]
 }

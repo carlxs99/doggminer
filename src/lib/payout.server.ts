@@ -151,8 +151,14 @@ export async function processPayouts(admin: Admin, budgetMs = 45_000) {
       if (summary.waiting) return summary;
     }
     while (Date.now() - started < budgetMs) {
-      const { data: next } = await admin.from('dogg_withdrawals').select('id, address, amount, seqno, query_id, attempted_at').eq('status', 'pending').order('created_at').limit(1).maybeSingle();
+      const { data: next } = await admin.from('dogg_withdrawals').select('id, telegram_id, address, amount, seqno, query_id, attempted_at').eq('status', 'pending').order('created_at').limit(1).maybeSingle();
       if (!next) break;
+      const check = await admin.rpc('dogg_referral_farm_check', { p_referrer: next.telegram_id });
+      if (check.error) { summary.error = check.error.message; break; }
+      const player = await admin.from('dogg_players').select('banned_at').eq('telegram_id', next.telegram_id).single();
+      if (player.error) { summary.error = player.error.message; break; }
+      // Never send an already banned account's queue; sending rows are still reconciled, never blindly refunded.
+      if (player.data.banned_at) { summary.error = 'Cuenta suspendida por multicuentas.'; break; }
       const w = next as Row;
       const f = await funds(ctx);
       if (f.ton < MIN_TON || f.dogg < jettonUnits(Number(w.amount), ctx.decimals)) {
@@ -165,6 +171,7 @@ export async function processPayouts(admin: Admin, budgetMs = 45_000) {
       const queryId = queryIdFor(w.id);
       // Record the attempt BEFORE sending: if anything breaks after the send, reconcile still knows about it.
       const claimed = await admin.from('dogg_withdrawals').update({ status: 'sending', seqno, query_id: queryId, attempted_at: new Date().toISOString(), error: null }).eq('id', w.id).eq('status', 'pending').select('id');
+      if (claimed.error) { summary.error = claimed.error.message; break; }
       if (!claimed.data?.length) continue;
       try { await sendOne(ctx, w, seqno, queryId); } catch (e) { console.error('payout send', e); }
       let executed = false;

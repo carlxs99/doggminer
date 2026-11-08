@@ -715,6 +715,7 @@ export type Database = {
         Args: { p_action: string; p_page?: number; p_telegram_id: number }
         Returns: Json
       }
+      dogg_referral_farm_check: { Args: { p_referrer: number }; Returns: Json }
       dogg_referral_qualify: {
         Args: { p_telegram_id: number }
         Returns: boolean
