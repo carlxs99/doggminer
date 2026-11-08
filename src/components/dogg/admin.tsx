@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { useDogg } from './state';
 import { adminAdjust, adminOverview, adminSaveTask, adminTaskAction, adminTasks, adminUsers, adminWithdrawalAction, adminWithdrawals, adminMulti, adminMultiReview, adminSetBan, type AdminTask, type AdminUser, type AdminWithdrawal, type MultiAccount } from '@/lib/admin.functions';
+import { BroadcastAdmin } from './admin-broadcast';
 import type { TaskKind } from '@/lib/tasks';
 import { useT } from './lang';
 import { currentLang, LOCALE, t as tg, type Key } from '@/lib/i18n';
@@ -16,13 +17,14 @@ const n = (v: number, d = 0) => Number(v ?? 0).toLocaleString(LOCALE[currentLang
 const when = (iso: string | null) => iso ? new Date(iso).toLocaleString(LOCALE[currentLang()], { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' }) : '—';
 const short = (a: string) => a.length > 14 ? `${a.slice(0, 6)}…${a.slice(-4)}` : a;
 const initData = () => window.Telegram?.WebApp?.initData ?? '';
-type Tab = 'resumen' | 'tareas' | 'usuarios' | 'retiros' | 'multi';
+type Tab = 'resumen' | 'tareas' | 'usuarios' | 'retiros' | 'multi' | 'broadcast';
 const TABS: { id: Tab; label: Key; icon: typeof Bot }[] = [
   { id: 'resumen', label: 'admin.tabSummary', icon: LayoutDashboard },
   { id: 'tareas', label: 'admin.tabTasks', icon: ListChecks },
   { id: 'usuarios', label: 'admin.tabUsers', icon: Users },
   { id: 'retiros', label: 'admin.tabWd', icon: ArrowUpRight },
   { id: 'multi', label: 'admin.tabMulti', icon: Fingerprint },
+  { id: 'broadcast', label: 'admin.tabBroadcast', icon: Send },
 ];
 
 export function AdminPanel() {
@@ -38,6 +40,7 @@ export function AdminPanel() {
     {tab === 'usuarios' && <UsersAdmin />}
     {tab === 'retiros' && <WithdrawalsAdmin />}
     {tab === 'multi' && <MultiAdmin />}
+    {tab === 'broadcast' && <BroadcastAdmin />}
   </div>;
 }
 

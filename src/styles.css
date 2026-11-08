@@ -804,3 +804,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 
 .row-amount-wrap { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; min-width: 0; }
 .row-usd { font-size: 0.7rem; color: var(--muted-foreground); white-space: nowrap; }
+.bc-pick{position:relative;display:flex;align-items:center;justify-content:center;height:72px;border:1.5px dashed var(--neon-line);border-radius:12px;color:var(--primary)}
+.bc-pick input{position:absolute;inset:0;opacity:0;cursor:pointer}
+.bc-img{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.bc-img img{max-height:160px;max-width:100%;border-radius:12px;border:1.5px solid var(--neon-line)}

@@ -209,3 +209,53 @@ export const adminSetBan = createServerFn({ method: 'POST' })
     if (r.error) throw new Error(r.error.message);
     return { ok: true };
   });
+
+// ---------- Broadcasts ----------
+const BroadcastInput = Init.extend({
+  text: z.string().trim().min(1).max(4000),
+  image: z.object({ base64: z.string().max(7_000_000), mime: z.enum(['image/jpeg', 'image/png', 'image/webp']) }).nullable(),
+  buttonText: z.string().trim().max(40).optional(),
+  buttonUrl: z.string().trim().max(500).optional(),
+  test: z.boolean().default(false),
+});
+const BroadcastRow = z.object({ id: z.string(), text: z.string(), photo_file_id: z.string().nullable(), button_text: z.string().nullable(), button_url: z.string().nullable(), status: z.string(), sent: z.number(), failed: z.number(), gone: z.number(), created_at: z.string(), finished_at: z.string().nullable() });
+export type AdminBroadcast = z.infer<typeof BroadcastRow>;
+
+export const adminBroadcasts = createServerFn({ method: 'POST' })
+  .inputValidator(Init)
+  .handler(async ({ data }) => {
+    const { db } = await requireAdmin(data.initData);
+    const r = await db.from('dogg_broadcasts').select('id, text, photo_file_id, button_text, button_url, status, sent, failed, gone, created_at, finished_at').order('created_at', { ascending: false }).limit(20);
+    if (r.error) throw new Error(r.error.message);
+    const audience = await db.from('dogg_players').select('telegram_id', { count: 'estimated', head: true }).is('banned_at', null).is('bot_blocked_at', null);
+    return { list: r.data.map(b => BroadcastRow.parse(b)), audience: audience.count ?? 0 };
+  });
+
+/** Sends the preview to the admin (this also uploads the image), then queues it for everyone unless it's a test. */
+export const adminSendBroadcast = createServerFn({ method: 'POST' })
+  .inputValidator(BroadcastInput)
+  .handler(async ({ data }) => {
+    const { adminId, db } = await requireAdmin(data.initData);
+    if (data.image && data.text.length > 1024) throw new Error('Con imagen, el texto puede tener como máximo 1024 caracteres.');
+    const url = data.buttonUrl?.trim() || null;
+    if (url && !/^https:\/\/\S+$/i.test(url) && !/^tg:\/\/\S+$/i.test(url)) throw new Error('El enlace del botón debe empezar por https://');
+    if (url && !data.buttonText?.trim()) throw new Error('Escribe el texto del botón.');
+    const { sendPreviewWithUpload } = await import('./broadcast.server');
+    const msg = { text: data.text, buttonText: url ? data.buttonText!.trim() : null, buttonUrl: url };
+    const photo = await sendPreviewWithUpload(adminId, msg, data.image).catch(e => { throw new Error(`Telegram rechazó el mensaje: ${e instanceof Error ? e.message : e}`); });
+    if (data.test) return { queued: false };
+    const r = await db.from('dogg_broadcasts').insert({ text: data.text, photo_file_id: photo, button_text: msg.buttonText, button_url: url, created_by: adminId }).select('id').single();
+    if (r.error) throw new Error(r.error.message);
+    await log(db, adminId, 'broadcast_create', { id: r.data.id, photo: Boolean(photo), button: url });
+    return { queued: true };
+  });
+
+export const adminCancelBroadcast = createServerFn({ method: 'POST' })
+  .inputValidator(Init.extend({ id: z.string().uuid() }))
+  .handler(async ({ data }) => {
+    const { adminId, db } = await requireAdmin(data.initData);
+    const r = await db.from('dogg_broadcasts').update({ status: 'cancelled', finished_at: new Date().toISOString() }).eq('id', data.id).in('status', ['queued', 'sending']);
+    if (r.error) throw new Error(r.error.message);
+    await log(db, adminId, 'broadcast_cancel', { id: data.id });
+    return { ok: true };
+  });

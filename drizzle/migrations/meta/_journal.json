@@ -435,6 +435,13 @@
       "when": 1794150993688,
       "tag": "0061_corroborated_paced_referral_farms",
       "breakpoints": true
+    },
+    {
+      "idx": 62,
+      "version": "7",
+      "when": 1794179705340,
+      "tag": "0062_admin_broadcasts",
+      "breakpoints": true
     }
   ]
 }

@@ -92,6 +92,57 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_broadcasts: {
+        Row: {
+          button_text: string | null
+          button_url: string | null
+          created_at: string
+          created_by: number
+          cursor_id: number
+          failed: number
+          finished_at: string | null
+          gone: number
+          id: string
+          lease_until: string
+          photo_file_id: string | null
+          sent: number
+          status: string
+          text: string
+        }
+        Insert: {
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          created_by: number
+          cursor_id?: number
+          failed?: number
+          finished_at?: string | null
+          gone?: number
+          id?: string
+          lease_until?: string
+          photo_file_id?: string | null
+          sent?: number
+          status?: string
+          text: string
+        }
+        Update: {
+          button_text?: string | null
+          button_url?: string | null
+          created_at?: string
+          created_by?: number
+          cursor_id?: number
+          failed?: number
+          finished_at?: string | null
+          gone?: number
+          id?: string
+          lease_until?: string
+          photo_file_id?: string | null
+          sent?: number
+          status?: string
+          text?: string
+        }
+        Relationships: []
+      }
       dogg_channel_posts: {
         Row: {
           angle: string | null
