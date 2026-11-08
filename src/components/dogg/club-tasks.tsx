@@ -24,6 +24,7 @@ function untilLabel(resetAt: string | null, now: number) {
 function openLink(url: string) {
   const tg = window.Telegram?.WebApp;
   if (tg?.openTelegramLink && url.startsWith('https://t.me/')) tg.openTelegramLink(url);
+  else if (tg?.openLink) tg.openLink(url);
   else window.open(url, '_blank', 'noopener');
 }
 

@@ -135,7 +135,7 @@ export const ru: Record<keyof typeof es, string> = {
   'err.memberCheck': 'Не удалось проверить подписку. Попробуй чуть позже.', 'err.taskMisconfigured': 'Задание настроено неправильно.',
   'err.notAdmin': 'Нет доступа.', 'err.adminLink': 'Ссылка должна быть из Telegram (t.me/… или @имя).', 'err.adminPrivate': 'Для приватной ссылки (t.me/+…) укажи также ID чата (начинается с -100).',
   'err.adminNotFound': 'Бот не находит этот канал или группу. Добавь его админом и проверь ссылку или ID.', 'err.adminBotNotAdmin': 'Бот должен быть администратором канала или группы, чтобы проверять пользователей.',
-  'err.adminIsGroup': 'Это группа, а не канал. Выбери «Группа».', 'err.adminIsChannel': 'Это канал, а не группа. Выбери «Канал».', 'err.adminBotLink': 'Ссылка на бота должна быть t.me/ИмяBot (оканчиваться на «bot»).',
+  'err.adminIsGroup': 'Это группа, а не канал. Выбери «Группа».', 'err.adminIsChannel': 'Это канал, а не группа. Выбери «Канал».', 'err.adminBotLink': 'Введи корректную веб-ссылку HTTP/HTTPS или ссылку Telegram.',
   'err.adminNegative': 'Баланс не может стать отрицательным (сейчас {n}).', 'err.adminNoUser': 'Пользователь не найден.', 'err.adminWdClosed': 'Этот вывод уже закрыт.',
 
   'admin.title': 'Админ-панель', 'admin.logged': 'Все твои действия здесь записываются.',
@@ -151,7 +151,7 @@ export const ru: Record<keyof typeof es, string> = {
   'admin.editTask': 'Изменить задание', 'admin.newTask': 'Новое задание', 'admin.kind.channel': 'Канал', 'admin.kind.group': 'Группа', 'admin.kind.bot': 'Бот',
   'admin.kind.react': 'Реакция', 'admin.hintReact': 'Ежедневное задание: пользователь открывает канал, ждёт 10 секунд, бот проверяет подписку. Повторяется каждые 24 ч. Telegram не показывает, кто поставил реакцию.', 'admin.hintBot': 'Пользователь открывает бота, ждёт 10 секунд и забирает награду.', 'admin.hintChannel': 'Сначала добавь @Doggminerbot администратором канала: бот проверит, что пользователь вступил.', 'admin.hintGroup': 'Сначала добавь @Doggminerbot администратором группы: бот проверит, что пользователь вступил.',
   'admin.fTitle': 'Название', 'admin.fTitlePhBot': 'Попробуй бота X', 'admin.fTitlePh': 'Вступи в официальный канал', 'admin.fDesc': 'Описание (необязательно)', 'admin.fDescPh': 'Новости и розыгрыши района',
-  'admin.fLink': 'Ссылка', 'admin.fLinkPhBot': 't.me/ИмяBot', 'admin.fLinkPh': 't.me/канал или @канал', 'admin.fChat': 'ID чата (только для приватных ссылок t.me/+…)', 'admin.fReward': 'Награда ($DOGG)', 'admin.fSort': 'Порядок',
+  'admin.fLink': 'Ссылка', 'admin.fLinkPhBot': 'https://… или t.me/…', 'admin.fLinkPh': 't.me/канал или @канал', 'admin.fChat': 'ID чата (только для приватных ссылок t.me/+…)', 'admin.fReward': 'Награда ($DOGG)', 'admin.fSort': 'Порядок',
   'admin.save': 'Сохранить', 'admin.create': 'Создать задание', 'admin.cancel': 'Отмена',
   'admin.taskUpdated': 'Задание обновлено', 'admin.taskCreated': 'Задание создано · уже в Заданиях', 'admin.saveFail': 'Не удалось сохранить',
   'admin.confirmDelete': 'Удалить «{t}»? История выплат будет потеряна.', 'admin.taskDeleted': 'Задание удалено', 'admin.taskPaused': 'Задание на паузе', 'admin.taskActivated': 'Задание включено',

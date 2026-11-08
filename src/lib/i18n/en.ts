@@ -135,7 +135,7 @@ export const en: Record<keyof typeof es, string> = {
   'err.memberCheck': "Couldn't check your membership right now. Try again in a moment.", 'err.taskMisconfigured': 'This task is not set up correctly.',
   'err.notAdmin': 'Not authorized.', 'err.adminLink': 'The link must be a Telegram link (t.me/… or @username).', 'err.adminPrivate': 'For a private link (t.me/+…), also enter the chat ID (starts with -100).',
   'err.adminNotFound': "The bot can't find that channel or group. Add it as admin and check the link or ID.", 'err.adminBotNotAdmin': 'The bot must be an admin of that channel or group to verify users.',
-  'err.adminIsGroup': 'That chat is a group, not a channel. Choose "Group".', 'err.adminIsChannel': 'That chat is a channel, not a group. Choose "Channel".', 'err.adminBotLink': 'A bot link must be t.me/BotName (ending in "bot").',
+  'err.adminIsGroup': 'That chat is a group, not a channel. Choose "Group".', 'err.adminIsChannel': 'That chat is a channel, not a group. Choose "Channel".', 'err.adminBotLink': 'Enter a valid HTTP/HTTPS web link or Telegram link.',
   'err.adminNegative': 'The balance cannot go negative (it has {n}).', 'err.adminNoUser': 'User not found.', 'err.adminWdClosed': 'This withdrawal is already closed.',
 
   'admin.title': 'Admin panel', 'admin.logged': 'Everything you do here is logged.',
@@ -151,7 +151,7 @@ export const en: Record<keyof typeof es, string> = {
   'admin.editTask': 'Edit task', 'admin.newTask': 'New task', 'admin.kind.channel': 'Channel', 'admin.kind.group': 'Group', 'admin.kind.bot': 'Bot',
   'admin.kind.react': 'Reaction', 'admin.hintReact': 'Daily task: the user opens the channel, waits 10 seconds and the bot checks they are subscribed. Repeats every 24 h. Telegram does not show who reacted.', 'admin.hintBot': 'The user opens the bot, waits 10 seconds and claims.', 'admin.hintChannel': 'First, add @Doggminerbot as an admin of the channel: the bot checks the user joined.', 'admin.hintGroup': 'First, add @Doggminerbot as an admin of the group: the bot checks the user joined.',
   'admin.fTitle': 'Title', 'admin.fTitlePhBot': 'Try bot X', 'admin.fTitlePh': 'Join the official channel', 'admin.fDesc': 'Description (optional)', 'admin.fDescPh': 'Hood news and giveaways',
-  'admin.fLink': 'Link', 'admin.fLinkPhBot': 't.me/BotName', 'admin.fLinkPh': 't.me/channel or @channel', 'admin.fChat': 'Chat ID (only for private t.me/+… links)', 'admin.fReward': 'Reward ($DOGG)', 'admin.fSort': 'Order',
+  'admin.fLink': 'Link', 'admin.fLinkPhBot': 'https://… or t.me/…', 'admin.fLinkPh': 't.me/channel or @channel', 'admin.fChat': 'Chat ID (only for private t.me/+… links)', 'admin.fReward': 'Reward ($DOGG)', 'admin.fSort': 'Order',
   'admin.save': 'Save changes', 'admin.create': 'Create task', 'admin.cancel': 'Cancel',
   'admin.taskUpdated': 'Task updated', 'admin.taskCreated': 'Task created · it now shows in Tasks', 'admin.saveFail': "Couldn't save",
   'admin.confirmDelete': 'Delete "{t}"? Its claim history will be lost.', 'admin.taskDeleted': 'Task deleted', 'admin.taskPaused': 'Task paused', 'admin.taskActivated': 'Task activated',

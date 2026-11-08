@@ -144,7 +144,7 @@ export const es = {
   'err.memberCheck': 'No se pudo comprobar tu suscripción ahora mismo. Inténtalo en un momento.', 'err.taskMisconfigured': 'Esta tarea no está bien configurada.',
   'err.notAdmin': 'No autorizado.', 'err.adminLink': 'El enlace debe ser de Telegram (t.me/… o @usuario).', 'err.adminPrivate': 'Para un enlace privado (t.me/+…), escribe también el ID del chat (empieza por -100).',
   'err.adminNotFound': 'El bot no encuentra ese canal o grupo. Añádelo como admin y revisa el enlace o el ID.', 'err.adminBotNotAdmin': 'El bot tiene que ser administrador de ese canal o grupo para verificar a los usuarios.',
-  'err.adminIsGroup': 'Ese chat es un grupo, no un canal. Elige «Grupo».', 'err.adminIsChannel': 'Ese chat es un canal, no un grupo. Elige «Canal».', 'err.adminBotLink': 'El enlace de un bot debe ser t.me/NombreBot (termina en «bot»).',
+  'err.adminIsGroup': 'Ese chat es un grupo, no un canal. Elige «Grupo».', 'err.adminIsChannel': 'Ese chat es un canal, no un grupo. Elige «Canal».', 'err.adminBotLink': 'Introduce un enlace web HTTP/HTTPS o de Telegram válido.',
   'err.adminNegative': 'El saldo no puede quedar negativo (tiene {n}).', 'err.adminNoUser': 'Usuario no encontrado.', 'err.adminWdClosed': 'Este retiro ya está cerrado.',
 
   // Admin panel
@@ -161,7 +161,7 @@ export const es = {
   'admin.editTask': 'Editar tarea', 'admin.newTask': 'Nueva tarea', 'admin.kind.channel': 'Canal', 'admin.kind.group': 'Grupo', 'admin.kind.bot': 'Bot',
   'admin.kind.react': 'Reacción', 'admin.hintReact': 'Tarea diaria: el usuario abre el canal, espera 10 segundos y el bot comprueba que está suscrito. Se repite cada 24 h. Telegram no deja ver quién reacciona.', 'admin.hintBot': 'El usuario abre el bot, espera 10 segundos y reclama.', 'admin.hintChannel': 'Antes, añade a @Doggminerbot como administrador del canal: el bot comprueba que el usuario se unió.', 'admin.hintGroup': 'Antes, añade a @Doggminerbot como administrador del grupo: el bot comprueba que el usuario se unió.',
   'admin.fTitle': 'Título', 'admin.fTitlePhBot': 'Prueba el bot X', 'admin.fTitlePh': 'Únete al canal oficial', 'admin.fDesc': 'Descripción (opcional)', 'admin.fDescPh': 'Noticias y sorteos del hood',
-  'admin.fLink': 'Enlace', 'admin.fLinkPhBot': 't.me/NombreBot', 'admin.fLinkPh': 't.me/canal o @canal', 'admin.fChat': 'ID del chat (solo si el enlace es privado t.me/+…)', 'admin.fReward': 'Recompensa ($DOGG)', 'admin.fSort': 'Orden',
+  'admin.fLink': 'Enlace', 'admin.fLinkPhBot': 'https://… o t.me/…', 'admin.fLinkPh': 't.me/canal o @canal', 'admin.fChat': 'ID del chat (solo si el enlace es privado t.me/+…)', 'admin.fReward': 'Recompensa ($DOGG)', 'admin.fSort': 'Orden',
   'admin.save': 'Guardar cambios', 'admin.create': 'Crear tarea', 'admin.cancel': 'Cancelar',
   'admin.taskUpdated': 'Tarea actualizada', 'admin.taskCreated': 'Tarea creada · ya sale en Tareas', 'admin.saveFail': 'No se pudo guardar',
   'admin.confirmDelete': '¿Borrar «{t}»? Se pierde su historial de cobros.', 'admin.taskDeleted': 'Tarea borrada', 'admin.taskPaused': 'Tarea pausada', 'admin.taskActivated': 'Tarea activada',

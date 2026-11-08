@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import { chatFromUrl, normalizeTelegramUrl } from './tasks';
+import { chatFromUrl, normalizeTaskUrl } from './tasks';
 
 const Init = z.object({ initData: z.string().min(1).max(10000) });
 
@@ -57,8 +57,8 @@ export const adminSaveTask = createServerFn({ method: 'POST' })
   }))
   .handler(async ({ data }) => {
     const { adminId, db } = await requireAdmin(data.initData);
-    const url = normalizeTelegramUrl(data.url);
-    if (!url) throw new Error('El enlace debe ser de Telegram (t.me/… o @usuario).');
+    const url = normalizeTaskUrl(data.kind, data.url);
+    if (!url) throw new Error(data.kind === 'bot' ? 'El enlace de un bot debe ser un enlace web HTTP/HTTPS o de Telegram válido.' : 'El enlace debe ser de Telegram (t.me/… o @usuario).');
     let chatId: string | null = null;
     if (data.kind !== 'bot') {
       const { botApi } = await import('./telegram.server');
@@ -72,8 +72,6 @@ export const adminSaveTask = createServerFn({ method: 'POST' })
       if ((data.kind === 'channel' || data.kind === 'react') && chat.type !== 'channel') throw new Error('Ese chat es un grupo, no un canal. Elige «Grupo».');
       if (data.kind === 'group' && chat.type === 'channel') throw new Error('Ese chat es un canal, no un grupo. Elige «Canal».');
       chatId = String(chat.id);
-    } else if (!/^https:\/\/t\.me\/[A-Za-z0-9_]{4,32}bot(\?.*)?$/i.test(url)) {
-      throw new Error('El enlace de un bot debe ser t.me/NombreBot (termina en «bot»).');
     }
     const row = { kind: data.kind, title: data.title, description: data.description || null, url, chat_id: chatId, reward: data.reward, sort: data.sort, active: data.active, updated_at: new Date().toISOString() };
     const r = data.id

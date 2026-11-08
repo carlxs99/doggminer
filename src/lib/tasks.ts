@@ -29,6 +29,23 @@ export function normalizeTelegramUrl(input: string) {
   return `https://t.me/${m[1]}`;
 }
 
+/** Bot tasks may open any HTTP(S) destination; membership tasks stay Telegram-only. */
+export function normalizeTaskUrl(kind: TaskKind, input: string): string | null {
+  const value = input.trim();
+  if (/[\u0000-\u0020\u007f\\]/.test(value)) return null;
+  const telegram = normalizeTelegramUrl(value);
+  if (kind !== 'bot' && !telegram) return null;
+  const candidate = telegram ?? value;
+  if (!/^https?:\/\//i.test(candidate)) return null;
+  try {
+    const url = new URL(candidate);
+    if (!url.hostname || url.username || url.password) return null;
+    return url.href;
+  } catch {
+    return null;
+  }
+}
+
 /** "@username" a public t.me link points to (null for private invite links like t.me/+abc or joinchat). */
 export function chatFromUrl(url: string) {
   const m = /^https:\/\/t\.me\/([A-Za-z0-9_]{4,32})(?:[/?].*)?$/.exec(url);
