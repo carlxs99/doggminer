@@ -63,7 +63,7 @@ const SERVER: [RegExp, Key][] = [
   [/^Verifica tu wallet (comprando|\(con)/i, 'err.verifyToWithdraw'],
   [/^El retiro mínimo es/i, 'err.minWithdraw'],
   [/^Saldo insuficiente: necesitas ([\d.,]+)/i, 'err.insufficient'],
-  [/^Ya viste los 10 anuncios/i, 'err.adsCap'],
+  [/^Ya viste los \d+ anuncios/i, 'err.adsCap'],
   [/^Demasiados intentos de anuncio/i, 'err.adsTooMany'],
   [/^Anuncio no encontrado/i, 'err.adNotFound'],
   [/^No tienes recompensas de referidos/i, 'err.noRefRewards'],

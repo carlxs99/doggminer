@@ -442,6 +442,13 @@
       "when": 1794179705340,
       "tag": "0062_admin_broadcasts",
       "breakpoints": true
+    },
+    {
+      "idx": 63,
+      "version": "7",
+      "when": 1794185675794,
+      "tag": "0063_ads_half_dogg_twenty_daily",
+      "breakpoints": true
     }
   ]
 }

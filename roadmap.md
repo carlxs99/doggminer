@@ -1,4 +1,5 @@
 # DOGG mini app
+- [x] Changed rewarded ads to 0.5 DOGG each and 20 per UTC day; 12 tests pass and disposable database checks verify balance, ledger, cap, duplicates and UTC reset without touching real players. Live Telegram ad flow remains unverified.
 - [x] Revalidated reported farms; banned wahyuzaiker on two corroborated timing signatures, preserved balances and left seven doubtful operators for manual review.
 - [x] Added conservative paced-farm detection at first qualification, referral claim, withdrawal and payout boundaries; disposable rollback tests and 13 regression tests pass. Real Telegram UI flow remains unverified.
 - [x] Rechecked suspected farms: banned 14 corroborated synchronized operators and 6 exact-device accounts; preserved all balances and doubtful accounts; recorded per-account evidence and verified database results.

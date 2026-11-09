@@ -3,7 +3,7 @@ export const JETTON = 'EQCnT_6nreJHUaxbZw7g64gkP5vx6LvSXWFboW5tYsCpLS7I';
 export const SWAP = `https://dedust.io/swap/GRAM/${JETTON}`;
 export const PRICE = `https://dedust.io/coins/${JETTON}`;
 export const SHIFT_MS = 86400000;
-export const AD_REWARD = 5; export const AD_DAILY = 10;
+export const AD_REWARD = 0.5; export const AD_DAILY = 20;
 export const REF_BONUS = 100; export const REF_SHARE = 0.1;
 // Recruits shown per page in the friends list; must match the LIMIT/OFFSET in public.dogg_referral.
 export const REF_PAGE = 20;
