@@ -5,13 +5,14 @@ export const MINERS_PER_TIER = 50;
 export type Miner = { id: string; level: number; name: string; category: string; power: number; daily: number; hold: number };
 // Visible steps (must match public.dogg_miner_stats): every level adds a noticeable amount, from +0.10/day at the start (level 1 = 1/day) up to 304/day at level 500.
 // Hold milestones are reachable by playing daily (app balance counts as hold); buying only speeds it up. Hold rises strictly every level.
-export const TIER_HOLDS = [10, 400, 1500, 4000, 8000, 15000, 40000, 80000, 150000, 300000, 600000];
+export const TIER_HOLDS = [2, 400, 1500, 4000, 8000, 15000, 40000, 80000, 150000, 300000, 600000];
 const CURVE = 253.1 / 499 ** 2.85;
 function rawDaily(i: number) { return i === 0 ? 1 : 1 + 0.10 * i + CURVE * i ** 2.85; }
 function rawHold(level: number, tier: number, j: number) {
   if (level === 1) return 0;
   const r = tier === 0 ? TIER_HOLDS[0]! * (TIER_HOLDS[1]! / TIER_HOLDS[0]!) ** ((j - 1) / 49) : TIER_HOLDS[tier]! * (TIER_HOLDS[tier + 1]! / TIER_HOLDS[tier]!) ** (j / MINERS_PER_TIER);
-  return Math.max(Math.round(r), level + 8);
+  // Tier 1 starts at 2 $DOGG for level 2 and rises ~1 per level early on, so new players level up almost daily.
+  return Math.max(Math.round(r), tier === 0 ? level : level + 8);
 }
 export function minerAt(level: number): Miner {
   const i = level - 1; const tier = Math.floor(i / MINERS_PER_TIER); const j = i % MINERS_PER_TIER;
