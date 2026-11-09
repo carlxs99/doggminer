@@ -3,8 +3,13 @@ export const WITHDRAW_MIN = 1000;
 export const WITHDRAW_FEE = 70;
 
 /** What actually reaches the wallet when `amount` leaves the app balance. */
-export function withdrawNet(amount: number): number {
-  return Math.max(0, Math.floor(amount) - WITHDRAW_FEE);
+export function withdrawNet(amount: number, lpActive = false): number {
+  return Math.max(0, Math.floor(amount) - withdrawFee(lpActive));
+}
+
+/** LP partners (DeDust liquidity) withdraw with no fee. */
+export function withdrawFee(lpActive = false): number {
+  return lpActive ? 0 : WITHDRAW_FEE;
 }
 
 /** Balance needed to withdraw `amount` (the fee is already inside it). */

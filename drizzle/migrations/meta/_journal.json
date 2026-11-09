@@ -470,6 +470,13 @@
       "when": 1794187380071,
       "tag": "0066_miner_tier1_holds_130",
       "breakpoints": true
+    },
+    {
+      "idx": 67,
+      "version": "7",
+      "when": 1794229323877,
+      "tag": "0067_lp_partner_miner",
+      "breakpoints": true
     }
   ]
 }

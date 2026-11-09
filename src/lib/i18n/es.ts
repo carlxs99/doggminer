@@ -183,4 +183,5 @@ export const es = {
   'turbo.btn': 'Turbo 420 · x2 5 min', 'turbo.on': 'Turbo x2 activo', 'turbo.used': 'Turbo usado · vuelve mañana', 'turbo.needShift': 'Inicia el turno para usar el Turbo',
   'streak.label': 'Racha {n} días · x{m}', 'streak.none': 'Recoge o inicia cada día para tu racha', 'streak.next': '{k} día(s) más → x{m}', 'streak.max': 'Bonus máximo de racha',
   'err.turboAd': 'Mira el anuncio para activar el Turbo 420.', 'turbo.ad': '▶ Ver anuncio · Turbo x2 5 min',
+  'lp.title': 'Minero Socio LP', 'lp.badge': 'SOCIO DEL POOL', 'lp.desc': 'Aporta al menos {min} TON de liquidez al pool $DOGG/TON de DeDust con tu wallet vinculada y desbloquea:', 'lp.perk1': '{d} $DOGG/día garantizados', 'lp.perk2': '0 comisión al retirar', 'lp.active': 'Activo: tienes {n} TON en el pool. Minas {d} $DOGG/día y retiras sin comisión.', 'lp.have': 'Tu liquidez: {n} / {min} TON', 'lp.cta': 'Aportar liquidez en DeDust', 'lp.wallet': 'Conecta tu wallet para que detectemos tu liquidez.', 'lp.note': 'Si retiras la liquidez vuelves a tu minero normal.',
 } as const;

@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { JETTON } from './dogg';
 import { autoUpgradeId } from './mining';
 
-const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional(), shiftBoost: z.number().optional(), turboAt: z.string().nullable().optional(), turboDay: z.string().nullable().optional() });
+const PlayerSchema = z.object({ balance: z.number(), shiftStartedAt: z.string().nullable(), claimedShifts: z.number(), streak: z.number(), lastCheckin: z.string().nullable(), minerId: z.string(), shiftAccrued: z.number(), rateChangedAt: z.string().nullable(), walletAddress: z.string().nullable().optional(), hold: z.number().optional(), downgraded: z.string().nullable().optional(), withdrawVerified: z.boolean().optional(), shiftBoost: z.number().optional(), turboAt: z.string().nullable().optional(), turboDay: z.string().nullable().optional(), lpActive: z.boolean().optional(), lpTon: z.number().nullable().optional() });
 
 async function verifyTelegramUser(initData: string) { return (await import('./telegram.server')).verifyTelegramUser(initData); }
 async function verifyTelegram(initData: string) { return (await verifyTelegramUser(initData)).id; }
@@ -57,6 +57,24 @@ async function currentHold(supabaseAdmin: Admin, telegramId: number) {
   }
 }
 
+/** LP partner status of the linked wallet (DeDust liquidity, read on-chain; 60 s cache unless `fresh`). null = unknown, so dogg_shift keeps the stored status. */
+async function currentLp(supabaseAdmin: Admin, telegramId: number, fresh = false): Promise<boolean | null> {
+  const row = await supabaseAdmin.from('dogg_players').select('wallet_address, lp_active, lp_at').eq('telegram_id', telegramId).maybeSingle();
+  const wallet = row.data?.wallet_address;
+  if (!wallet) return row.data?.lp_active ? false : null;
+  if (!fresh && row.data?.lp_at && Date.now() - Date.parse(row.data.lp_at) < 60_000) return null;
+  try {
+    const { lpTon } = await import('./lp.server');
+    const { LP_MIN_TON } = await import('./lp');
+    const ton = await Promise.race([lpTon(wallet), new Promise<never>((_, rej) => setTimeout(() => rej(new Error('slow')), fresh ? 8000 : 2500))]);
+    await supabaseAdmin.from('dogg_players').update({ lp_ton: ton, lp_at: new Date().toISOString() }).eq('telegram_id', telegramId);
+    return ton >= LP_MIN_TON;
+  } catch (e) {
+    if (fresh) console.error('lp read', e);
+    return null;
+  }
+}
+
 /** Parses a dogg_shift result and, if the hold now covers a better miner, switches to it automatically (accrued credit is checkpointed by dogg_shift). */
 async function settle(supabaseAdmin: Admin, telegramId: number, data: unknown, hold: number) {
   const player = PlayerSchema.parse(data);
@@ -80,8 +98,8 @@ export const playerAction = createServerFn({ method: 'POST' })
     // Multi-account detector: hashed device + network signals on every open (informative only, never blocks).
     // Signals and the hold read run side by side so opening the app doesn't wait for one after the other.
     const signals = opening ? import('./multi.server').then(m => m.recordSignals(supabaseAdmin, telegramId, data.device, tg)) : Promise.resolve();
-    const [hold] = await Promise.all([currentHold(supabaseAdmin, telegramId), signals]);
-    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action === 'turbo' ? `turbo:${data.ymid ?? ''}` : data.action, p_hold: hold });
+    const [hold, lp] = await Promise.all([currentHold(supabaseAdmin, telegramId), currentLp(supabaseAdmin, telegramId), signals]);
+    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: data.action === 'select' ? `miner:${data.minerId ?? ''}` : data.action === 'turbo' ? `turbo:${data.ymid ?? ''}` : data.action, p_hold: hold, ...(lp === null ? {} : { p_lp: lp }) });
     if (result.error) throw new Error(result.error.message);
     const player = await settle(supabaseAdmin, telegramId, result.data, hold);
     // Tell the inviter (once) when this player joins with their link and when they start mining (+100).
@@ -220,6 +238,12 @@ export const requestWithdraw = createServerFn({ method: 'POST' })
     // Commit the evidence-based decision before the withdrawal RPC so a rejected withdrawal cannot roll the ban back.
     const check = await supabaseAdmin.rpc('dogg_referral_farm_check', { p_referrer: telegramId });
     if (check.error) throw new Error(check.error.message);
+    // Fresh on-chain LP check right before the withdrawal decides the fee (0 for LP partners).
+    const lp = await currentLp(supabaseAdmin, telegramId, true);
+    if (lp !== null) {
+      const h = await currentHold(supabaseAdmin, telegramId).catch(() => null);
+      if (h !== null) await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: h, p_lp: lp });
+    }
     const w = await supabaseAdmin.rpc('dogg_withdraw', { p_telegram_id: telegramId, p_amount: data.amount });
     if (w.error) throw new Error(w.error.message);
     const { processPayouts } = await import('./payout.server');

@@ -173,4 +173,5 @@ export const en: Record<keyof typeof es, string> = {
   'turbo.btn': 'Turbo 420 · x2 5 min', 'turbo.on': 'Turbo x2 active', 'turbo.used': 'Turbo used · back tomorrow', 'turbo.needShift': 'Start your shift to use Turbo',
   'streak.label': '{n}-day streak · x{m}', 'streak.none': 'Claim or start every day to build a streak', 'streak.next': '{k} more day(s) → x{m}', 'streak.max': 'Max streak bonus',
   'err.turboAd': 'Watch the ad to fire up Turbo 420.', 'turbo.ad': '▶ Watch ad · Turbo x2 5 min',
+  'lp.title': 'LP Partner Miner', 'lp.badge': 'POOL PARTNER', 'lp.desc': 'Add at least {min} TON of liquidity to the DeDust $DOGG/TON pool from your linked wallet and unlock:', 'lp.perk1': '{d} $DOGG/day guaranteed', 'lp.perk2': '0 withdrawal fee', 'lp.active': 'Active: you have {n} TON in the pool. You mine {d} $DOGG/day and withdraw fee-free.', 'lp.have': 'Your liquidity: {n} / {min} TON', 'lp.cta': 'Add liquidity on DeDust', 'lp.wallet': 'Connect your wallet so we can detect your liquidity.', 'lp.note': 'Remove the liquidity and you go back to your normal miner.',
 };

@@ -14,6 +14,7 @@ import { ClubTasks } from './club-tasks';
 import { useT } from './lang';
 import { PNL_RANGES, pnlSeries, pnlToday, type PnlRange } from '@/lib/pnl';
 import { BuyDedustLink, DedustWebLink } from './buy';
+import { LP_DAILY, LP_MIN_TON, LP_URL, effectiveDaily } from '@/lib/lp';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal, liveStreak, streakBoost, TURBO_MS } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/lvl-tier-*.mp4.asset.json', { eager: true, import: 'default' });
@@ -49,7 +50,7 @@ export function Humero() {
     <LiveEarned player={player} live={live} fallback={earned} />
     <NextMiner player={player} demo={demo} />
     <BoostBar player={player} now={now} busy={busy} onTurbo={() => void action('turbo')} />
-    <div className="turn-badges"><span className="turn-badge"><Zap /> {miner.daily} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
+    <div className="turn-badges"><span className="turn-badge"><Zap /> {effectiveDaily(miner.daily, player.lpActive)} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || (Boolean(player.shiftStartedAt) && earned <= 0)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? t('mine.claim') : t('mine.start')}<ArrowRight /></Button></div>
     <div className="mine-buy"><BuyDedustLink className="buy-green">{t('mine.buy')}</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">{t('mine.price')}</a></div>
     <DedustWebLink />
@@ -182,7 +183,8 @@ export function GrowOps() {
   const shown = inTier.slice(page * PAGE, page * PAGE + PAGE);
   const pickTier = (t: string) => { haptic(); setTier(t); const i = MINERS.filter(m => m.category === t).findIndex(m => m.id === player.minerId); setPage(i >= 0 ? Math.floor(i / PAGE) : 0); };
   const go = (d: number) => { haptic(); setPage(p => Math.min(pages - 1, Math.max(0, p + d))); };
-  return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><h2 className="vault-h">{t('boost.packs')}</h2>
+  return <><ScreenHero title={t('nav.boost')} green art="cap" subtitle={t('boost.subtitle')} /><PnlChart /><LpPartnerCard player={player} />
+    <h2 className="vault-h">{t('boost.packs')}</h2>
     <div className="grow-notice"><ShieldCheck /><span>{player.walletAddress ? t('boost.noticeLinked', { n: (player.hold ?? 0).toLocaleString('de-DE') }) : t('boost.noticeConnect')}</span></div>
     <div className="tier-tabs" role="tablist">{MINER_TIERS.map((tierLabel, i) => <button key={tierLabel} role="tab" aria-selected={tier === tierLabel} className={`rank-${i + 1} ${tier === tierLabel ? 'active' : ''}`} onClick={() => pickTier(tierLabel)}><small>{t('boost.tierRange', { a: i * 50 + 1, b: i * 50 + 50 })}</small>{tierName(tierLabel, t)}</button>)}</div>
     <section className="miner-category">
@@ -203,3 +205,19 @@ export function GrowOps() {
   </>;
 }
 
+
+/** LP partner offer: DeDust liquidity (>= LP_MIN_TON, verified on-chain by the server) mines at least LP_DAILY/day with no withdrawal fee. */
+function LpPartnerCard({ player }: { player: Player }) {
+  const t = useT();
+  const ton = Math.floor((player.lpTon ?? 0) * 100) / 100;
+  return <section className={`lp-card ${player.lpActive ? 'on' : ''}`}>
+    <div className="lp-head"><Trophy /><strong>{t('lp.title')}</strong>{player.lpActive && <span className="lp-badge">{t('lp.badge')}</span>}</div>
+    {player.lpActive ? <p>{t('lp.active', { n: ton.toLocaleString('de-DE'), d: LP_DAILY })}</p> : <>
+      <p>{t('lp.desc', { min: LP_MIN_TON })}</p>
+      <ul><li><Zap /> {t('lp.perk1', { d: LP_DAILY })}</li><li><Check /> {t('lp.perk2')}</li></ul>
+      <small>{player.walletAddress ? t('lp.have', { n: ton.toLocaleString('de-DE'), min: LP_MIN_TON }) : t('lp.wallet')}</small>
+      <a className="buy-gold" href={LP_URL} target="_blank" rel="noopener noreferrer" onClick={() => haptic()}>{t('lp.cta')} <ExternalLink size={13} /></a>
+    </>}
+    <small className="lp-note">{t('lp.note')}</small>
+  </section>;
+}

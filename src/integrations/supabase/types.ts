@@ -297,6 +297,9 @@ export type Database = {
           last_checkin: string | null
           last_hold: number | null
           last_hold_at: string | null
+          lp_active: boolean
+          lp_at: string | null
+          lp_ton: number | null
           miner_id: string
           multi_alerted_at: string | null
           rate_changed_at: string | null
@@ -338,6 +341,9 @@ export type Database = {
           last_checkin?: string | null
           last_hold?: number | null
           last_hold_at?: string | null
+          lp_active?: boolean
+          lp_at?: string | null
+          lp_ton?: number | null
           miner_id?: string
           multi_alerted_at?: string | null
           rate_changed_at?: string | null
@@ -379,6 +385,9 @@ export type Database = {
           last_checkin?: string | null
           last_hold?: number | null
           last_hold_at?: string | null
+          lp_active?: boolean
+          lp_at?: string | null
+          lp_ton?: number | null
           miner_id?: string
           multi_alerted_at?: string | null
           rate_changed_at?: string | null
@@ -702,6 +711,9 @@ export type Database = {
           last_checkin: string | null
           last_hold: number | null
           last_hold_at: string | null
+          lp_active: boolean
+          lp_at: string | null
+          lp_ton: number | null
           miner_id: string
           multi_alerted_at: string | null
           rate_changed_at: string | null
@@ -781,7 +793,12 @@ export type Database = {
         Returns: undefined
       }
       dogg_shift: {
-        Args: { p_action: string; p_hold?: number; p_telegram_id: number }
+        Args: {
+          p_action: string
+          p_hold?: number
+          p_lp?: boolean
+          p_telegram_id: number
+        }
         Returns: Json
       }
       dogg_streak_boost: { Args: { p_streak: number }; Returns: number }

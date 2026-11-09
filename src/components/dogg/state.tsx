@@ -163,7 +163,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
         if (r.status === 'failed') throw new Error(t('toast.wdFailed'));
         log({ kind: 'withdraw', label: 'hist.withdraw', amount: -gross, ...(r.status === 'sent' ? {} : { status: 'review' as const }) });
         coinRain(coinImg); bass(); strongHaptic();
-        toast.success(r.status === 'sent' ? t('toast.wdSent', { n: withdrawNet(gross).toLocaleString('de-DE') }) : t('toast.wdOnWay'));
+        toast.success(r.status === 'sent' ? t('toast.wdSent', { n: withdrawNet(gross, player.lpActive).toLocaleString('de-DE') }) : t('toast.wdOnWay'));
       } finally { setBusy(false); }
     } catch (e) { toast.error(friendlyError(e, t('toast.wdFail'))); }
   };
