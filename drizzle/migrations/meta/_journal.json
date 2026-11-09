@@ -477,6 +477,13 @@
       "when": 1794229323877,
       "tag": "0067_lp_partner_miner",
       "breakpoints": true
+    },
+    {
+      "idx": 68,
+      "version": "7",
+      "when": 1794253613766,
+      "tag": "0068_migration",
+      "breakpoints": true
     }
   ]
 }
