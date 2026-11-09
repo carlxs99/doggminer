@@ -6,10 +6,10 @@ const now = Date.parse('2026-11-04T18:00:00Z');
 const base = { first_name: 'Carlos', miner_id: 'rookie-1', shift_accrued: 0, rate_changed_at: null, ref_pending: 0 };
 
 describe('daily reminder', () => {
-  it('a finished 24h shift asks to claim the real mined amount (5 $DOGG for the first miner)', () => {
+  it('a finished 24h shift asks to claim the real mined amount (1 $DOGG for the first miner)', () => {
     const p = { ...base, shift_started_at: new Date(now - 30 * H).toISOString() };
     expect(reminderState(p, now)).toBe('ready');
-    expect(reminderMessage(p, now).text).toContain('5.00 $DOGG');
+    expect(reminderMessage(p, now).text).toContain('1.00 $DOGG');
   });
   it('a player with no shift is asked to start one', () => {
     const p = { ...base, shift_started_at: null };
