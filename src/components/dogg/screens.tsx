@@ -210,14 +210,14 @@ export function GrowOps() {
 function LpPartnerCard({ player }: { player: Player }) {
   const t = useT();
   const ton = Math.floor((player.lpTon ?? 0) * 100) / 100;
+  const n = ton.toLocaleString('de-DE');
   return <section className={`lp-card ${player.lpActive ? 'on' : ''}`}>
     <div className="lp-head"><Trophy /><strong>{t('lp.title')}</strong>{player.lpActive && <span className="lp-badge">{t('lp.badge')}</span>}</div>
-    {player.lpActive ? <p>{t('lp.active', { n: ton.toLocaleString('de-DE'), d: LP_DAILY })}</p> : <>
-      <p>{t('lp.desc', { min: LP_MIN_TON })}</p>
+    {player.lpActive ? <p>{t('lp.active', { n, d: LP_DAILY })} <em>{t('lp.note')}</em></p> : <>
+      <p>{t('lp.desc', { min: LP_MIN_TON })} <em>{t('lp.note')}</em></p>
       <ul><li><Zap /> {t('lp.perk1', { d: LP_DAILY })}</li><li><Check /> {t('lp.perk2')}</li></ul>
-      <small>{player.walletAddress ? t('lp.have', { n: ton.toLocaleString('de-DE'), min: LP_MIN_TON }) : t('lp.wallet')}</small>
-      <a className="buy-gold" href={LP_URL} target="_blank" rel="noopener noreferrer" onClick={() => haptic()}>{t('lp.cta')} <ExternalLink size={13} /></a>
+      <div className="lp-foot"><small>{player.walletAddress ? t('lp.have', { n, min: LP_MIN_TON }) : t('lp.wallet')}</small>
+        <a className="buy-gold" href={LP_URL} target="_blank" rel="noopener noreferrer" onClick={() => haptic()}>{t('lp.cta')} <ExternalLink size={12} /></a></div>
     </>}
-    <small className="lp-note">{t('lp.note')}</small>
   </section>;
 }
