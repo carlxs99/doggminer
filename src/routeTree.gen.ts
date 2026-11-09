@@ -18,7 +18,6 @@ import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
 import { Route as ApiPublicTelegramWebhookRouteImport } from './routes/api.public.telegram-webhook'
-import { Route as ApiPublicTmpAnnounceRouteImport } from './routes/api/public/tmp-announce'
 import { Route as ApiPublicTonManifestRouteImport } from './routes/api.public.ton-manifest'
 import { Route as ApiPublicJobsBroadcastRouteImport } from './routes/api.public.jobs.broadcast'
 import { Route as ApiPublicJobsChannelPostRouteImport } from './routes/api.public.jobs.channel-post'
@@ -72,11 +71,6 @@ const ApiPublicTelegramWebhookRoute =
     path: '/api/public/telegram-webhook',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ApiPublicTmpAnnounceRoute = ApiPublicTmpAnnounceRouteImport.update({
-  id: '/api/public/tmp-announce',
-  path: '/api/public/tmp-announce',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiPublicTonManifestRoute = ApiPublicTonManifestRouteImport.update({
   id: '/api/public/ton-manifest',
   path: '/api/public/ton-manifest',
@@ -115,7 +109,6 @@ export interface FileRoutesByFullPath {
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
-  '/api/public/tmp-announce': typeof ApiPublicTmpAnnounceRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/broadcast': typeof ApiPublicJobsBroadcastRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
@@ -132,7 +125,6 @@ export interface FileRoutesByTo {
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
-  '/api/public/tmp-announce': typeof ApiPublicTmpAnnounceRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/broadcast': typeof ApiPublicJobsBroadcastRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
@@ -150,7 +142,6 @@ export interface FileRoutesById {
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
   '/api/public/telegram-webhook': typeof ApiPublicTelegramWebhookRoute
-  '/api/public/tmp-announce': typeof ApiPublicTmpAnnounceRoute
   '/api/public/ton-manifest': typeof ApiPublicTonManifestRoute
   '/api/public/jobs/broadcast': typeof ApiPublicJobsBroadcastRoute
   '/api/public/jobs/channel-post': typeof ApiPublicJobsChannelPostRoute
@@ -169,7 +160,6 @@ export interface FileRouteTypes {
     | '/trabajos'
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
-    | '/api/public/tmp-announce'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/broadcast'
     | '/api/public/jobs/channel-post'
@@ -186,7 +176,6 @@ export interface FileRouteTypes {
     | '/trabajos'
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
-    | '/api/public/tmp-announce'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/broadcast'
     | '/api/public/jobs/channel-post'
@@ -203,7 +192,6 @@ export interface FileRouteTypes {
     | '/trabajos'
     | '/api/public/monetag-postback'
     | '/api/public/telegram-webhook'
-    | '/api/public/tmp-announce'
     | '/api/public/ton-manifest'
     | '/api/public/jobs/broadcast'
     | '/api/public/jobs/channel-post'
@@ -221,7 +209,6 @@ export interface RootRouteChildren {
   TrabajosRoute: typeof TrabajosRoute
   ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
   ApiPublicTelegramWebhookRoute: typeof ApiPublicTelegramWebhookRoute
-  ApiPublicTmpAnnounceRoute: typeof ApiPublicTmpAnnounceRoute
   ApiPublicTonManifestRoute: typeof ApiPublicTonManifestRoute
   ApiPublicJobsBroadcastRoute: typeof ApiPublicJobsBroadcastRoute
   ApiPublicJobsChannelPostRoute: typeof ApiPublicJobsChannelPostRoute
@@ -294,13 +281,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicTelegramWebhookRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/tmp-announce': {
-      id: '/api/public/tmp-announce'
-      path: '/api/public/tmp-announce'
-      fullPath: '/api/public/tmp-announce'
-      preLoaderRoute: typeof ApiPublicTmpAnnounceRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/ton-manifest': {
       id: '/api/public/ton-manifest'
       path: '/api/public/ton-manifest'
@@ -349,7 +329,6 @@ const rootRouteChildren: RootRouteChildren = {
   TrabajosRoute: TrabajosRoute,
   ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,
   ApiPublicTelegramWebhookRoute: ApiPublicTelegramWebhookRoute,
-  ApiPublicTmpAnnounceRoute: ApiPublicTmpAnnounceRoute,
   ApiPublicTonManifestRoute: ApiPublicTonManifestRoute,
   ApiPublicJobsBroadcastRoute: ApiPublicJobsBroadcastRoute,
   ApiPublicJobsChannelPostRoute: ApiPublicJobsChannelPostRoute,
