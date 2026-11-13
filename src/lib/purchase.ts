@@ -1,6 +1,6 @@
 /** One-time native GRAM payment; network fees are additional. */
-export const VERIFY_PAYMENT = 0.05;
-export const VERIFY_NANO = '50000000';
+export const VERIFY_PAYMENT = 0.1;
+export const VERIFY_NANO = '100000000';
 
 export type VerificationTransfer = { memo: string; sender: string; recipient: string; amount: bigint; hash: string; at: number; aborted: boolean; bounced: boolean };
 export function paymentMatches(t: VerificationTransfer, p: { memo: string; wallet: string; recipient: string; createdAt: number }) {
