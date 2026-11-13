@@ -1,5 +1,4 @@
 import { expect, it } from 'vitest';
-import { Buffer } from 'buffer/';
 import { verificationPayload } from '@/lib/verification-payload';
 
 it('encodes the exact verification memo when the browser has no Buffer', async () => {
@@ -10,7 +9,7 @@ it('encodes the exact verification memo when the browser has no Buffer', async (
     const payload = await verificationPayload(memo);
     expect(globalThis.Buffer.alloc(4).length).toBe(4);
     const { Cell } = await import('@ton/core');
-    const body = Cell.fromBoc(Buffer.from(payload, 'base64'))[0]?.beginParse();
+    const body = Cell.fromBase64(payload).beginParse();
     expect(body?.loadUint(32)).toBe(0);
     expect(body?.loadStringTail()).toBe(memo);
   } finally {
