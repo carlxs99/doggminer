@@ -1,5 +1,5 @@
 # DOGG mini app
-- [x] Fix missing browser Buffer when preparing the verification payment; preserve the exact reference and payment amount.
+- [x] Fix missing browser Buffer when preparing the verification payment; explicitly resolve the npm browser package (buffer/) in production instead of Node's empty shim; preserve the exact reference and payment amount.
 - [ ] Verify a real 0.05 GRAM payment from the owner's admin account in Telegram and confirm replay protection; waiting for the owner to approve the wallet payment.
 - [x] Replace hold verification with a unique-reference 0.05 GRAM payment to the payout wallet; preserve 450 verified accounts; automatic paginated reconciliation, 29 tests and disposable rollback checks pass. Real wallet payment inside Telegram remains unverified until published and approved by a wallet owner.
 - [x] Revised update artwork using the official DOGG coin and character; published English LP Partner / compact Boost announcement with photo and open-app button in NEWS (message 8).

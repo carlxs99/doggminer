@@ -1,4 +1,6 @@
-import { Buffer } from 'buffer';
+// The trailing slash selects the npm browser package, not Node's built-in
+// "buffer" module, which production browser bundles replace with an empty shim.
+import { Buffer } from 'buffer/';
 
 /** TON's cell encoder needs Buffer even when loaded dynamically in Telegram. */
 export async function verificationPayload(memo: string): Promise<string> {
