@@ -1,4 +1,5 @@
 # DOGG mini app
+- [ ] Verify a real 0.05 GRAM payment from the owner's admin account in Telegram and confirm replay protection; waiting for the owner to approve the wallet payment.
 - [x] Replace hold verification with a unique-reference 0.05 GRAM payment to the payout wallet; preserve 450 verified accounts; automatic paginated reconciliation, 29 tests and disposable rollback checks pass. Real wallet payment inside Telegram remains unverified until published and approved by a wallet owner.
 - [x] Revised update artwork using the official DOGG coin and character; published English LP Partner / compact Boost announcement with photo and open-app button in NEWS (message 8).
 - [x] Changed rewarded ads to 0.5 DOGG each and 20 per UTC day; 12 tests pass and disposable database checks verify balance, ledger, cap, duplicates and UTC reset without touching real players. Live Telegram ad flow remains unverified.
