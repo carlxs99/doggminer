@@ -54,14 +54,14 @@ function Bridge() {
   }, [ui, setOpenWallet, unlink, player.walletAddress]);
   useEffect(() => {
     setSendVerification(async v => {
+      const { friendlyAddress } = await import('@/lib/address');
       if (!wallet || wallet.account.chain !== '-239' || wallet.account.address.toLowerCase() !== v.wallet) {
-        const { friendlyAddress } = await import('@/lib/address');
         const url = `ton://transfer/${friendlyAddress(v.recipient)}?amount=${v.amount}&text=${encodeURIComponent(v.memo)}`;
         window.location.href = url;
         return;
       }
       const payload = await verificationPayload(v.memo);
-      await ui.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 300, network: '-239', from: v.wallet, messages: [{ address: v.recipient, amount: v.amount, payload }] });
+      await ui.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 300, network: '-239', from: v.wallet, messages: [{ address: friendlyAddress(v.recipient), amount: v.amount, payload }] });
     });
     return () => setSendVerification(null);
   }, [ui, wallet, setSendVerification]);
