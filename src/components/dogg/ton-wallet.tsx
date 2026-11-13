@@ -3,6 +3,7 @@ import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { useDogg } from './state';
 import { t } from '@/lib/i18n';
+import { verificationPayload } from '@/lib/verification-payload';
 function Bridge() {
   const [ui] = useTonConnectUI();
   const wallet = useTonWallet();
@@ -59,8 +60,7 @@ function Bridge() {
         window.location.href = url;
         return;
       }
-      const { beginCell } = await import('@ton/core');
-      const payload = beginCell().storeUint(0, 32).storeStringTail(v.memo).endCell().toBoc().toString('base64');
+      const payload = await verificationPayload(v.memo);
       await ui.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 300, network: '-239', from: v.wallet, messages: [{ address: v.recipient, amount: v.amount, payload }] });
     });
     return () => setSendVerification(null);

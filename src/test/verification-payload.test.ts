@@ -1,0 +1,18 @@
+import { expect, it } from 'vitest';
+import { Buffer } from 'buffer';
+import { verificationPayload } from '@/lib/verification-payload';
+
+it('encodes the exact verification memo when the browser has no Buffer', async () => {
+  const previous = globalThis.Buffer;
+  Reflect.deleteProperty(globalThis, 'Buffer');
+  const memo = 'DOGG-VERIFY-12345678-1234-1234-1234-123456789abc';
+  try {
+    const payload = await verificationPayload(memo);
+    const { Cell } = await import('@ton/core');
+    const body = Cell.fromBoc(Buffer.from(payload, 'base64'))[0]?.beginParse();
+    expect(body?.loadUint(32)).toBe(0);
+    expect(body?.loadStringTail()).toBe(memo);
+  } finally {
+    globalThis.Buffer = previous;
+  }
+});
