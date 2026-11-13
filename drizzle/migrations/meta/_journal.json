@@ -484,6 +484,20 @@
       "when": 1794253613766,
       "tag": "0068_migration",
       "breakpoints": true
+    },
+    {
+      "idx": 69,
+      "version": "7",
+      "when": 1794534744140,
+      "tag": "0069_wallet_verification_payment",
+      "breakpoints": true
+    },
+    {
+      "idx": 70,
+      "version": "7",
+      "when": 1794534797910,
+      "tag": "0070_verification_scan_continuation",
+      "breakpoints": true
     }
   ]
 }

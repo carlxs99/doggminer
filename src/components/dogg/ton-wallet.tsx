@@ -6,7 +6,7 @@ import { t } from '@/lib/i18n';
 function Bridge() {
   const [ui] = useTonConnectUI();
   const wallet = useTonWallet();
-  const { setWallet, setOpenWallet, verifyProof, unlink, getChallenge, demo, player, synced } = useDogg();
+  const { setWallet, setOpenWallet, setSendVerification, verifyProof, unlink, getChallenge, demo, player, synced } = useDogg();
   const sent = useRef<string | null>(null);
   // Set when the player taps "connect", so a missing signature after their own connect can be reported.
   const userOpened = useRef(false);
@@ -51,6 +51,20 @@ function Bridge() {
     });
     return () => setOpenWallet(null);
   }, [ui, setOpenWallet, unlink, player.walletAddress]);
+  useEffect(() => {
+    setSendVerification(async v => {
+      if (!wallet || wallet.account.chain !== '-239' || wallet.account.address.toLowerCase() !== v.wallet) {
+        const { friendlyAddress } = await import('@/lib/address');
+        const url = `ton://transfer/${friendlyAddress(v.recipient)}?amount=${v.amount}&text=${encodeURIComponent(v.memo)}`;
+        window.location.href = url;
+        return;
+      }
+      const { beginCell } = await import('@ton/core');
+      const payload = beginCell().storeUint(0, 32).storeStringTail(v.memo).endCell().toBoc().toString('base64');
+      await ui.sendTransaction({ validUntil: Math.floor(Date.now() / 1000) + 300, network: '-239', from: v.wallet, messages: [{ address: v.recipient, amount: v.amount, payload }] });
+    });
+    return () => setSendVerification(null);
+  }, [ui, wallet, setSendVerification]);
   return null;
 }
 export default function TonWallet() {

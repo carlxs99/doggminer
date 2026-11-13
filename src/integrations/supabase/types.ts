@@ -583,6 +583,74 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_verification_cursor: {
+        Row: {
+          head_lt: string | null
+          last_lt: string
+          page_hash: string | null
+          page_lt: string | null
+          recipient: string
+        }
+        Insert: {
+          head_lt?: string | null
+          last_lt?: string
+          page_hash?: string | null
+          page_lt?: string | null
+          recipient: string
+        }
+        Update: {
+          head_lt?: string | null
+          last_lt?: string
+          page_hash?: string | null
+          page_lt?: string | null
+          recipient?: string
+        }
+        Relationships: []
+      }
+      dogg_verification_payments: {
+        Row: {
+          amount_nano: number
+          confirmed_at: string | null
+          created_at: string
+          id: string
+          memo: string
+          recipient: string
+          telegram_id: number
+          tx_hash: string | null
+          wallet_address: string
+        }
+        Insert: {
+          amount_nano?: number
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          memo: string
+          recipient: string
+          telegram_id: number
+          tx_hash?: string | null
+          wallet_address: string
+        }
+        Update: {
+          amount_nano?: number
+          confirmed_at?: string | null
+          created_at?: string
+          id?: string
+          memo?: string
+          recipient?: string
+          telegram_id?: number
+          tx_hash?: string | null
+          wallet_address?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "dogg_verification_payments_telegram_id_fkey"
+            columns: ["telegram_id"]
+            isOneToOne: false
+            referencedRelation: "dogg_players"
+            referencedColumns: ["telegram_id"]
+          },
+        ]
+      }
       dogg_wallet_links: {
         Row: {
           first_at: string
@@ -747,6 +815,17 @@ export type Database = {
           isSetofReturn: true
         }
       }
+      dogg_confirm_verification: {
+        Args: {
+          p_amount: number
+          p_hash: string
+          p_memo: string
+          p_recipient: string
+          p_sender: string
+          p_utime: number
+        }
+        Returns: boolean
+      }
       dogg_mark_level: {
         Args: { p_id: number; p_level: number }
         Returns: number
@@ -768,6 +847,10 @@ export type Database = {
         Returns: Json
       }
       dogg_multi_score: { Args: { p_telegram_id: number }; Returns: Json }
+      dogg_open_verification: {
+        Args: { p_recipient: string; p_telegram_id: number }
+        Returns: Json
+      }
       dogg_payout_acquire: { Args: never; Returns: boolean }
       dogg_payout_release: { Args: never; Returns: undefined }
       dogg_record_signals: {

@@ -13,7 +13,9 @@ export const Route = createFileRoute('/api/public/jobs/payouts')({
         // Keeps the bot chat (/start welcome) pointed at the published app.
         const { ensureWebhook } = await import('@/lib/notify.server');
         const webhook = await ensureWebhook().catch(e => { console.error('ensureWebhook', e); return null; });
-        const summary = await processPayouts(supabaseAdmin, 38_000);
+        const { reconcileVerifications } = await import('@/lib/verification.server');
+        await reconcileVerifications(supabaseAdmin).catch(e => console.error('verification payments', e));
+        const summary = await processPayouts(supabaseAdmin, 20_000);
         return Response.json({ ok: true, webhook, ...summary });
       },
     },

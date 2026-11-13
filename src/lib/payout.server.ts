@@ -67,6 +67,9 @@ async function setup() {
   return { tc, wallet, key, jettonWallet, decimals, apiKey, seqno: () => tc.seqno(wallet.address) };
 }
 
+/** Public receiving address only; never return the key or mnemonic. */
+export async function payoutRecipient() { return (await setup()).wallet.address.toRawString(); }
+
 async function funds(ctx: Ctx) {
   const ton = (await ctx.tc.state(ctx.wallet.address)).balance;
   const dogg = await ctx.tc.jettonBalance(ctx.jettonWallet);

@@ -295,21 +295,39 @@ export const referralAction = createServerFn({ method: 'POST' })
     return z.object({ total: z.number(), qualified: z.number(), pending: z.number(), earned: z.number(), balance: z.number(), claimed: z.number(), walletLinked: z.boolean(), page: z.number(), pages: z.number(), friends: z.array(FriendSchema) }).parse(r.data);
   });
 
-/** One-time withdrawal verification: the linked wallet must hold >= 100 $DOGG on-chain (read server-side). Once passed, it's permanent. */
+/** Reuse one durable memo per account and linked wallet. */
+export const openVerificationPayment = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
+  .handler(async ({ data }) => {
+    const telegramId = await verifyTelegram(data.initData);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const row = await supabaseAdmin.from('dogg_players').select('withdraw_verified_at').eq('telegram_id', telegramId).maybeSingle();
+    if (row.error) throw new Error(row.error.message);
+    if (row.data?.withdraw_verified_at) return { verified: true as const };
+    const { payoutRecipient } = await import('./payout.server');
+    const r = await supabaseAdmin.rpc('dogg_open_verification', { p_telegram_id: telegramId, p_recipient: await payoutRecipient() });
+    if (r.error) throw new Error(r.error.message);
+    return z.union([z.object({ verified: z.literal(true) }), z.object({ verified: z.literal(false), memo: z.string(), recipient: z.string(), amount: z.string(), wallet: z.string() })]).parse(r.data);
+  });
+
+/** Wallet approval is not payment confirmation: verify receipt on-chain. */
 export const verifyPurchase = createServerFn({ method: 'POST' })
   .inputValidator(z.object({ initData: z.string().min(1).max(10000) }))
   .handler(async ({ data }) => {
     const telegramId = await verifyTelegram(data.initData);
     const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
-    const row = await supabaseAdmin.from('dogg_players').select('wallet_address, withdraw_verified_at').eq('telegram_id', telegramId).maybeSingle();
+    const row = await supabaseAdmin.from('dogg_players').select('wallet_address, withdraw_verified_at, banned_at').eq('telegram_id', telegramId).maybeSingle();
+    if (row.error) throw new Error(row.error.message);
+    if (row.data?.banned_at) throw new Error('Cuenta suspendida');
     const wallet = row.data?.wallet_address;
     if (!wallet) throw new Error('Conecta y vincula tu wallet TON primero.');
     if (!row.data?.withdraw_verified_at) {
-      // Fresh read (not the 45 s cache): the player may have just bought.
-      const onChain = await jettonHold(wallet);
-      await supabaseAdmin.from('dogg_players').update({ last_hold: onChain, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
-      const v = await supabaseAdmin.rpc('dogg_verify_withdraw', { p_telegram_id: telegramId, p_wallet: wallet, p_bought: onChain });
-      if (v.error) throw new Error(v.error.message);
+      const invoice = await supabaseAdmin.from('dogg_verification_payments').select('recipient').eq('telegram_id', telegramId).eq('wallet_address', wallet).maybeSingle();
+      if (invoice.error) throw new Error(invoice.error.message);
+      if (invoice.data) {
+        const { checkVerification } = await import('./verification.server');
+        await checkVerification(supabaseAdmin, invoice.data.recipient);
+      }
     }
     const hold = await currentHold(supabaseAdmin, telegramId);
     const r = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });

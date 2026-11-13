@@ -1,7 +1,7 @@
 // Weekly posts for the @doggnewschannel announcement channel (English). Pure: shared by the weekly job, the first manual post and tests.
 import { AD_DAILY, AD_REWARD, MINI_APP_LINK, PRICE, REF_BONUS, REF_SHARE, SWAP } from './dogg';
 import { APP_URL } from './bot-messages';
-import { VERIFY_BUY } from './purchase';
+import { VERIFY_PAYMENT } from './purchase';
 
 export const CHANNEL = '@doggnewschannel';
 /** Telegram's limit for a photo caption. */
@@ -107,7 +107,7 @@ const POSTS: ((s?: ChannelStats) => { caption: string; buttons: Button[][] })[] 
       '💸 <b>Cash out to your TON wallet</b>',
       '',
       '1️⃣ Go to <b>Profile</b> and connect your TON wallet (Tonkeeper & co.)',
-      `2️⃣ One-time check: hold at least <b>${VERIFY_BUY} $DOGG</b> in that wallet`,
+      `2️⃣ Verify once with a <b>${VERIFY_PAYMENT} GRAM</b> payment (network fee additional); existing verifications stay valid`,
       '3️⃣ Withdraw from <b>1,000 $DOGG</b> — sent on-chain automatically',
       '',
       'The bot pings you the moment your $DOGG lands ✅',
@@ -219,7 +219,7 @@ export function writerInstructions() {
     '- The miner level is automatic: it follows the $DOGG the player holds (connected TON wallet + app balance). Hold more = better miner; sell = it drops to the level covered.',
     `- Ads: up to ${AD_DAILY} rewarded ads per day, +${AD_REWARD} $DOGG each. Tasks tab: join channels/bots for extra rewards.`,
     `- Referrals: +${REF_BONUS} $DOGG when an invited friend starts their first shift, plus ${pct}% of everything they mine, for life; the friend keeps 100%.`,
-    `- Withdrawals: from 1,000 $DOGG (the 70 $DOGG fee is taken from the amount: withdraw 1,000, receive 930) straight to the player's TON wallet, sent automatically on-chain; one-time check that the wallet holds at least ${VERIFY_BUY} $DOGG. Mining never needs a wallet, only withdrawing does.`,
+    `- Withdrawals: from 1,000 $DOGG (the 70 $DOGG fee is taken from the amount: withdraw 1,000, receive 930) straight to the player's TON wallet, sent automatically on-chain; one-time ${VERIFY_PAYMENT} GRAM payment verifies the account permanently, network fee additional, no DOGG hold required. Existing verifications are preserved. Mining never needs a wallet, only withdrawing does.`,
     '- $DOGG can be bought on DeDust (there is a button under the post). The app is in English, Spanish and Russian. The bot sends notifications for withdrawals and new recruits.',
     '',
     'RULES:',

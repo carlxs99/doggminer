@@ -8,9 +8,9 @@ import { withdrawFee, withdrawNet } from '@/lib/withdraw';
 import { Title } from './screens';
 import { ScreenHero } from './hero';
 import { JETTON, PRICE, REF_BONUS, REF_PAGE, REF_SHARE, formatDogg, friendlyError, haptic, refPages, referralLink } from '@/lib/dogg';
-import { referralAction } from '@/lib/dogg.functions';
+import { referralAction, openVerificationPayment } from '@/lib/dogg.functions';
 import { coinRain, strongHaptic } from '@/lib/fx';
-import { VERIFY_BUY } from '@/lib/purchase';
+import { VERIFY_PAYMENT } from '@/lib/purchase';
 import { BuyDedustLink, DedustWebLink } from './buy';
 import { useServerFn } from '@tanstack/react-start';
 import { useT } from './lang';
@@ -45,17 +45,46 @@ function useOnchain(wallet: string | null, refresh: number) {
 }
 
 
-/** One-time withdrawal verification: the linked wallet must hold 100 $DOGG; once passed, withdrawals are always allowed. */
+/** Permanent verification via an actual native payment, never client approval alone. */
 function WithdrawVerify() {
-  const { player, demo, verifyBuy, verifying } = useDogg();
+  const { player, verifyBuy, sendVerification } = useDogg();
   const t = useT();
+  const open = useServerFn(openVerificationPayment);
+  const [pending, setPending] = useState(false);
+  const [preparing, setPreparing] = useState(false);
+  useEffect(() => {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (!initData || player.withdrawVerified || !player.walletAddress) return;
+    let stopped = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const poll = async () => {
+      await verifyBuy();
+      if (!stopped) timer = setTimeout(poll, pending ? 12000 : 60000);
+    };
+    timer = setTimeout(poll, pending ? 3000 : 15000);
+    return () => { stopped = true; clearTimeout(timer); };
+  }, [pending, player.withdrawVerified, player.walletAddress]);
+  async function pay() {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (!initData) { toast.info(t('err.openTelegram')); return; }
+    if (!sendVerification) return;
+    setPreparing(true);
+    try {
+      if (await verifyBuy()) return;
+      const invoice = await open({ data: { initData } });
+      if (invoice.verified) { await verifyBuy(); return; }
+      setPending(true);
+      await sendVerification(invoice);
+    } catch (e) { toast.error(friendlyError(e, t('toast.verifyFail'))); }
+    finally { setPreparing(false); }
+  }
   if (player.withdrawVerified) return <p className="wv-ok"><ShieldCheck /> {t('wv.ok')}</p>;
   const linked = Boolean(player.walletAddress);
   return <section className="withdraw-verify">
-    <div className="wv-head"><span className="row-icon gold"><ShieldCheck /></span><div><strong>{t('wv.title')}</strong><small>{t('wv.desc', { n: VERIFY_BUY })}</small></div></div>
-    <ol className="wv-steps"><li className={linked ? 'ok' : ''}><Check /> {t('wv.s1')}</li><li><Check /> {t('wv.s2', { n: VERIFY_BUY })}</li><li><Check /> {t('wv.s3')}</li></ol>
-    <div className="wv-actions"><Button asChild variant="outline"><BuyDedustLink><RefreshCw /> {t('wv.buy')}</BuyDedustLink></Button><Button onClick={() => void verifyBuy()} disabled={verifying || !linked}>{verifying ? <RefreshCw className="animate-spin" /> : <ShieldCheck />} {t('wv.verify')}</Button></div>
-    <DedustWebLink />
+    <div className="wv-head"><span className="row-icon gold"><ShieldCheck /></span><div><strong>{t('wv.title')}</strong><small>{t('wv.desc', { n: VERIFY_PAYMENT })}</small></div></div>
+    <ol className="wv-steps"><li className={linked ? 'ok' : ''}><Check /> {t('wv.s1')}</li><li><Check /> {t('wv.s2', { n: VERIFY_PAYMENT })}</li><li><Check /> {t('wv.s3')}</li></ol>
+    <div className="wv-actions"><Button onClick={() => void pay()} disabled={preparing || !linked || !sendVerification}>{preparing ? <RefreshCw className="animate-spin" /> : <ShieldCheck />} {t('wv.verify')}</Button>{pending && <Button variant="outline" onClick={() => void verifyBuy()}><RefreshCw /> {t('wv.check')}</Button>}</div>
+    {pending && <p role="status" className="wv-note">{t('wv.pending')}</p>}
     {!linked && <small className="wv-note">{t('wv.note')}</small>}
   </section>;
 }

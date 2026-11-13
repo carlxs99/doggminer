@@ -7,7 +7,7 @@ const { state } = vi.hoisted(() => ({ state: {
   withdraw: vi.fn(), busy: false,
 } }));
 vi.mock('@/components/dogg/state', () => ({ useDogg: () => state, WITHDRAW_MIN: 1000, WITHDRAW_FEE: 70 }));
-vi.mock('@/lib/dogg.functions', () => ({ referralAction: {} }));
+vi.mock('@/lib/dogg.functions', () => ({ referralAction: {}, openVerificationPayment: {} }));
 vi.mock('@tanstack/react-start', () => ({ useServerFn: vi.fn() }));
 vi.mock('@/components/dogg/screens', () => ({ Title: () => null }));
 vi.mock('@/components/dogg/hero', () => ({ ScreenHero: () => null }));

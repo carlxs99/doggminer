@@ -30,7 +30,7 @@ export const es = {
   'faq.q1': '¿Cómo mino $DOGG?', 'faq.a1': 'Pulsa "Prende el turno" en el Humero. Durante 24 h acumulas $DOGG según la potencia de tu minero; al terminar, cóbralo y empieza otro.',
   'faq.q2': '¿Cómo desbloqueo mejores mineros?', 'faq.a2': 'Cada minero pide un hold mínimo. Cuenta el $DOGG de tu wallet verificada más lo minado en la app. Si tu saldo baja, tu minero baja al nivel que cubras.',
   'faq.q3': '¿Por qué tengo que firmar al conectar la wallet?', 'faq.a3': 'Es una firma gratuita que no mueve fondos. Demuestra que la wallet es tuya para que nadie use la de otro.',
-  'faq.q4': '¿Cómo retiro?', 'faq.a4': 'Desde 1.000 $DOGG; la comisión de 70 $DOGG se descuenta del retiro (retiras 1.000 y recibes 930). Antes, verifica tu wallet una sola vez: debe tener al menos 10.000 $DOGG. El envío llega a tu wallet en unos minutos.',
+  'faq.q4': '¿Cómo retiro?', 'faq.a4': 'Desde 1.000 $DOGG; la comisión de 70 $DOGG se descuenta del retiro (retiras 1.000 y recibes 930). Verifica tu wallet una sola vez con un pago de 0,05 GRAM más comisión de red. Los usuarios ya verificados conservan su verificación.',
   'faq.q5': '¿Dónde se juega?', 'faq.a5': 'Siempre desde @Doggminerbot en Telegram: ahí se guardan tu cuenta, tu minado, tus referidos y tus retiros.',
   'hero.alt': 'DOGG, el personaje de $DOGG MINER',
 
@@ -83,8 +83,9 @@ export const es = {
   'vault.contract': 'CONTRATO DEL JETTON', 'vault.unverified': 'Jetton no verificado · comprueba el contrato antes de operar.',
   'vault.readFail': 'No se pudieron leer tus saldos ahora mismo. Toca actualizar en unos segundos.',
   'time.now': 'ahora', 'time.min': 'hace {n} min', 'time.h': 'hace {n} h', 'time.d': 'hace {n} d',
-  'wv.ok': 'Wallet verificada para retiros', 'wv.title': 'Verifica tu wallet para retirar', 'wv.desc': 'Tu wallet vinculada debe tener al menos {n} $DOGG. Solo se hace una vez: después podrás retirar siempre.',
-  'wv.s1': 'Conecta y vincula tu wallet', 'wv.s2': 'Ten {n} $DOGG o más en ella (cómpralos en DeDust)', 'wv.s3': 'Toca «Verificar wallet»', 'wv.buy': 'Comprar en DeDust', 'wv.verify': 'Verificar wallet', 'wv.note': 'Primero conecta tu wallet arriba y firma la vinculación.',
+  'wv.check': 'Comprobar pago', 'wv.pending': 'Esperando confirmación en la blockchain. No vuelvas a pagar si ya lo enviaste; se detectará aunque cierres la app.',
+  'wv.ok': 'Wallet verificada para retiros', 'wv.title': 'Verifica tu wallet para retirar', 'wv.desc': 'Pago único de {n} GRAM desde tu wallet vinculada. Verificación permanente, sin requisito de hold; comisión de red aparte.',
+  'wv.s1': 'Conecta y vincula tu wallet', 'wv.s2': 'Paga {n} GRAM con la referencia incluida', 'wv.s3': 'Confirmación automática al recibir el pago', 'wv.buy': 'Comprar en DeDust', 'wv.verify': 'Pagar 0,05 GRAM', 'wv.note': 'Primero conecta tu wallet arriba y firma la vinculación.',
   'buy.miniApp': '¿Prefieres la mini app de DeDust? Ábrela y pega el contrato', 'buy.copied': 'Contrato de $DOGG copiado', 'buy.copiedDesc': 'En DeDust, toca el token a recibir y pega el contrato para elegir $DOGG.', 'buy.search': 'Busca $DOGG en DeDust', 'buy.searchDesc': 'Pega este contrato: {c}',
 
   // Friends
@@ -118,7 +119,7 @@ export const es = {
   'toast.shiftOn': 'Turno prendido. Keep it growing 🌱', 'toast.checkin': 'Bonus diario reclamado: +10 créditos', 'toast.harvest': 'Puff puff… cosecha cobrada 💰', 'toast.actionFail': 'No se pudo completar la acción',
   'toast.shift24': 'Tu turno termina en 24 horas.', 'toast.checkinDone': 'Ya reclamaste el bonus de hoy.',
   'toast.levelUp': '¡Subiste a {name}!', 'toast.activateFail': 'No se pudo activar',
-  'toast.minWithdraw': 'El mínimo de retiro es {n} $DOGG.', 'toast.connectToWithdraw': 'Conecta tu wallet TON para retirar.', 'toast.verifyToWithdraw': 'Verifica tu wallet (con {n} $DOGG o más) para poder retirar.',
+  'toast.minWithdraw': 'El mínimo de retiro es {n} $DOGG.', 'toast.connectToWithdraw': 'Conecta tu wallet TON para retirar.', 'toast.verifyToWithdraw': 'Verifica tu wallet con el pago único de {n} GRAM para poder retirar.',
   'toast.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG.',
   'toast.wdFailed': 'El envío falló y se te devolvió el saldo. Inténtalo más tarde.', 'toast.wdSent': '¡{n} $DOGG enviados a tu wallet!', 'toast.wdOnWay': 'Retiro en camino a tu wallet · llegará en unos minutos', 'toast.wdFail': 'No se pudo retirar',
   'toast.adPaid': '+{r} $DOGG por ver el anuncio', 'toast.adsCap': 'Ya viste los {n} anuncios de hoy. Vuelve mañana.', 'toast.adPrepFail': 'No se pudo preparar el anuncio.',
@@ -132,7 +133,7 @@ export const es = {
   'err.generic': 'Algo salió mal. Inténtalo de nuevo.', 'err.rate': 'Mucho tráfico ahora mismo. Espera unos segundos y vuelve a intentarlo.', 'err.offline': 'Sin conexión. Revisa tu internet e inténtalo de nuevo.', 'err.server': 'El servicio no responde ahora mismo. Inténtalo en un momento.',
   'err.reopen': 'Abre de nuevo la mini app desde Telegram.', 'err.openTelegram': 'Abre la app desde Telegram.', 'err.botNotConfigured': 'El bot todavía no está configurado. El minado real no está disponible.',
   'err.shiftActive': 'Ya tienes un turno activo.', 'err.shiftNotDone': 'Todavía no hay nada que recoger.', 'err.needHold': 'Necesitas {n} $DOGG entre tu wallet verificada y la app para este minero.', 'err.badMiner': 'Minero no válido.',
-  'err.connectToWithdraw': 'Conecta tu wallet antes de retirar.', 'err.verifyToWithdraw': 'Verifica tu wallet (con 10.000 $DOGG o más) para poder retirar.', 'err.minWithdraw': 'El retiro mínimo es 1.000 $DOGG.', 'err.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG.',
+  'err.connectToWithdraw': 'Conecta tu wallet antes de retirar.', 'err.verifyToWithdraw': 'Verifica tu wallet con el pago único de 0,05 GRAM para poder retirar.', 'err.minWithdraw': 'El retiro mínimo es 1.000 $DOGG.', 'err.insufficient': 'Saldo insuficiente: necesitas {n} $DOGG.',
   'err.adsCap': 'Ya viste los 20 anuncios de hoy. Vuelve mañana.', 'err.adsTooMany': 'Demasiados intentos de anuncio hoy. Vuelve mañana.', 'err.adNotFound': 'Anuncio no encontrado.',
   'err.noRefRewards': 'No tienes recompensas de referidos por reclamar.', 'err.linkWalletFirst': 'Conecta y vincula tu wallet TON primero.',
   'err.noPurchase': 'Aún no vemos tus $DOGG: tu wallet tiene {n} $DOGG y necesitas 1. Si acabas de comprar, espera un minuto y vuelve a verificar.',

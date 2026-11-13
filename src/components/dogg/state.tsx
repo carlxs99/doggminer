@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState, type React
 import { useServerFn } from '@tanstack/react-start';
 import { toast } from 'sonner';
 import { adAction, turboAdAction, ledgerAction, playerAction, requestWithdraw, unlinkWallet, verifyPurchase, verifyWallet, walletChallenge } from '@/lib/dogg.functions';
-import { VERIFY_BUY } from '@/lib/purchase';
+import { VERIFY_PAYMENT } from '@/lib/purchase';
 import { WITHDRAW_MIN, withdrawNeeds, withdrawNet } from '@/lib/withdraw';
 import { showRewardedAd, showDirectAd } from '@/lib/ads';
 import { deviceSignals } from '@/lib/fingerprint';
@@ -21,7 +21,7 @@ import coinImg from '@/assets/dogg-coin.webp';
 
 export type Entry = { kind: 'mining' | 'task' | 'withdraw' | 'team'; label: string; amount: number; at: number; status?: 'review' };
 export { WITHDRAW_MIN, WITHDRAW_FEE } from '@/lib/withdraw';
-type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'turbo') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; unlink: () => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<void>; verifying: boolean; isAdmin: boolean; banned: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
+type State = { history: Entry[]; withdraw: (amount: number) => Promise<void>; player: Player; now: number; demo: boolean; name: string; busy: boolean; action: (action: 'start' | 'claim' | 'turbo') => Promise<void>; activateMiner: (id: string) => Promise<void>; wallet: string | null; walletLive: boolean; setWallet: (address: string | null) => void; openWallet: (() => void) | null; setOpenWallet: (fn: (() => void) | null) => void; verifyProof: (v: WalletProof) => Promise<void>; unlink: () => Promise<void>; getChallenge: () => Promise<string | null>; adsToday: number; rewardAd: () => Promise<void>; applyBalance: (balance: number, entry?: Omit<Entry, 'at'>) => void; verifyBuy: () => Promise<boolean>; sendVerification: ((v: { recipient: string; amount: string; memo: string; wallet: string }) => Promise<void>) | null; setSendVerification: (fn: ((v: { recipient: string; amount: string; memo: string; wallet: string }) => Promise<void>) | null) => void; verifying: boolean; isAdmin: boolean; banned: boolean; synced: boolean; earnedBefore: number; loaded: boolean };
 export type WalletProof = { address: string; publicKey?: string | undefined; stateInit?: string | undefined; proof: { timestamp: number; domain: { lengthBytes: number; value: string }; payload: string; signature: string } };
 // Reuse one context across hot reloads so the provider and consumers never disagree.
 const g = globalThis as { __doggContext?: React.Context<State | null> };
@@ -47,6 +47,8 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const applyBalance = useCallback((balance: number, entry?: Omit<Entry, 'at'>) => { setPlayer(p => ({ ...p, balance })); if (entry) setHistory(h => [{ ...entry, at: Date.now() }, ...h]); }, []);
   // Live TON Connect session (may be lost when Telegram clears its storage); the account's linked wallet is saved on the server.
   const [tcWallet, setWallet] = useState<string | null>(null);
+  const [sendVerification, storeSendVerification] = useState<State['sendVerification']>(null);
+  const setSendVerification = useCallback((fn: State['sendVerification']) => storeSendVerification(() => fn), []);
   const [openWallet, storeOpenWallet] = useState<(() => void) | null>(null);
   const setOpenWallet = useCallback((fn: (() => void) | null) => storeOpenWallet(() => fn), []);
   const call = useServerFn(playerAction);
@@ -151,7 +153,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       if (!Number.isFinite(amount) || amount < WITHDRAW_MIN) throw new Error(t('toast.minWithdraw', { n: WITHDRAW_MIN.toLocaleString('de-DE') }));
       if (demo) throw new Error(t('err.openTelegram'));
       if (!player.walletAddress) throw new Error(t('toast.connectToWithdraw'));
-      if (!player.withdrawVerified) throw new Error(t('toast.verifyToWithdraw', { n: VERIFY_BUY }));
+      if (!player.withdrawVerified) throw new Error(t('toast.verifyToWithdraw', { n: VERIFY_PAYMENT }));
       const gross = withdrawNeeds(amount);
       if (gross > player.balance) throw new Error(t('toast.insufficient', { n: gross.toLocaleString('de-DE') }));
       const initData = window.Telegram?.WebApp?.initData;
@@ -167,16 +169,16 @@ export function DoggProvider({ children }: { children: ReactNode }) {
       } finally { setBusy(false); }
     } catch (e) { toast.error(friendlyError(e, t('toast.wdFail'))); }
   };
-  // Withdrawal verification: the server checks that the linked wallet bought >= 100 $DOGG (one time, permanent).
+  // Withdrawal verification requires receiving the referenced payment on-chain, once.
   const purchaseCall = useServerFn(verifyPurchase);
   const [verifying, setVerifying] = useState(false);
   const verifyBuy = async () => {
-    if (verifying) return; haptic();
+    if (verifying) return false;
     const initData = window.Telegram?.WebApp?.initData;
-    if (!initData) { toast.error(t('err.openTelegram')); return; }
+    if (!initData) { toast.error(t('err.openTelegram')); return false; }
     setVerifying(true);
-    try { const p = await purchaseCall({ data: { initData } }); setPlayer(p); notifyLevel(p); strongHaptic(); toast.success(t('toast.verifyOk')); }
-    catch (e) { toast.error(friendlyError(e, t('toast.verifyFail'))); }
+    try { const p = await purchaseCall({ data: { initData } }); setPlayer(p); notifyLevel(p); if (p.withdrawVerified) { strongHaptic(); toast.success(t('toast.verifyOk')); return true; } return false; }
+    catch (e) { toast.error(friendlyError(e, t('toast.verifyFail'))); return false; }
     finally { setVerifying(false); }
   };
   // Ads: real Monetag rewarded ad. In Telegram the server opens an ad view (ymid) and Monetag's postback pays +5 (10/day);
@@ -215,7 +217,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   // The wallet linked to the account (server) counts even without a live session, so players never reconnect to mine, verify or withdraw.
   const linkedWallet = !demo && player.walletAddress ? friendlyAddress(player.walletAddress) : null;
   const wallet = (tcWallet ? friendlyAddress(tcWallet) : null) ?? linkedWallet;
-  return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, unlink, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, isAdmin, banned, synced, loaded }}>{children}</Context.Provider>;
+  return <Context.Provider value={{ history: shown, earnedBefore: !demo && ledger ? ledger.earnedBefore : 0, withdraw, player, now, demo, name, busy, action, activateMiner, wallet, walletLive: Boolean(tcWallet), setWallet, openWallet, setOpenWallet, verifyProof, unlink, getChallenge, adsToday, rewardAd, applyBalance, verifyBuy, verifying, sendVerification, setSendVerification, isAdmin, banned, synced, loaded }}>{children}</Context.Provider>;
 }
 export function useDogg() { const state = useContext(Context); if (!state) throw new Error('DoggProvider missing'); return state; }
 // Changing the shared game state forces a full reload so the provider and screens stay in sync.

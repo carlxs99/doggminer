@@ -60,7 +60,7 @@ const SERVER: [RegExp, Key][] = [
   [/^Necesitas ([\d.,]+) \$DOGG entre tu wallet/i, 'err.needHold'],
   [/^Minero no válido/i, 'err.badMiner'],
   [/^Conecta tu wallet antes de retirar/i, 'err.connectToWithdraw'],
-  [/^Verifica tu wallet (comprando|\(con)/i, 'err.verifyToWithdraw'],
+  [/^Verifica tu wallet/i, 'err.verifyToWithdraw'],
   [/^El retiro mínimo es/i, 'err.minWithdraw'],
   [/^Saldo insuficiente: necesitas ([\d.,]+)/i, 'err.insufficient'],
   [/^Ya viste los \d+ anuncios/i, 'err.adsCap'],
