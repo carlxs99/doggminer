@@ -191,6 +191,7 @@ export function Juegos() {
     {open ? <>
       <button type="button" className="games-back" onClick={() => go(null)}><ChevronLeft /> {t('games.back')}</button>
       {open === 'mines' ? <DoggMines /> : <SpinBlunt />}
+      <GameHistory key={open} game={open} />
     </> : <>
       <h3 className="soon-title"><Flame /> {t('games.available')}</h3>
       <div className="soon-list">
@@ -208,6 +209,5 @@ export function Juegos() {
         <em>{t('games.soonTag')}</em>
       </div>)}</div>
     </>}
-    <GameHistory />
   </div>;
 }

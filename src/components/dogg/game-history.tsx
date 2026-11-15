@@ -2,14 +2,14 @@ import { useSuspenseQuery } from '@tanstack/react-query';
 import { History, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { gameHistoryOptions } from '@/lib/game-history-query';
-import { roundOutcome } from '@/lib/game-history';
+import { roundOutcome, type GlobalRound } from '@/lib/game-history';
 import { useT } from './lang';
 import bud from '@/assets/games/bud.webp';
 import coin from '@/assets/dogg-coin.webp';
 
-export function GameHistory() {
+export function GameHistory({ game }: { game: GlobalRound['game'] }) {
   const t = useT();
-  const { data, refetch, isFetching } = useSuspenseQuery(gameHistoryOptions);
+  const { data, refetch, isFetching } = useSuspenseQuery(gameHistoryOptions(game));
   const number = (n: number) => n.toLocaleString(t.locale, { maximumFractionDigits: 2 });
   return <section className="game-history" aria-labelledby="global-rounds-title">
     <header className="flex items-center justify-between gap-2">

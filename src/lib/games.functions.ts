@@ -21,7 +21,8 @@ export type SpinResult = z.infer<typeof Spin>;
 
 /** Public, anonymous projection only; private source tables remain inaccessible. */
 export const globalGameHistory = createServerFn({ method: 'GET' })
-  .handler(async (): Promise<{ rounds: GlobalRound[]; unavailable: boolean }> => {
+  .inputValidator(z.object({ game: z.enum(['mines', 'spin']) }))
+  .handler(async ({ data }): Promise<{ rounds: GlobalRound[]; unavailable: boolean }> => {
     try {
       const { createClient } = await import('@supabase/supabase-js');
       const url = process.env['SUPABASE_URL'];
@@ -36,7 +37,7 @@ export const globalGameHistory = createServerFn({ method: 'GET' })
           return fetch(input, { ...init, headers });
         } },
       });
-      const result = await db.from('dogg_global_game_history').select('id,game,bet,payout,played_at').order('played_at', { ascending: false }).order('id', { ascending: false }).limit(20);
+      const result = await db.from('dogg_global_game_history').select('id,game,bet,payout,played_at').eq('game', data.game).order('played_at', { ascending: false }).order('id', { ascending: false }).limit(20);
       if (result.error) throw new Error(result.error.message);
       const rounds = z.array(z.object({ id: z.string(), game: z.enum(['mines', 'spin']), bet: z.coerce.number(), payout: z.coerce.number(), played_at: z.string() })).parse(result.data);
       return { rounds, unavailable: false };
