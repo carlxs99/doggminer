@@ -53,6 +53,8 @@ export const ru: Record<keyof typeof es, string> = {
   "games.spinLost": "Пепел… вы проиграли {n} $DOGG",
   "games.spinWon": "x{m}! +{n} $DOGG",
   "games.spinRules": "Ставка 5–100 $DOGG. 20 секторов от x0 до x25. FREE = бесплатный повтор.",
+  "games.back": "Назад к играм",
+  "games.available": "Доступно",
   'nav.friends': 'Друзья', 'nav.friends.sub': 'Твоя банда',
   'nav.profile': 'Профиль', 'nav.profile.sub': 'Кошелёк и выводы',
   'nav.admin': 'АДМИН',

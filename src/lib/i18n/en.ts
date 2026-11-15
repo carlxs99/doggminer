@@ -53,6 +53,8 @@ export const en: Record<keyof typeof es, string> = {
   "games.spinLost": "Ashes… you lost {n} $DOGG",
   "games.spinWon": "x{m}! +{n} $DOGG",
   "games.spinRules": "Bet 5–100 $DOGG. 20 slots from x0 to x25. FREE = spin again for free.",
+  "games.back": "Back to games",
+  "games.available": "Available",
   'nav.friends': 'Friends', 'nav.friends.sub': 'Your crew',
   'nav.profile': 'Profile', 'nav.profile.sub': 'Wallet & withdrawals',
   'nav.admin': 'ADMIN',

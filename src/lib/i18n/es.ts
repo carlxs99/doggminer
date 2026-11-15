@@ -53,6 +53,8 @@ export const es = {
   "games.spinLost": "Ceniza… perdiste {n} $DOGG",
   "games.spinWon": "¡x{m}! +{n} $DOGG",
   "games.spinRules": "Apuesta 5–100 $DOGG. 20 casillas: de x0 a x25. FREE = vuelves a girar gratis.",
+  "games.back": "Volver a juegos",
+  "games.available": "Disponibles",
   'nav.friends': 'Amigos', 'nav.friends.sub': 'Tu crew',
   'nav.profile': 'Perfil', 'nav.profile.sub': 'Wallet y retiros',
   'nav.admin': 'ADMIN',

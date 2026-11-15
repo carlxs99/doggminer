@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useServerFn } from '@tanstack/react-start';
-import { Bomb, Coins, Dices, Flame, Lock, Swords } from 'lucide-react';
+import { Bomb, ChevronLeft, ChevronRight, Coins, Dices, Flame, Lock, Swords } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { ScreenHero } from './hero';
@@ -167,15 +167,29 @@ const SOON = [
 
 export function Juegos() {
   const t = useT();
+  const [open, setOpen] = useState<'mines' | 'spin' | null>(null);
+  const go = (g: 'mines' | 'spin' | null) => { haptic(); setOpen(g); window.scrollTo({ top: 0 }); };
   return <div className="games-screen">
     <ScreenHero title={t('nav.games')} green art="leaf" subtitle={t('games.subtitle')} />
-    <DoggMines />
-    <SpinBlunt />
-    <h3 className="soon-title"><Lock /> {t('games.soon')}</h3>
-    <div className="soon-list">{SOON.map(({ key, icon: Icon, img }) => <div key={key} className="soon-card">
-      <span className="soon-icon">{img ? <img src={img} alt="" width={40} height={40} loading="lazy" /> : <Icon />}</span>
-      <div><strong>{t(`games.${key}` as 'games.flip')}</strong><small>{t(`games.${key}Desc` as 'games.flipDesc')}</small></div>
-      <em>{t('games.soonTag')}</em>
-    </div>)}</div>
+    {open ? <>
+      <button type="button" className="games-back" onClick={() => go(null)}><ChevronLeft /> {t('games.back')}</button>
+      {open === 'mines' ? <DoggMines /> : <SpinBlunt />}
+    </> : <>
+      <h3 className="soon-title"><Flame /> {t('games.available')}</h3>
+      <div className="soon-list">
+        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', coin, t('games.spinTitle'), 'games.spinDesc']] as const).map(([key, img, title, desc]) =>
+          <button key={key} type="button" className="soon-card game-card" onClick={() => go(key)}>
+            <span className="soon-icon"><img src={img} alt="" width={40} height={40} /></span>
+            <div><strong>{title}</strong><small>{t(desc)}</small></div>
+            <ChevronRight className="game-go" />
+          </button>)}
+      </div>
+      <h3 className="soon-title"><Lock /> {t('games.soon')}</h3>
+      <div className="soon-list">{SOON.map(({ key, icon: Icon, img }) => <div key={key} className="soon-card">
+        <span className="soon-icon">{img ? <img src={img} alt="" width={40} height={40} loading="lazy" /> : <Icon />}</span>
+        <div><strong>{t(`games.${key}` as 'games.flip')}</strong><small>{t(`games.${key}Desc` as 'games.flipDesc')}</small></div>
+        <em>{t('games.soonTag')}</em>
+      </div>)}</div>
+    </>}
   </div>;
 }

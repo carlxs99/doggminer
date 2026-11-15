@@ -936,3 +936,8 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .spin-pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:20px solid var(--gold);z-index:2;filter:drop-shadow(0 0 6px var(--gold))}
 @media (max-width:600px){.spin-wrap{width:min(100%,220px)}.spin-card{margin-top:10px}}
 @media (max-height:620px){.spin-wrap{width:min(100%,190px)}}
+.game-card{width:100%;text-align:left;cursor:pointer;opacity:1;border-style:solid;border-color:color-mix(in oklch,var(--primary) 55%,transparent);color:inherit;box-shadow:0 0 14px color-mix(in oklch,var(--primary) 18%,transparent)}
+.game-card:active{transform:scale(.98)}
+.game-go{width:20px;height:20px;color:var(--primary);flex-shrink:0}
+.games-back{display:inline-flex;align-items:center;gap:4px;margin:8px 0 2px;padding:5px 12px 5px 6px;border-radius:99px;border:1px solid color-mix(in oklch,var(--primary) 50%,transparent);background:var(--card-deep);color:var(--primary);font-size:12px;font-weight:800}.games-back svg{width:16px;height:16px}
+.spin-card{margin-top:4px}
