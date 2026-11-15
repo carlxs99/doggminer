@@ -4,6 +4,23 @@
 
 @custom-variant dark (&:is(.dark *));
 
+.game-history{margin-top:20px;border-top:1px solid var(--border);padding-top:8px;min-width:0}
+.game-history .soon-title{font-size:15px;margin:8px 0;line-height:1.25}
+.game-history-columns,.game-history-row{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(48px,.65fr) minmax(65px,.85fr);gap:8px;align-items:center}
+.game-history-columns{padding:8px 0;font-size:10px;color:var(--muted-foreground);border-bottom:1px solid var(--border)}
+.game-history-columns>span:not(:first-child),.game-history-row>span{text-align:right}
+.game-history-list{max-height:320px;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}
+.game-history-row{min-height:54px;border-bottom:1px solid var(--border);font-size:12px;font-variant-numeric:tabular-nums}
+.game-history-name{display:flex;gap:6px;align-items:center;min-width:0}
+.game-history-name img{flex:none;object-fit:contain}
+.game-history-name>div{min-width:0}
+.game-history-name strong{display:block;font-size:11px;overflow-wrap:anywhere}
+.game-history-name time,.game-history-row small{display:block;font-size:9px;line-height:1.4;color:var(--muted-foreground)}
+.game-history-result.profit{color:var(--primary)}
+.game-history-result.loss{color:var(--destructive)}
+.game-history-result.even{color:var(--gold)}
+.game-history-empty{padding:18px 0;font-size:12px;color:var(--muted-foreground)}
+
 /*
  * Design system definition.
  *

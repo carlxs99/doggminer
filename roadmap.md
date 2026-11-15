@@ -1,4 +1,5 @@
 # DOGG mini app
+- [x] Add anonymous global recent rounds for Mines and Spin; real results read through the UI, 14 tests pass, 320/390 px display and refresh verified without changing balances.
 - [x] Fix missing browser Buffer when preparing the verification payment; explicitly resolve the npm browser package (buffer/) in production instead of Node's empty shim; preserve the exact reference and payment amount.
 - [x] Raise the wallet verification payment from 0.05 to 0.1 GRAM; database default and pending invoices updated, confirmed verifications untouched, 9 tests pass.
 - [ ] Verify a real 0.1 GRAM payment from the owner's admin account in Telegram and confirm replay protection; waiting for the owner to approve the wallet payment.

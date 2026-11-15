@@ -767,7 +767,16 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      dogg_global_game_history: {
+        Row: {
+          bet: number | null
+          game: string | null
+          id: string | null
+          payout: number | null
+          played_at: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       dogg_ad: {

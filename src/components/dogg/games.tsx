@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useServerFn } from '@tanstack/react-start';
+import { useQueryClient } from '@tanstack/react-query';
+import { GameHistory } from './game-history';
 import { Bomb, ChevronLeft, ChevronRight, Coins, Dices, Flame, Lock, Swords } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -19,6 +21,7 @@ const fmt = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 
 const buzz = (kind: 'success' | 'error') => window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.(kind);
 
 function DoggMines() {
+  const queryClient = useQueryClient();
   const { demo, player, applyBalance } = useDogg();
   const t = useT();
   const call = useServerFn(minesAction);
@@ -44,6 +47,7 @@ function DoggMines() {
     try {
       const r = await call({ data: { initData, action, ...(action === 'start' ? { bet, mines } : {}), ...(tile !== undefined ? { tile } : {}) } });
       setRound(r); applyBalance(r.balance);
+      if (r.status === 'won' || r.status === 'lost') void queryClient.invalidateQueries({ queryKey: ['global-game-history'] });
       if (r.status === 'lost') { buzz('error'); toast.error(t('games.busted', { n: fmt(r.bet!) })); }
       else if (r.status === 'won') { buzz('success'); toast.success(t('games.won', { n: fmt(r.payout!) })); }
       else if (action === 'reveal') buzz('success');
@@ -98,6 +102,7 @@ const segColor = (m: number) => m === 25 ? 'jack' : m < 0 ? 'free' : m === 0 ? '
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
 function SpinBlunt() {
+  const queryClient = useQueryClient();
   const { demo, player, applyBalance } = useDogg();
   const t = useT();
   const call = useServerFn(spinAction);
@@ -124,6 +129,7 @@ function SpinBlunt() {
         if (k < r.slots.length - 1) { toast.info(t('games.spinFree')); await sleep(900); }
       }
       applyBalance(r.balance);
+      void queryClient.invalidateQueries({ queryKey: ['global-game-history'] });
       const m = SPIN_SLOTS[r.slots[r.slots.length - 1] ?? 0] ?? 1;
       if (r.payout <= 0) { buzz('error'); toast.error(t('games.spinLost', { n: fmt(r.bet) })); }
       else { buzz('success'); toast.success(t('games.spinWon', { m: m < 0 ? 1 : m, n: fmt(r.payout) })); }
@@ -202,5 +208,6 @@ export function Juegos() {
         <em>{t('games.soonTag')}</em>
       </div>)}</div>
     </>}
+    <GameHistory />
   </div>;
 }

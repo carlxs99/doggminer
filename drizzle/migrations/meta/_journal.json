@@ -519,6 +519,13 @@
       "when": 1794710433690,
       "tag": "0073_fix_spin_slot",
       "breakpoints": true
+    },
+    {
+      "idx": 74,
+      "version": "7",
+      "when": 1794735667337,
+      "tag": "0074_global_game_history",
+      "breakpoints": true
     }
   ]
 }
