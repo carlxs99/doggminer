@@ -100,7 +100,7 @@ const SOON = [
 
 export function Juegos() {
   const t = useT();
-  return <>
+  return <div className="games-screen">
     <ScreenHero title={t('nav.games')} green art="leaf" subtitle={t('games.subtitle')} />
     <DoggMines />
     <h3 className="soon-title"><Lock /> {t('games.soon')}</h3>
@@ -109,5 +109,5 @@ export function Juegos() {
       <div><strong>{t(`games.${key}` as 'games.flip')}</strong><small>{t(`games.${key}Desc` as 'games.flipDesc')}</small></div>
       <em>{t('games.soonTag')}</em>
     </div>)}</div>
-  </>;
+  </div>;
 }
