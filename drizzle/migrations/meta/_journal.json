@@ -512,6 +512,13 @@
       "when": 1794709759312,
       "tag": "0072_spin_the_blunt",
       "breakpoints": true
+    },
+    {
+      "idx": 73,
+      "version": "7",
+      "when": 1794710433690,
+      "tag": "0073_fix_spin_slot",
+      "breakpoints": true
     }
   ]
 }
