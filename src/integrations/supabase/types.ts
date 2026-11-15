@@ -941,6 +941,10 @@ export type Database = {
         }
         Returns: Json
       }
+      dogg_spin: {
+        Args: { p_bet: number; p_telegram_id: number }
+        Returns: Json
+      }
       dogg_streak_boost: { Args: { p_streak: number }; Returns: number }
       dogg_task_claim: {
         Args: { p_member: boolean; p_task: string; p_telegram_id: number }

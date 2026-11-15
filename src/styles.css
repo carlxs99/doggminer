@@ -916,3 +916,23 @@ button:disabled{opacity:.5;cursor:not-allowed}
   .mines-pick button{font-size:10px}
   .mines-pick button em{display:none}
 }
+
+/* Spin the Blunt */
+.spin-card{margin-top:14px}
+.spin-wrap{position:relative;width:min(100%,250px);margin:8px auto 4px;aspect-ratio:1}
+.spin-wheel{width:100%;height:100%;transition:transform 3.5s cubic-bezier(.12,.75,.12,1);filter:drop-shadow(0 0 14px color-mix(in oklch,var(--primary) 45%,transparent))}
+.spin-wheel .seg path{stroke:color-mix(in oklch,var(--gold) 70%,transparent);stroke-width:.8}
+.spin-wheel .seg text{font-size:9px;font-weight:900;fill:var(--foreground);font-family:var(--font-display)}
+.spin-wheel .dark path{fill:var(--card-deep)}
+.spin-wheel .green path{fill:color-mix(in oklch,var(--primary) 55%,var(--card-deep))}
+.spin-wheel .purple path{fill:color-mix(in oklch,oklch(.55 .2 300) 70%,var(--card-deep))}
+.spin-wheel .gold path{fill:color-mix(in oklch,var(--gold) 70%,var(--card-deep))}
+.spin-wheel .jack path{fill:var(--gold)}.spin-wheel .jack text{fill:var(--background)}
+.spin-wheel .free path{fill:color-mix(in oklch,var(--primary) 85%,var(--background))}.spin-wheel .free text{fill:var(--background);font-size:7.5px}
+.spin-wheel .ash path{fill:color-mix(in oklch,var(--muted-foreground) 25%,var(--background))}
+.spin-wheel .hit path{stroke:var(--foreground);stroke-width:2.5}
+.spin-wheel .rim{fill:none;stroke:var(--gold);stroke-width:3}
+.spin-wheel .hub{fill:var(--background);stroke:var(--gold);stroke-width:2}
+.spin-pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:20px solid var(--gold);z-index:2;filter:drop-shadow(0 0 6px var(--gold))}
+@media (max-width:600px){.spin-wrap{width:min(100%,220px)}.spin-card{margin-top:10px}}
+@media (max-height:620px){.spin-wrap{width:min(100%,190px)}}

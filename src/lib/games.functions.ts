@@ -14,3 +14,17 @@ export const minesAction = createServerFn({ method: 'POST' })
     if (r.error) throw new Error(r.error.message);
     return Round.parse(r.data);
   });
+
+const Spin = z.object({ balance: z.number(), slots: z.array(z.number()), payout: z.number(), bet: z.number() });
+export type SpinResult = z.infer<typeof Spin>;
+
+/** Spin the Blunt: the slot is drawn in the database (dogg_spin); the client only animates it. */
+export const spinAction = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), bet: z.number().int().min(5).max(100) }))
+  .handler(async ({ data }) => {
+    const id = (await (await import('./telegram.server')).verifyTelegramUser(data.initData)).id;
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.rpc('dogg_spin', { p_telegram_id: id, p_bet: data.bet });
+    if (r.error) throw new Error(r.error.message);
+    return Spin.parse(r.data);
+  });

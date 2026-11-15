@@ -7,7 +7,8 @@ import { ScreenHero } from './hero';
 import { useDogg } from './state';
 import { useT } from './lang';
 import { haptic } from '@/lib/dogg';
-import { minesAction, type MinesRound } from '@/lib/games.functions';
+import { minesAction, spinAction, type MinesRound } from '@/lib/games.functions';
+import { SPIN_SLOTS, SPIN_BETS } from '@/lib/spin';
 import { minesMult, MINES_BETS, MINES_MODES } from '@/lib/mines';
 import { translateServer } from '@/lib/i18n';
 import bud from '@/assets/games/bud.webp';
@@ -92,10 +93,76 @@ function DoggMines() {
   </section>;
 }
 
+const SEG = 360 / SPIN_SLOTS.length;
+const segColor = (m: number) => m === 25 ? 'jack' : m < 0 ? 'free' : m === 0 ? 'ash' : m >= 5 ? 'gold' : m >= 2 ? 'purple' : m > 1 ? 'green' : 'dark';
+const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
+
+function SpinBlunt() {
+  const { demo, player, applyBalance } = useDogg();
+  const t = useT();
+  const call = useServerFn(spinAction);
+  const [bet, setBet] = useState<number>(10);
+  const [busy, setBusy] = useState(false);
+  const [rot, setRot] = useState(0);
+  const [hit, setHit] = useState<number | null>(null);
+
+  async function spin() {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (demo || !initData) { toast.info(t('games.openTg')); return; }
+    if (busy) return;
+    setBusy(true); setHit(null); haptic();
+    try {
+      const r = await call({ data: { initData, bet } });
+      let cur = rot;
+      for (const [k, slot] of r.slots.entries()) {
+        const target = 360 - (slot * SEG + SEG / 2);
+        cur = cur - (((cur % 360) + 360) % 360) + 360 * 6 + target;
+        setRot(cur);
+        const ticks = setInterval(() => window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.('light'), 160);
+        await sleep(3600); clearInterval(ticks);
+        setHit(slot);
+        if (k < r.slots.length - 1) { toast.info(t('games.spinFree')); await sleep(900); }
+      }
+      applyBalance(r.balance);
+      const m = SPIN_SLOTS[r.slots[r.slots.length - 1] ?? 0] ?? 1;
+      if (r.payout <= 0) { buzz('error'); toast.error(t('games.spinLost', { n: fmt(r.bet) })); }
+      else { buzz('success'); toast.success(t('games.spinWon', { m: m < 0 ? 1 : m, n: fmt(r.payout) })); }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '';
+      toast.error(translateServer(msg) ?? t('games.error'));
+    } finally { setBusy(false); }
+  }
+
+  return <section className="mines-card spin-card">
+    <header className="mines-head">
+      <div><span className="mines-tag"><Flame /> {t('games.live')}</span><h2>{t('games.spinTitle')}</h2><p>{t('games.spinDesc')}</p></div>
+      <div className="mines-bal"><small>{t('games.balance')}</small><strong>{fmt(player.balance)}</strong><span>$DOGG</span></div>
+    </header>
+    <div className="spin-wrap">
+      <span className="spin-pointer" aria-hidden />
+      <svg viewBox="-100 -100 200 200" className="spin-wheel" style={{ transform: `rotate(${rot}deg)` }} aria-label={t('games.spinTitle')}>
+        {SPIN_SLOTS.map((m, i) => {
+          const a0 = (i * SEG - 90) * Math.PI / 180, a1 = ((i + 1) * SEG - 90) * Math.PI / 180;
+          const mid = i * SEG + SEG / 2;
+          return <g key={i} className={`seg ${segColor(m)} ${hit === i && !busy ? 'hit' : ''}`}>
+            <path d={`M0 0 L${96 * Math.cos(a0)} ${96 * Math.sin(a0)} A96 96 0 0 1 ${96 * Math.cos(a1)} ${96 * Math.sin(a1)} Z`} />
+            <text transform={`rotate(${mid}) translate(0 -72) rotate(90)`} textAnchor="middle" dominantBaseline="middle">{m < 0 ? 'FREE' : m === 0 ? '💀' : `x${m}`}</text>
+          </g>;
+        })}
+        <circle r="96" className="rim" />
+        <circle r="22" className="hub" />
+        <image href={coin} x="-19" y="-19" width="38" height="38" />
+      </svg>
+    </div>
+    <div className="mines-pick"><small>{t('games.bet')}</small><div>{SPIN_BETS.map(b => <button key={b} type="button" disabled={busy} className={bet === b ? 'on' : ''} onClick={() => { haptic(); setBet(b); }}>{b}</button>)}</div></div>
+    <Button className="mines-play" disabled={busy} onClick={() => void spin()}><Dices /> {busy ? t('games.spinning') : t('games.spinPlay', { n: bet })}</Button>
+    <p className="mines-rules">{t('games.spinRules')}</p>
+  </section>;
+}
+
 const SOON = [
   { key: 'flip', icon: Coins, img: coin },
   { key: 'battle', icon: Swords, img: null },
-  { key: 'spin', icon: Dices, img: null },
 ] as const;
 
 export function Juegos() {
@@ -103,6 +170,7 @@ export function Juegos() {
   return <div className="games-screen">
     <ScreenHero title={t('nav.games')} green art="leaf" subtitle={t('games.subtitle')} />
     <DoggMines />
+    <SpinBlunt />
     <h3 className="soon-title"><Lock /> {t('games.soon')}</h3>
     <div className="soon-list">{SOON.map(({ key, icon: Icon, img }) => <div key={key} className="soon-card">
       <span className="soon-icon">{img ? <img src={img} alt="" width={40} height={40} loading="lazy" /> : <Icon />}</span>
