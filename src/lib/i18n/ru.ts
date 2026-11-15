@@ -58,6 +58,8 @@ export const ru: Record<keyof typeof es, string> = {
   'games.history': 'Последние игры всех игроков',
   'games.historyRefresh': 'Обновить игры',
   'games.historyGame': 'Игра / Дата',
+  'games.historyPlayer': 'Игрок / Дата',
+  'games.historyUnknownPlayer': 'Игрок',
   'games.historyBet': 'Ставка',
   'games.historyPayout': 'Выплата',
   'games.historyEmpty': 'Пока нет завершённых игр.',

@@ -58,6 +58,8 @@ export const es = {
   'games.history': 'Últimas jugadas globales',
   'games.historyRefresh': 'Actualizar jugadas',
   'games.historyGame': 'Juego / Fecha',
+  'games.historyPlayer': 'Jugador / Fecha',
+  'games.historyUnknownPlayer': 'Jugador',
   'games.historyBet': 'Apuesta',
   'games.historyPayout': 'Premio',
   'games.historyEmpty': 'Todavía no hay jugadas terminadas.',

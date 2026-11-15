@@ -9,7 +9,7 @@
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
 
-- Global rounds use an anonymous public view; private game data stays hidden to protect players.
+- Global rounds expose display names in a public view; private game data stays hidden to protect players.
 
 - Keep five DOGG content screens as independent TanStack routes with a shared shell and game-state provider so navigation preserves the active shift.
 - Isolate TON Connect in a dynamically imported component behind ClientOnly because wallet SDKs require browser APIs.

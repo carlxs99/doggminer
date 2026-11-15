@@ -1,6 +1,6 @@
 import { createServerFn } from '@tanstack/react-start';
 import { z } from 'zod';
-import type { GlobalRound } from './game-history';
+import { publicRoundSchema, type GlobalRound } from './game-history';
 
 const Round = z.object({ balance: z.number(), id: z.string().optional(), bet: z.number().optional(), mines: z.number().optional(), revealed: z.array(z.number()).optional(), status: z.enum(['active', 'won', 'lost']).optional(), payout: z.number().optional(), mult: z.number().optional(), next: z.number().optional(), board: z.array(z.number()).nullable().optional(), hit: z.number().optional() });
 export type MinesRound = z.infer<typeof Round>;
@@ -19,7 +19,7 @@ export const minesAction = createServerFn({ method: 'POST' })
 const Spin = z.object({ balance: z.number(), slots: z.array(z.number()), payout: z.number(), bet: z.number() });
 export type SpinResult = z.infer<typeof Spin>;
 
-/** Public, anonymous projection only; private source tables remain inaccessible. */
+/** Public completed rounds with display names only; private source tables remain inaccessible. */
 export const globalGameHistory = createServerFn({ method: 'GET' })
   .inputValidator(z.object({ game: z.enum(['mines', 'spin']) }))
   .handler(async ({ data }): Promise<{ rounds: GlobalRound[]; unavailable: boolean }> => {
@@ -37,9 +37,9 @@ export const globalGameHistory = createServerFn({ method: 'GET' })
           return fetch(input, { ...init, headers });
         } },
       });
-      const result = await db.from('dogg_global_game_history').select('id,game,bet,payout,played_at').eq('game', data.game).order('played_at', { ascending: false }).order('id', { ascending: false }).limit(20);
+      const result = await db.from('dogg_global_game_history').select('id,game,bet,payout,played_at,player_name').eq('game', data.game).order('played_at', { ascending: false }).order('id', { ascending: false }).limit(20);
       if (result.error) throw new Error(result.error.message);
-      const rounds = z.array(z.object({ id: z.string(), game: z.enum(['mines', 'spin']), bet: z.coerce.number(), payout: z.coerce.number(), played_at: z.string() })).parse(result.data);
+      const rounds = z.array(publicRoundSchema).parse(result.data);
       return { rounds, unavailable: false };
     } catch (error) {
       console.error('[game-history] Read failed', error instanceof Error ? error.message : 'unknown');

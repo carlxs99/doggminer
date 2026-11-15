@@ -1,4 +1,7 @@
-export type GlobalRound = { id: string; game: 'mines' | 'spin'; bet: number; payout: number; played_at: string };
+import { z } from 'zod';
+
+export const publicRoundSchema = z.object({ id: z.string(), game: z.enum(['mines', 'spin']), bet: z.coerce.number(), payout: z.coerce.number(), played_at: z.string(), player_name: z.string().nullable() });
+export type GlobalRound = z.infer<typeof publicRoundSchema>;
 
 export function roundOutcome(round: Pick<GlobalRound, 'bet' | 'payout'>) {
   const net = Math.round((round.payout - round.bet) * 100) / 100;

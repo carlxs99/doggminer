@@ -526,6 +526,13 @@
       "when": 1794735667337,
       "tag": "0074_global_game_history",
       "breakpoints": true
+    },
+    {
+      "idx": 75,
+      "version": "7",
+      "when": 1794737922792,
+      "tag": "0075_game_history_player_names",
+      "breakpoints": true
     }
   ]
 }

@@ -774,6 +774,7 @@ export type Database = {
           id: string | null
           payout: number | null
           played_at: string | null
+          player_name: string | null
         }
         Relationships: []
       }

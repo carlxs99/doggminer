@@ -58,6 +58,8 @@ export const en: Record<keyof typeof es, string> = {
   'games.history': 'Latest global rounds',
   'games.historyRefresh': 'Refresh rounds',
   'games.historyGame': 'Game / Date',
+  'games.historyPlayer': 'Player / Date',
+  'games.historyUnknownPlayer': 'Player',
   'games.historyBet': 'Bet',
   'games.historyPayout': 'Payout',
   'games.historyEmpty': 'No completed rounds yet.',
