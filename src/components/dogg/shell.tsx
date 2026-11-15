@@ -1,7 +1,7 @@
 import { ClientOnly, Link, useLocation, useRouter } from '@tanstack/react-router';
 import { Suspense, lazy, useEffect, useState, type ReactNode } from 'react';
 import { setSound, soundOn, scratch } from '@/lib/fx';
-import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume2, VolumeX, CircleHelp, Copy, ExternalLink, ShieldCheck } from 'lucide-react';
+import { Leaf, Cigarette, Radio, Zap, Users, Wallet, Crown, ArrowUpRight, Volume2, VolumeX, Dices, CircleHelp, Copy, ExternalLink, ShieldCheck } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useDogg } from './state';
@@ -17,6 +17,7 @@ const FAQ: [Key, Key][] = [['faq.q1', 'faq.a1'], ['faq.q2', 'faq.a2'], ['faq.q3'
 const navigation = [
   { to: '/', name: 'nav.mine', subtitle: 'nav.mine.sub', icon: Cigarette },
   { to: '/trabajos', name: 'nav.tasks', subtitle: 'nav.tasks.sub', icon: Radio },
+  { to: '/juegos', name: 'nav.games', subtitle: 'nav.games.sub', icon: Dices },
   { to: '/grow-ops', name: 'nav.boost', subtitle: 'nav.boost.sub', icon: Zap },
   { to: '/amigos', name: 'nav.friends', subtitle: 'nav.friends.sub', icon: Users },
   { to: '/perfil', name: 'nav.profile', subtitle: 'nav.profile.sub', icon: Crown },

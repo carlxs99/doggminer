@@ -498,6 +498,13 @@
       "when": 1794534797910,
       "tag": "0070_verification_scan_continuation",
       "breakpoints": true
+    },
+    {
+      "idx": 71,
+      "version": "7",
+      "when": 1794708248842,
+      "tag": "0071_migration",
+      "breakpoints": true
     }
   ]
 }

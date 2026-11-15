@@ -239,6 +239,45 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_mines_games: {
+        Row: {
+          bet: number
+          board: number[]
+          created_at: string
+          ended_at: string | null
+          id: string
+          mines: number
+          payout: number
+          revealed: number[]
+          status: string
+          telegram_id: number
+        }
+        Insert: {
+          bet: number
+          board: number[]
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          mines: number
+          payout?: number
+          revealed?: number[]
+          status?: string
+          telegram_id: number
+        }
+        Update: {
+          bet?: number
+          board?: number[]
+          created_at?: string
+          ended_at?: string | null
+          id?: string
+          mines?: number
+          payout?: number
+          revealed?: number[]
+          status?: string
+          telegram_id?: number
+        }
+        Relationships: []
+      }
       dogg_multi_reviews: {
         Row: {
           admin_id: number
@@ -833,6 +872,24 @@ export type Database = {
       dogg_miner_stats: {
         Args: { p_id: string }
         Returns: Record<string, unknown>
+      }
+      dogg_mines: {
+        Args: {
+          p_action: string
+          p_bet?: number
+          p_mines?: number
+          p_telegram_id: number
+          p_tile?: number
+        }
+        Returns: Json
+      }
+      dogg_mines_mult: {
+        Args: { p_k: number; p_mines: number }
+        Returns: number
+      }
+      dogg_mines_view: {
+        Args: { g: Database["public"]["Tables"]["dogg_mines_games"]["Row"] }
+        Returns: Json
       }
       dogg_multi_peers: {
         Args: { p_telegram_id: number }

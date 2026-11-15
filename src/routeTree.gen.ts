@@ -14,6 +14,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AmigosRouteImport } from './routes/amigos'
 import { Route as BilleteraRouteImport } from './routes/billetera'
 import { Route as GrowOpsRouteImport } from './routes/grow-ops'
+import { Route as JuegosRouteImport } from './routes/juegos'
 import { Route as PerfilRouteImport } from './routes/perfil'
 import { Route as TrabajosRouteImport } from './routes/trabajos'
 import { Route as ApiPublicMonetagPostbackRouteImport } from './routes/api.public.monetag-postback'
@@ -47,6 +48,11 @@ const BilleteraRoute = BilleteraRouteImport.update({
 const GrowOpsRoute = GrowOpsRouteImport.update({
   id: '/grow-ops',
   path: '/grow-ops',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JuegosRoute = JuegosRouteImport.update({
+  id: '/juegos',
+  path: '/juegos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PerfilRoute = PerfilRouteImport.update({
@@ -105,6 +111,7 @@ export interface FileRoutesByFullPath {
   '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
+  '/juegos': typeof JuegosRoute
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
@@ -121,6 +128,7 @@ export interface FileRoutesByTo {
   '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
+  '/juegos': typeof JuegosRoute
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
@@ -138,6 +146,7 @@ export interface FileRoutesById {
   '/amigos': typeof AmigosRoute
   '/billetera': typeof BilleteraRoute
   '/grow-ops': typeof GrowOpsRoute
+  '/juegos': typeof JuegosRoute
   '/perfil': typeof PerfilRoute
   '/trabajos': typeof TrabajosRoute
   '/api/public/monetag-postback': typeof ApiPublicMonetagPostbackRoute
@@ -156,6 +165,7 @@ export interface FileRouteTypes {
     | '/amigos'
     | '/billetera'
     | '/grow-ops'
+    | '/juegos'
     | '/perfil'
     | '/trabajos'
     | '/api/public/monetag-postback'
@@ -172,6 +182,7 @@ export interface FileRouteTypes {
     | '/amigos'
     | '/billetera'
     | '/grow-ops'
+    | '/juegos'
     | '/perfil'
     | '/trabajos'
     | '/api/public/monetag-postback'
@@ -188,6 +199,7 @@ export interface FileRouteTypes {
     | '/amigos'
     | '/billetera'
     | '/grow-ops'
+    | '/juegos'
     | '/perfil'
     | '/trabajos'
     | '/api/public/monetag-postback'
@@ -205,6 +217,7 @@ export interface RootRouteChildren {
   AmigosRoute: typeof AmigosRoute
   BilleteraRoute: typeof BilleteraRoute
   GrowOpsRoute: typeof GrowOpsRoute
+  JuegosRoute: typeof JuegosRoute
   PerfilRoute: typeof PerfilRoute
   TrabajosRoute: typeof TrabajosRoute
   ApiPublicMonetagPostbackRoute: typeof ApiPublicMonetagPostbackRoute
@@ -251,6 +264,13 @@ declare module '@tanstack/react-router' {
       path: '/grow-ops'
       fullPath: '/grow-ops'
       preLoaderRoute: typeof GrowOpsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/juegos': {
+      id: '/juegos'
+      path: '/juegos'
+      fullPath: '/juegos'
+      preLoaderRoute: typeof JuegosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/perfil': {
@@ -325,6 +345,7 @@ const rootRouteChildren: RootRouteChildren = {
   AmigosRoute: AmigosRoute,
   BilleteraRoute: BilleteraRoute,
   GrowOpsRoute: GrowOpsRoute,
+  JuegosRoute: JuegosRoute,
   PerfilRoute: PerfilRoute,
   TrabajosRoute: TrabajosRoute,
   ApiPublicMonetagPostbackRoute: ApiPublicMonetagPostbackRoute,

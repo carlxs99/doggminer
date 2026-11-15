@@ -809,3 +809,48 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .bc-img{display:flex;flex-direction:column;gap:6px;align-items:flex-start}
 .bc-img img{max-height:160px;max-width:100%;border-radius:12px;border:1.5px solid var(--neon-line)}
 .lp-card{margin:0 0 12px;padding:10px 11px;border-radius:12px;border:1px solid color-mix(in oklch,var(--gold) 55%,var(--border));background:linear-gradient(160deg,color-mix(in oklch,var(--gold) 12%,var(--card)),var(--card));box-shadow:0 0 14px color-mix(in oklch,var(--gold) 14%,transparent);display:grid;gap:6px}.lp-card.on{border-color:color-mix(in oklch,var(--primary) 60%,var(--border));box-shadow:0 0 16px color-mix(in oklch,var(--primary) 22%,transparent)}.lp-head{display:flex;align-items:center;gap:6px}.lp-head svg{width:16px;color:var(--gold)}.lp-head strong{font-family:var(--font-display);font-size:15px;letter-spacing:.02em}.lp-badge{margin-left:auto;font-size:9px;font-weight:700;padding:3px 7px;border-radius:999px;background:var(--primary);color:var(--primary-foreground)}.lp-card p{font-size:11px;line-height:1.45;color:var(--muted-foreground);margin:0}.lp-card em{font-style:normal;opacity:.72}.lp-card ul{display:flex;flex-wrap:wrap;gap:4px 12px;font-size:11px;font-weight:600;color:var(--gold)}.lp-card li{display:flex;align-items:center;gap:5px}.lp-card li svg{width:12px}.lp-card small{font-size:10px;color:var(--muted-foreground)}.lp-card a{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:30px;padding:0 10px;border-radius:7px;font-size:11px;font-weight:700;flex:none}.lp-foot{display:flex;align-items:center;justify-content:space-between;gap:8px}
+
+/* Hood Games: DOGG Mines */
+.bottom-nav>a{flex:1;min-width:0;padding:3px 1px!important}
+.bottom-nav>a span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.mines-card{margin-top:14px;padding:16px;border:1.5px solid var(--neon-line);border-radius:20px;background:radial-gradient(120% 80% at 50% 0%,color-mix(in oklch,var(--primary) 14%,transparent),transparent 60%),var(--card-deep);box-shadow:0 0 22px var(--neon-soft),inset 0 0 30px color-mix(in oklch,var(--primary) 6%,transparent)}
+.mines-head{display:flex;justify-content:space-between;gap:10px;align-items:flex-start}
+.mines-head h2{font-family:var(--font-display);font-size:26px;letter-spacing:.04em;color:var(--primary);text-shadow:0 0 14px var(--neon-soft);line-height:1.1;margin-top:6px}
+.mines-head p{font-size:11px;color:var(--muted-foreground);margin-top:4px;max-width:220px}
+.mines-tag{display:inline-flex;align-items:center;gap:4px;font-size:9px;font-weight:700;color:var(--gold);border:1px solid color-mix(in oklch,var(--gold) 55%,transparent);border-radius:99px;padding:2px 8px}
+.mines-tag svg{width:11px;height:11px}
+.mines-bal{text-align:right;flex-shrink:0}.mines-bal small,.mines-bal span{display:block;font-size:9px;color:var(--muted-foreground)}.mines-bal strong{font-size:18px;color:var(--gold)}
+.mines-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:14px 0}
+.mines-stats>div{border:1px solid var(--border);border-radius:12px;padding:7px;text-align:center;background:color-mix(in oklch,var(--background) 60%,transparent)}
+.mines-stats small{display:block;font-size:9px;color:var(--muted-foreground)}.mines-stats strong{font-size:16px;color:var(--primary)}.mines-stats strong.gold{color:var(--gold)}
+.mines-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;max-width:400px;margin:0 auto}
+.mine-tile{aspect-ratio:1;border-radius:13px;display:grid;place-items:center;position:relative;overflow:hidden;border:1.5px solid color-mix(in oklch,var(--primary) 30%,transparent);background:linear-gradient(155deg,color-mix(in oklch,var(--primary) 16%,var(--card-deep)),var(--card-deep) 70%);box-shadow:inset 0 2px 0 color-mix(in oklch,var(--foreground) 8%,transparent),0 4px 10px oklch(0 0 0 / .45);transition:transform .15s,box-shadow .2s}
+.mine-tile.closed:not(:disabled):active{transform:scale(.92)}
+.mine-tile.closed:not(:disabled){cursor:pointer;animation:tile-breathe 3s ease-in-out infinite}
+.mine-tile i{width:34%;height:34%;border-radius:50%;background:radial-gradient(circle,color-mix(in oklch,var(--primary) 55%,transparent),transparent 70%);opacity:.55}
+.mine-tile img{width:82%;height:82%;object-fit:contain;animation:tile-pop .35s cubic-bezier(.3,1.6,.5,1)}
+.mine-tile.bud{border-color:var(--primary);background:radial-gradient(circle,color-mix(in oklch,var(--primary) 30%,transparent),var(--card-deep) 75%);box-shadow:0 0 16px var(--neon-soft),inset 0 0 12px color-mix(in oklch,var(--gold) 20%,transparent)}
+.mine-tile.bud img{filter:drop-shadow(0 0 8px color-mix(in oklch,var(--gold) 60%,transparent))}
+.mine-tile.boom{border-color:var(--destructive);background:radial-gradient(circle,color-mix(in oklch,var(--destructive) 45%,transparent),var(--card-deep) 75%);box-shadow:0 0 22px color-mix(in oklch,var(--destructive) 60%,transparent);animation:boom-shake .4s}
+.mine-tile.bud-dim img,.mine-tile.mine-dim img{opacity:.35;animation:none;filter:grayscale(.4)}
+.mine-tile.pending{animation:tile-pending .6s infinite alternate}
+.mines-grid.lost{animation:boom-shake .45s}
+@keyframes tile-pop{from{transform:scale(.2) rotate(-25deg);opacity:0}to{transform:scale(1);opacity:1}}
+@keyframes tile-breathe{50%{border-color:color-mix(in oklch,var(--primary) 55%,transparent)}}
+@keyframes tile-pending{to{box-shadow:0 0 18px var(--neon-soft)}}
+@keyframes boom-shake{20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-3px)}80%{transform:translateX(3px)}}
+.mines-pick{margin-top:12px}.mines-pick>small{display:block;font-size:10px;color:var(--muted-foreground);margin-bottom:6px}
+.mines-pick>div{display:flex;gap:6px}
+.mines-pick button{flex:1;min-width:0;height:36px;border-radius:10px;border:1px solid var(--border);background:var(--background);font-weight:700;font-size:13px;color:var(--foreground);display:flex;align-items:center;justify-content:center;gap:4px}
+.mines-pick button svg{width:13px;height:13px;color:var(--destructive)}
+.mines-pick button em{font-style:normal;font-size:9px;font-weight:500;color:var(--muted-foreground)}
+.mines-pick button.on{border-color:var(--primary);color:var(--primary);box-shadow:0 0 12px var(--neon-soft);background:color-mix(in oklch,var(--primary) 12%,var(--background))}
+.mines-play,.mines-cash{width:100%;height:48px;margin-top:14px;border-radius:14px;font-weight:800;font-size:14px;letter-spacing:.03em}
+.mines-cash{background:linear-gradient(135deg,var(--gold),color-mix(in oklch,var(--gold) 70%,var(--primary)));color:var(--background);box-shadow:0 0 20px color-mix(in oklch,var(--gold) 45%,transparent)}
+.mines-rules{font-size:9.5px;color:var(--muted-foreground);margin-top:10px;line-height:1.5;text-align:center}
+.soon-title{display:flex;align-items:center;gap:6px;margin:22px 0 10px;font-family:var(--font-display);font-size:16px;color:var(--gold)}.soon-title svg{width:15px;height:15px}
+.soon-list{display:grid;gap:8px}
+.soon-card{display:flex;align-items:center;gap:12px;padding:11px 13px;border-radius:15px;border:1px dashed color-mix(in oklch,var(--gold) 40%,transparent);background:var(--card-deep);opacity:.85}
+.soon-icon{width:42px;height:42px;flex-shrink:0;border-radius:12px;display:grid;place-items:center;background:color-mix(in oklch,var(--gold) 12%,transparent);color:var(--gold)}.soon-icon img{width:36px;height:36px;border-radius:50%}.soon-icon svg{width:21px;height:21px}
+.soon-card>div{flex:1;min-width:0}.soon-card strong{display:block;font-size:13px}.soon-card small{font-size:10px;color:var(--muted-foreground)}
+.soon-card>em{font-style:normal;font-size:9px;font-weight:800;color:var(--gold);border:1px solid color-mix(in oklch,var(--gold) 55%,transparent);border-radius:99px;padding:2px 8px}

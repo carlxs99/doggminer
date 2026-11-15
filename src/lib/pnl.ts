@@ -5,7 +5,7 @@ export type LedgerEntry = { kind: string; amount: number; at: number };
 export const PNL_RANGES = { '24h': 864e5, '7d': 7 * 864e5, '30d': 30 * 864e5, All: Infinity } as const;
 export type PnlRange = keyof typeof PNL_RANGES;
 
-const isGain = (e: LedgerEntry) => e.amount > 0 && e.kind !== 'withdraw';
+const isGain = (e: LedgerEntry) => e.amount > 0 && e.kind !== 'withdraw' && e.kind !== 'game';
 
 /** Earnings in the last 24 hours ("PNL de hoy"). */
 export function pnlToday(entries: LedgerEntry[], now: number) {

@@ -99,6 +99,11 @@ const SERVER: [RegExp, Key][] = [
   [/^El enlace de un bot debe ser/i, 'err.adminBotLink'],
   [/^El saldo no puede quedar negativo \(tiene ([\d.,]+)\)/i, 'err.adminNegative'],
   [/^Usuario no encontrado/i, 'err.adminNoUser'],
+  [/^Saldo insuficiente$/i, 'games.errFunds'],
+  [/^Ya tienes una partida en curso/i, 'games.errActive'],
+  [/^No hay partida en curso/i, 'games.errNone'],
+  [/^Apuesta entre 5 y 100/i, 'games.errBet'],
+  [/^Destapa al menos una casilla/i, 'games.pickFirst'],
   [/^Este retiro ya está cerrado/i, 'err.adminWdClosed'],
 ];
 export function translateServer(raw: string): string | null {

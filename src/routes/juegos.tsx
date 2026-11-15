@@ -1,0 +1,3 @@
+import { createFileRoute } from '@tanstack/react-router';
+import { Juegos } from '@/components/dogg/games';
+export const Route = createFileRoute('/juegos')({ head: () => ({ meta: [{ title: 'Juegos · $DOGG MINER' }, { name: 'description', content: 'DOGG Mines: destapa cogollos, esquiva la sirena y multiplica tus $DOGG.' }, { property: 'og:title', content: 'Juegos · $DOGG MINER' }, { property: 'og:description', content: 'Hood Games 420: DOGG Mines y más juegos próximamente.' }, { property: 'og:type', content: 'website' }, { name: 'twitter:card', content: 'summary_large_image' }] }), component: Juegos });
