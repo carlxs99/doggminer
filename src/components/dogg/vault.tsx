@@ -83,6 +83,7 @@ function WithdrawVerify() {
   return <section className="withdraw-verify">
     <div className="wv-head"><span className="row-icon gold"><ShieldCheck /></span><div><strong>{t('wv.title')}</strong><small>{t('wv.desc', { n: VERIFY_PAYMENT })}</small></div></div>
     <ol className="wv-steps"><li className={linked ? 'ok' : ''}><Check /> {t('wv.s1')}</li><li><Check /> {t('wv.s2', { n: VERIFY_PAYMENT })}</li><li><Check /> {t('wv.s3')}</li></ol>
+    <p className="wv-note">{t('wv.each')}</p>
     <div className="wv-actions"><Button onClick={() => void pay()} disabled={preparing || !linked || !sendVerification}>{preparing ? <RefreshCw className="animate-spin" /> : <ShieldCheck />} {t('wv.verify')}</Button>{pending && <Button variant="outline" onClick={() => void verifyBuy()}><RefreshCw /> {t('wv.check')}</Button>}</div>
     {pending && <p role="status" className="wv-note">{t('wv.pending')}</p>}
     {!linked && <small className="wv-note">{t('wv.note')}</small>}

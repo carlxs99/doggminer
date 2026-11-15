@@ -141,7 +141,7 @@ export const en: Record<keyof typeof es, string> = {
   'time.now': 'now', 'time.min': '{n} min ago', 'time.h': '{n} h ago', 'time.d': '{n} d ago',
   'wv.check': 'Check payment', 'wv.pending': 'Waiting for blockchain confirmation. Do not pay again if already sent; detection continues even if you close the app.',
   'wv.ok': 'Wallet verified for withdrawals', 'wv.title': 'Verify your wallet to withdraw', 'wv.desc': 'One-time {n} GRAM payment from your linked wallet. Permanent verification, no hold required; network fee is additional.',
-  'wv.s1': 'Connect and link your wallet', 'wv.s2': 'Pay {n} GRAM with the included reference', 'wv.s3': 'Automatically confirmed when payment arrives', 'wv.buy': 'Buy on DeDust', 'wv.verify': 'Pay 0.1 GRAM', 'wv.note': 'First connect your wallet above and sign the link.',
+  'wv.s1': 'Connect and link your wallet', 'wv.s2': 'Pay {n} GRAM with the included reference', 'wv.s3': 'Automatically confirmed when payment arrives', 'wv.buy': 'Buy on DeDust', 'wv.verify': 'Pay 0.1 GRAM', 'wv.note': 'First connect your wallet above and sign the link.', 'wv.each': 'Every wallet you link must be verified once: if you switch wallets, verify the new one.',
   'buy.miniApp': 'Prefer the DeDust mini app? Open it and paste the contract', 'buy.copied': '$DOGG contract copied', 'buy.copiedDesc': 'In DeDust, tap the token to receive and paste the contract to pick $DOGG.', 'buy.search': 'Find $DOGG on DeDust', 'buy.searchDesc': 'Paste this contract: {c}',
 
   'friends.subtitle': 'Invite your homies and grow together', 'friends.link': 'Your invite link', 'friends.linkTg': 'Available when opened from Telegram', 'friends.copyLink': 'Copy link', 'friends.invite': 'Invite friends',

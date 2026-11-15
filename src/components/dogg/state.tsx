@@ -64,7 +64,7 @@ export function DoggProvider({ children }: { children: ReactNode }) {
   const verifyProof = useCallback(async (v: WalletProof) => {
     const initData = window.Telegram?.WebApp?.initData;
     if (!initData) return;
-    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); notifyLevel(p); toast.success(t('toast.walletLinked', { n: (p.hold ?? 0).toLocaleString('de-DE') })); }
+    try { const p = await verifyCall({ data: { initData, ...v } }); setPlayer(p); notifyLevel(p); toast.success(t('toast.walletLinked', { n: (p.hold ?? 0).toLocaleString('de-DE') })); if (!p.withdrawVerified) toast.info(t('wv.each')); }
     catch (e) { toast.error(friendlyError(e, t('toast.walletLinkFail'))); }
   }, [verifyCall]);
   const unlinkCall = useServerFn(unlinkWallet);

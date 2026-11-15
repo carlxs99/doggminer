@@ -145,7 +145,7 @@ export const es = {
   'time.now': 'ahora', 'time.min': 'hace {n} min', 'time.h': 'hace {n} h', 'time.d': 'hace {n} d',
   'wv.check': 'Comprobar pago', 'wv.pending': 'Esperando confirmación en la blockchain. No vuelvas a pagar si ya lo enviaste; se detectará aunque cierres la app.',
   'wv.ok': 'Wallet verificada para retiros', 'wv.title': 'Verifica tu wallet para retirar', 'wv.desc': 'Pago único de {n} GRAM desde tu wallet vinculada. Verificación permanente, sin requisito de hold; comisión de red aparte.',
-  'wv.s1': 'Conecta y vincula tu wallet', 'wv.s2': 'Paga {n} GRAM con la referencia incluida', 'wv.s3': 'Confirmación automática al recibir el pago', 'wv.buy': 'Comprar en DeDust', 'wv.verify': 'Pagar 0,1 GRAM', 'wv.note': 'Primero conecta tu wallet arriba y firma la vinculación.',
+  'wv.s1': 'Conecta y vincula tu wallet', 'wv.s2': 'Paga {n} GRAM con la referencia incluida', 'wv.s3': 'Confirmación automática al recibir el pago', 'wv.buy': 'Comprar en DeDust', 'wv.verify': 'Pagar 0,1 GRAM', 'wv.note': 'Primero conecta tu wallet arriba y firma la vinculación.', 'wv.each': 'Cada wallet que vincules debe verificarse una vez: si cambias de wallet, verifica la nueva.',
   'buy.miniApp': '¿Prefieres la mini app de DeDust? Ábrela y pega el contrato', 'buy.copied': 'Contrato de $DOGG copiado', 'buy.copiedDesc': 'En DeDust, toca el token a recibir y pega el contrato para elegir $DOGG.', 'buy.search': 'Busca $DOGG en DeDust', 'buy.searchDesc': 'Pega este contrato: {c}',
 
   // Friends

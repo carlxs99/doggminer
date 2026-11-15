@@ -1,4 +1,5 @@
 # DOGG mini app
+- [x] Require re-verification after changing wallet: database guard revokes the previous wallet's verification (and its liquidity status) when a different wallet is linked; a wallet the same account already paid to verify returns automatically, unlinking keeps it. Disposable rollback checks and 100 tests pass, build OK. Real wallet switch inside Telegram remains unverified.
 - [x] Show each player's Telegram display name in their game's global history; 9 tests pass, both real 20-round feeds and refresh verified at 360 px without overflow or balance changes; private fields remain hidden.
 - [x] Separate global recent rounds into each game's own history; server filters before limiting to 20, six tests pass, both real feeds and lobby verified at 320 px without changing balances.
 - [x] Add anonymous global recent rounds for Mines and Spin; real results read through the UI, 14 tests pass, 320/390 px display and refresh verified without changing balances.

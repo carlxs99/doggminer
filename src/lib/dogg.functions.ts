@@ -218,13 +218,18 @@ export const verifyWallet = createServerFn({ method: 'POST' })
     const hold = await jettonHold(address);
     // Creates the row if needed; pass the real hold so linking never triggers a false downgrade.
     await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
-    // A valid signature proves ownership: release the wallet from any account that claimed it without proof.
+    // A valid signature proves ownership: release the wallet from any account that claimed it without proof,
+    // including that account's claim on this wallet's verification, so the real owner can verify it.
+    await supabaseAdmin.from('dogg_players').update({ withdraw_verified_at: null, withdraw_verified_wallet: null, withdraw_verified_amount: null })
+      .eq('wallet_address', address).eq('withdraw_verified_wallet', address).neq('telegram_id', telegramId).is('banned_at', null);
     await supabaseAdmin.from('dogg_players').update({ wallet_address: null, wallet_verified_at: null, last_hold: null, last_hold_at: null }).eq('wallet_address', address).neq('telegram_id', telegramId);
     const upd = await supabaseAdmin.from('dogg_players').update({ wallet_address: address, wallet_verified_at: new Date().toISOString(), last_hold: hold, last_hold_at: new Date().toISOString() }).eq('telegram_id', telegramId);
     if (upd.error) throw new Error(upd.error.code === '23505' ? 'Esta wallet ya está vinculada a otra cuenta de Telegram.' : upd.error.message);
     // Remember every account that verified this wallet.
     await supabaseAdmin.from('dogg_wallet_links').upsert({ wallet_address: address, telegram_id: telegramId }, { onConflict: 'wallet_address,telegram_id', ignoreDuplicates: true });
-    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold });
+    // Liquidity-partner status belongs to the wallet: read the new one on-chain instead of keeping the previous wallet's.
+    const lp = await currentLp(supabaseAdmin, telegramId, true);
+    const result = await supabaseAdmin.rpc('dogg_shift', { p_telegram_id: telegramId, p_action: 'read', p_hold: hold, ...(lp === null ? {} : { p_lp: lp }) });
     if (result.error) throw new Error(result.error.message);
     return settle(supabaseAdmin, telegramId, result.data, hold);
   });
