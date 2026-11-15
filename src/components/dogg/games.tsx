@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { Link } from '@tanstack/react-router';
 import { useServerFn } from '@tanstack/react-start';
 import { useQueryClient } from '@tanstack/react-query';
 import { GameHistory } from './game-history';
@@ -184,11 +185,17 @@ const SOON = [
 
 export function Juegos() {
   const t = useT();
+  const { player, demo } = useDogg();
+  const locked = !demo && !!player && !player.withdrawVerified;
   const [open, setOpen] = useState<'mines' | 'spin' | null>(null);
   const go = (g: 'mines' | 'spin' | null) => { haptic(); setOpen(g); window.scrollTo({ top: 0 }); };
   return <div className="games-screen">
     <ScreenHero title={t('nav.games')} green art="leaf" subtitle={t('games.subtitle')} />
-    {open ? <>
+    {locked && <div className="games-verify" role="alert">
+      <Lock /><div><strong>{t('games.verifyNeeded')}</strong><small>{t('games.verifyBody')}</small></div>
+      <Button asChild size="sm"><Link to="/billetera" onClick={haptic}>{t('games.verifyBtn')}</Link></Button>
+    </div>}
+    {open && !locked ? <>
       <button type="button" className="games-back" onClick={() => go(null)}><ChevronLeft /> {t('games.back')}</button>
       {open === 'mines' ? <DoggMines /> : <SpinBlunt />}
       <GameHistory key={open} game={open} />
@@ -196,7 +203,7 @@ export function Juegos() {
       <h3 className="soon-title"><Flame /> {t('games.available')}</h3>
       <div className="soon-list">
         {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', coin, t('games.spinTitle'), 'games.spinDesc']] as const).map(([key, img, title, desc]) =>
-          <button key={key} type="button" className="soon-card game-card" onClick={() => go(key)}>
+          <button key={key} type="button" className="soon-card game-card" disabled={locked} onClick={() => locked ? (haptic(), toast.error(t('games.verifyNeeded'))) : go(key)}>
             <span className="soon-icon"><img src={img} alt="" width={40} height={40} /></span>
             <div><strong>{title}</strong><small>{t(desc)}</small></div>
             <ChevronRight className="game-go" />

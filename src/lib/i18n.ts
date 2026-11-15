@@ -47,6 +47,7 @@ export function detectLang(): Lang {
 
 // Server messages are written in Spanish; map the known ones to dictionary keys (capture groups become {n}).
 const SERVER: [RegExp, Key][] = [
+  [/^Verifica tu wallet para poder jugar/i, 'games.verifyNeeded'],
   [/^Abre de nuevo la mini app/i, 'err.reopen'],
   [/^Abre la app desde Telegram/i, 'err.openTelegram'],
   [/bot todavía no está configurado/i, 'err.botNotConfigured'],
