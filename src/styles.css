@@ -918,24 +918,29 @@ button:disabled{opacity:.5;cursor:not-allowed}
 }
 
 /* Spin the Blunt */
-.spin-card{margin-top:14px}
-.spin-wrap{position:relative;width:min(100%,250px);margin:8px auto 4px;aspect-ratio:1}
-.spin-wheel{width:100%;height:100%;transition:transform 3.5s cubic-bezier(.12,.75,.12,1);filter:drop-shadow(0 0 14px color-mix(in oklch,var(--primary) 45%,transparent))}
-.spin-wheel .seg path{stroke:color-mix(in oklch,var(--gold) 70%,transparent);stroke-width:.8}
-.spin-wheel .seg text{font-size:9px;font-weight:900;fill:var(--foreground);font-family:var(--font-display)}
-.spin-wheel .dark path{fill:var(--card-deep)}
-.spin-wheel .green path{fill:color-mix(in oklch,var(--primary) 55%,var(--card-deep))}
-.spin-wheel .purple path{fill:color-mix(in oklch,oklch(.55 .2 300) 70%,var(--card-deep))}
-.spin-wheel .gold path{fill:color-mix(in oklch,var(--gold) 70%,var(--card-deep))}
-.spin-wheel .jack path{fill:var(--gold)}.spin-wheel .jack text{fill:var(--background)}
-.spin-wheel .free path{fill:color-mix(in oklch,var(--primary) 85%,var(--background))}.spin-wheel .free text{fill:var(--background);font-size:7.5px}
-.spin-wheel .ash path{fill:color-mix(in oklch,var(--muted-foreground) 25%,var(--background))}
-.spin-wheel .hit path{stroke:var(--foreground);stroke-width:2.5}
-.spin-wheel .rim{fill:none;stroke:var(--gold);stroke-width:3}
-.spin-wheel .hub{fill:var(--background);stroke:var(--gold);stroke-width:2}
-.spin-pointer{position:absolute;left:50%;top:-6px;transform:translateX(-50%);width:0;height:0;border-left:11px solid transparent;border-right:11px solid transparent;border-top:20px solid var(--gold);z-index:2;filter:drop-shadow(0 0 6px var(--gold))}
-@media (max-width:600px){.spin-wrap{width:min(100%,220px)}.spin-card{margin-top:10px}}
-@media (max-height:620px){.spin-wrap{width:min(100%,190px)}}
+.spin-card{margin-top:4px}
+.spin-wrap{position:relative;width:min(100%,260px);margin:12px auto 6px;aspect-ratio:1}
+.spin-glow{position:absolute;inset:-8%;border-radius:50%;background:radial-gradient(circle,color-mix(in oklch,var(--primary) 35%,transparent) 0,transparent 68%);filter:blur(8px);opacity:.6;transition:opacity .4s}
+.spin-wrap.spinning .spin-glow{opacity:1;animation:spin-pulse .6s ease-in-out infinite alternate}
+@keyframes spin-pulse{to{transform:scale(1.06)}}
+.spin-wheel{position:relative;width:100%;height:100%;transition:transform 3.5s cubic-bezier(.12,.75,.12,1);filter:drop-shadow(0 6px 18px color-mix(in oklch,var(--background) 80%,transparent))}
+.spin-wheel .seg path{stroke:color-mix(in oklch,var(--gold) 80%,transparent);stroke-width:.9}
+.spin-wheel .seg text{font-size:10px;font-weight:900;fill:var(--foreground);font-family:var(--font-display);paint-order:stroke;stroke:color-mix(in oklch,var(--background) 70%,transparent);stroke-width:2px}
+.spin-wheel .jack text,.spin-wheel .free text{fill:var(--background);stroke:none}
+.spin-wheel .jack text{font-size:12px}.spin-wheel .free text{font-size:8px}
+.spin-wheel .ash text{font-size:13px;fill:var(--muted-foreground)}
+.spin-wheel .hit path{stroke:var(--foreground);stroke-width:3;animation:seg-hit .5s ease-in-out 4 alternate}
+@keyframes seg-hit{to{filter:brightness(1.6)}}
+.spin-wheel .rim-in{fill:none;stroke:color-mix(in oklch,var(--gold) 60%,transparent);stroke-width:1.2}
+.spin-wheel .bulb{fill:oklch(.97 .06 95);filter:drop-shadow(0 0 2px var(--gold))}
+.spin-wheel .bulb.b{opacity:.35}
+.spin-wrap.spinning .bulb{animation:bulb .3s steps(1) infinite}.spin-wrap.spinning .bulb.b{animation-delay:.15s}
+@keyframes bulb{50%{opacity:.25}}
+.spin-pointer{position:absolute;left:50%;top:-14px;transform:translateX(-50%);width:34px;height:34px;z-index:2;filter:drop-shadow(0 0 6px var(--gold))}
+.spin-wrap.spinning .spin-pointer{animation:tick .16s ease-in-out infinite alternate}
+@keyframes tick{to{transform:translateX(-50%) rotate(-12deg)}}
+@media (max-width:600px){.spin-wrap{width:min(100%,232px)}}
+@media (max-height:620px){.spin-wrap{width:min(100%,196px)}}
 .game-card{width:100%;text-align:left;cursor:pointer;opacity:1;border-style:solid;border-color:color-mix(in oklch,var(--primary) 55%,transparent);color:inherit;box-shadow:0 0 14px color-mix(in oklch,var(--primary) 18%,transparent)}
 .game-card:active{transform:scale(.98)}
 .game-go{width:20px;height:20px;color:var(--primary);flex-shrink:0}

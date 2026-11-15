@@ -138,20 +138,31 @@ function SpinBlunt() {
       <div><span className="mines-tag"><Flame /> {t('games.live')}</span><h2>{t('games.spinTitle')}</h2><p>{t('games.spinDesc')}</p></div>
       <div className="mines-bal"><small>{t('games.balance')}</small><strong>{fmt(player.balance)}</strong><span>$DOGG</span></div>
     </header>
-    <div className="spin-wrap">
-      <span className="spin-pointer" aria-hidden />
-      <svg viewBox="-100 -100 200 200" className="spin-wheel" style={{ transform: `rotate(${rot}deg)` }} aria-label={t('games.spinTitle')}>
+    <div className={`spin-wrap ${busy ? 'spinning' : ''}`}>
+      <span className="spin-glow" aria-hidden />
+      <svg viewBox="-60 -60 120 120" className="spin-pointer" aria-hidden><defs><linearGradient id="sp-pt" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--gold)" /><stop offset="1" stopColor="color-mix(in oklch,var(--gold) 55%,var(--background))" /></linearGradient></defs><path d="M-26 -50 L26 -50 L0 40 Z" fill="url(#sp-pt)" stroke="var(--background)" strokeWidth="5" strokeLinejoin="round" /><circle cy="-30" r="9" fill="var(--primary)" /></svg>
+      <svg viewBox="-110 -110 220 220" className="spin-wheel" style={{ transform: `rotate(${rot}deg)` }} aria-label={t('games.spinTitle')}>
+        <defs>
+          {([['dark', 'var(--card-deep)', 'var(--background)'], ['green', 'color-mix(in oklch,var(--primary) 85%,white)', 'color-mix(in oklch,var(--primary) 45%,var(--background))'], ['purple', 'oklch(.62 .22 305)', 'oklch(.3 .14 305)'], ['gold', 'color-mix(in oklch,var(--gold) 90%,white)', 'color-mix(in oklch,var(--gold) 45%,var(--background))'], ['jack', 'oklch(.95 .12 95)', 'var(--gold)'], ['free', 'oklch(.85 .2 140)', 'color-mix(in oklch,var(--primary) 70%,var(--background))'], ['ash', 'color-mix(in oklch,var(--muted-foreground) 45%,var(--background))', 'var(--background)']] as const).map(([id, c0, c1]) =>
+            <radialGradient key={id} id={`sg-${id}`} cx="0" cy="0" r="100" gradientUnits="userSpaceOnUse"><stop offset=".25" stopColor={c1} /><stop offset=".75" stopColor={c0} /><stop offset="1" stopColor={c1} /></radialGradient>)}
+          <linearGradient id="sg-rim" x1="0" y1="-1" x2="0" y2="1"><stop offset="0" stopColor="oklch(.92 .12 95)" /><stop offset=".5" stopColor="var(--gold)" /><stop offset="1" stopColor="oklch(.45 .1 75)" /></linearGradient>
+        </defs>
+        <circle r="108" fill="url(#sg-rim)" />
+        <circle r="99" fill="var(--background)" />
         {SPIN_SLOTS.map((m, i) => {
+          const c = segColor(m);
           const a0 = (i * SEG - 90) * Math.PI / 180, a1 = ((i + 1) * SEG - 90) * Math.PI / 180;
           const mid = i * SEG + SEG / 2;
-          return <g key={i} className={`seg ${segColor(m)} ${hit === i && !busy ? 'hit' : ''}`}>
-            <path d={`M0 0 L${96 * Math.cos(a0)} ${96 * Math.sin(a0)} A96 96 0 0 1 ${96 * Math.cos(a1)} ${96 * Math.sin(a1)} Z`} />
-            <text transform={`rotate(${mid}) translate(0 -72) rotate(90)`} textAnchor="middle" dominantBaseline="middle">{m < 0 ? 'FREE' : m === 0 ? '💀' : `x${m}`}</text>
+          return <g key={i} className={`seg ${c} ${hit === i && !busy ? 'hit' : ''}`}>
+            <path d={`M0 0 L${97 * Math.cos(a0)} ${97 * Math.sin(a0)} A97 97 0 0 1 ${97 * Math.cos(a1)} ${97 * Math.sin(a1)} Z`} fill={`url(#sg-${c})`} />
+            <text transform={`rotate(${mid}) translate(0 -74) rotate(90)`} textAnchor="middle" dominantBaseline="central">{m < 0 ? 'FREE' : m === 0 ? '☠' : `x${m}`}</text>
           </g>;
         })}
-        <circle r="96" className="rim" />
-        <circle r="22" className="hub" />
-        <image href={coin} x="-19" y="-19" width="38" height="38" />
+        {SPIN_SLOTS.map((_, i) => { const a = (i * SEG - 90) * Math.PI / 180; return <circle key={i} className={`bulb ${i % 2 ? 'b' : 'a'}`} cx={103.5 * Math.cos(a)} cy={103.5 * Math.sin(a)} r="2.6" />; })}
+        <circle r="97" className="rim-in" />
+        <circle r="30" fill="url(#sg-rim)" />
+        <circle r="26" fill="var(--background)" />
+        <image href={coin} x="-24" y="-24" width="48" height="48" />
       </svg>
     </div>
     <div className="mines-pick"><small>{t('games.bet')}</small><div>{SPIN_BETS.map(b => <button key={b} type="button" disabled={busy} className={bet === b ? 'on' : ''} onClick={() => { haptic(); setBet(b); }}>{b}</button>)}</div></div>
