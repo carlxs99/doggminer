@@ -15,8 +15,8 @@ async function getMethod(address: string, method: string, stack: Item[]) {
   return j.stack;
 }
 
-/** GRAM side (in TON) of the wallet's DeDust liquidity in the $DOGG pool; 0 when it has none. */
-export async function lpTon(wallet: string): Promise<number> {
+/** The wallet's DeDust position in the $DOGG pool: GRAM side (ton) and $DOGG side (dogg); zeros when it has none. */
+export async function lpTon(wallet: string): Promise<{ ton: number; dogg: number }> {
   const slice = beginCell().storeAddress(Address.parse(wallet)).endCell().toBoc().toString('base64');
   const [posStack, poolStack] = await Promise.all([
     getMethod(LP_POOL, 'get_position_address', [{ type: 'slice', value: slice }]),
@@ -24,15 +24,15 @@ export async function lpTon(wallet: string): Promise<number> {
   ]);
   const position = Cell.fromBase64(posStack[0]!.value).beginParse().loadAddress().toRawString();
   const acc = await fetch(`${TC}/account?address=${encodeURIComponent(position)}`, { headers: headers() });
-  if (acc.status === 404) return 0;
+  if (acc.status === 404) return { ton: 0, dogg: 0 };
   if (!acc.ok) throw new Error(`toncenter ${acc.status}`);
   const a = await acc.json() as { status?: string; data?: string | null };
-  if (a.status !== 'active' || !a.data) return 0;
+  if (a.status !== 'active' || !a.data) return { ton: 0, dogg: 0 };
   const s = Cell.fromBase64(a.data).beginParse();
   s.loadAddress(); s.loadAddress();
   const lp = s.loadCoins();
   // get_pool_data: [9] = $DOGG reserve, [10] = GRAM reserve, [11] = LP total supply.
-  const gram = BigInt(poolStack[10]!.value); const total = BigInt(poolStack[11]!.value);
-  if (total <= 0n) return 0;
-  return Number(lp * gram / total) / 1e9;
+  const dogg = BigInt(poolStack[9]!.value); const gram = BigInt(poolStack[10]!.value); const total = BigInt(poolStack[11]!.value);
+  if (total <= 0n) return { ton: 0, dogg: 0 };
+  return { ton: Number(lp * gram / total) / 1e9, dogg: Number(lp * dogg / total) / 1e9 };
 }

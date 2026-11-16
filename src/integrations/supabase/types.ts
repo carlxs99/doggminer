@@ -338,6 +338,7 @@ export type Database = {
           last_hold_at: string | null
           lp_active: boolean
           lp_at: string | null
+          lp_daily: number
           lp_ton: number | null
           miner_id: string
           multi_alerted_at: string | null
@@ -382,6 +383,7 @@ export type Database = {
           last_hold_at?: string | null
           lp_active?: boolean
           lp_at?: string | null
+          lp_daily?: number
           lp_ton?: number | null
           miner_id?: string
           multi_alerted_at?: string | null
@@ -426,6 +428,7 @@ export type Database = {
           last_hold_at?: string | null
           lp_active?: boolean
           lp_at?: string | null
+          lp_daily?: number
           lp_ton?: number | null
           miner_id?: string
           multi_alerted_at?: string | null
@@ -830,6 +833,7 @@ export type Database = {
           last_hold_at: string | null
           lp_active: boolean
           lp_at: string | null
+          lp_daily: number
           lp_ton: number | null
           miner_id: string
           multi_alerted_at: string | null
@@ -951,6 +955,7 @@ export type Database = {
           p_action: string
           p_hold?: number
           p_lp?: boolean
+          p_lp_daily?: number
           p_telegram_id: number
         }
         Returns: Json

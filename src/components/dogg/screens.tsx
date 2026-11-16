@@ -14,7 +14,7 @@ import { ClubTasks } from './club-tasks';
 import { useT } from './lang';
 import { PNL_RANGES, pnlSeries, pnlToday, type PnlRange } from '@/lib/pnl';
 import { BuyDedustLink, DedustWebLink } from './buy';
-import { LP_DAILY, LP_MIN_TON, LP_URL, effectiveDaily } from '@/lib/lp';
+import { LP_APY, LP_MIN_TON, LP_URL, effectiveDaily } from '@/lib/lp';
 import { MINERS, MINER_TIERS, bestLevel, getMiner, minerAt, shiftTotal, liveStreak, streakBoost, TURBO_MS } from '@/lib/mining';
 // Square (1:1) tier scenes: each clip starts and ends on its matching sq-N.webp still, so the poster never jumps.
 const CLIP_ASSETS = import.meta.glob<{ url: string }>('@/assets/tiers/lvl-tier-*.mp4.asset.json', { eager: true, import: 'default' });
@@ -50,7 +50,7 @@ export function Humero() {
     <LiveEarned player={player} live={live} fallback={earned} />
     <NextMiner player={player} demo={demo} />
     <BoostBar player={player} now={now} busy={busy} onTurbo={() => void action('turbo')} />
-    <div className="turn-badges"><span className="turn-badge"><Zap /> {effectiveDaily(miner.daily, player.lpActive)} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
+    <div className="turn-badges"><span className="turn-badge"><Zap /> {Number(effectiveDaily(miner.daily, player.lpActive, player.lpDaily).toFixed(2))} $DOGG/d</span><span className="turn-badge"><Clock3 /> {player.shiftStartedAt ? <Countdown elapsed={elapsed} /> : `${Math.floor(remaining / 60)}h ${remaining % 60}m`}</span></div>
     <div className="mine-claim"><Button className="start-shift" disabled={busy || (Boolean(player.shiftStartedAt) && earned <= 0)} onClick={() => action(player.shiftStartedAt ? 'claim' : 'start')}><Leaf />{busy ? t('mine.processing') : player.shiftStartedAt ? t('mine.claim') : t('mine.start')}<ArrowRight /></Button></div>
     <div className="mine-buy"><BuyDedustLink className="buy-green">{t('mine.buy')}</BuyDedustLink><a href={PRICE} target="_blank" rel="noopener noreferrer" className="buy-gold">{t('mine.price')}</a></div>
     <DedustWebLink />
@@ -206,16 +206,16 @@ export function GrowOps() {
 }
 
 
-/** LP partner offer: DeDust liquidity (>= LP_MIN_TON, verified on-chain by the server) mines at least LP_DAILY/day with no withdrawal fee. */
+/** LP partner offer: DeDust liquidity (>= LP_MIN_TON, verified on-chain by the server) earns LP_APY on its value with no withdrawal fee. */
 function LpPartnerCard({ player }: { player: Player }) {
   const t = useT();
   const ton = Math.floor((player.lpTon ?? 0) * 100) / 100;
   const n = ton.toLocaleString('de-DE');
   return <section className={`lp-card ${player.lpActive ? 'on' : ''}`}>
     <div className="lp-head"><Trophy /><strong>{t('lp.title')}</strong>{player.lpActive && <span className="lp-badge">{t('lp.badge')}</span>}</div>
-    {player.lpActive ? <p>{t('lp.active', { n, d: LP_DAILY })} <em>{t('lp.note')}</em></p> : <>
+    {player.lpActive ? <p>{t('lp.active', { n, d: (player.lpDaily ?? 0).toLocaleString('de-DE', { maximumFractionDigits: 2 }), apy: LP_APY * 100 })} <em>{t('lp.note')}</em></p> : <>
       <p>{t('lp.desc', { min: LP_MIN_TON })} <em>{t('lp.note')}</em></p>
-      <ul><li><Zap /> {t('lp.perk1', { d: LP_DAILY })}</li><li><Check /> {t('lp.perk2')}</li></ul>
+      <ul><li><Zap /> {t('lp.perk1', { apy: LP_APY * 100 })}</li><li><Check /> {t('lp.perk2')}</li></ul>
       <div className="lp-foot"><small>{player.walletAddress ? t('lp.have', { n, min: LP_MIN_TON }) : t('lp.wallet')}</small>
         <a className="buy-gold" href={LP_URL} target="_blank" rel="noopener noreferrer" onClick={() => haptic()}>{t('lp.cta')} <ExternalLink size={12} /></a></div>
     </>}

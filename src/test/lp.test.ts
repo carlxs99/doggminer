@@ -1,15 +1,11 @@
-import { describe, expect, it } from 'vitest';
-import { effectiveDaily, LP_MIN_TON } from '@/lib/lp';
-import { withdrawFee, withdrawNet } from '@/lib/withdraw';
-import { shiftTotal } from '@/lib/mining';
+import { describe, it, expect } from 'vitest';
+import { effectiveDaily, lpDailyFor, LP_APY, LP_MIN_TON } from '@/lib/lp';
+import { withdrawFee } from '@/lib/withdraw';
 
-describe('LP partner miner', () => {
-  it('needs at least 2 TON of liquidity', () => { expect(LP_MIN_TON).toBe(2); });
-  it('mines 50 $DOGG/day when the miner makes less', () => { expect(effectiveDaily(5, true)).toBe(50); expect(effectiveDaily(5, false)).toBe(5); });
-  it('keeps a higher miner rate', () => { expect(effectiveDaily(80, true)).toBe(80); });
-  it('withdraws 1000 with no fee', () => { expect(withdrawFee(true)).toBe(0); expect(withdrawNet(1000, true)).toBe(1000); expect(withdrawNet(1000)).toBe(930); });
-  it('a full shift as LP partner pays 50', () => {
-    const start = new Date(Date.now() - 86_400_000).toISOString();
-    expect(shiftTotal({ minerId: 'rookie-1', shiftAccrued: 0, rateChangedAt: start, shiftStartedAt: start, lpActive: true }, Date.now())).toBeCloseTo(50, 3);
-  });
+describe('LP staking', () => {
+  it('needs at least 2 GRAM of liquidity', () => { expect(LP_MIN_TON).toBe(2); });
+  it('pays 60% APY on the position value', () => { expect(LP_APY).toBe(0.6); expect(lpDailyFor(10000)).toBeCloseTo(16.4384, 3); expect(lpDailyFor(100000) * 30).toBeCloseTo(4931.5, 0); });
+  it('is proportional, with no fixed floor', () => { expect(lpDailyFor(1000)).toBeCloseTo(1.6438, 3); expect(lpDailyFor(0)).toBe(0); });
+  it('pays the higher of miner and staking, never both', () => { expect(effectiveDaily(5, true, 16.4)).toBe(16.4); expect(effectiveDaily(80, true, 16.4)).toBe(80); expect(effectiveDaily(5, false, 16.4)).toBe(5); });
+  it('keeps withdrawals fee-free for LP partners', () => { expect(withdrawFee(true)).toBe(0); });
 });

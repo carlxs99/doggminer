@@ -547,6 +547,13 @@
       "when": 1794835849684,
       "tag": "0077_flip_the_coin",
       "breakpoints": true
+    },
+    {
+      "idx": 78,
+      "version": "7",
+      "when": 1794848549982,
+      "tag": "0078_lp_staking_apy",
+      "breakpoints": true
     }
   ]
 }
