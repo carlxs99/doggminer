@@ -970,3 +970,18 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .games-verify strong { font-size: .9rem; }
 .games-verify small { font-size: .72rem; color: var(--muted-foreground); line-height: 1.3; }
 .game-card:disabled { opacity: .5; }
+
+/* Blunt hub */
+.spin-blunt{position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;pointer-events:none}
+.spin-blunt img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 6px color-mix(in oklch,var(--background) 80%,transparent));animation:blunt-bob 3s ease-in-out infinite}
+@keyframes blunt-bob{50%{transform:rotate(-4deg) scale(1.03)}}
+.spin-blunt .ember{position:absolute;left:4%;bottom:6%;width:30%;height:30%;border-radius:50%;background:radial-gradient(circle,oklch(.8 .2 50 / .9),oklch(.6 .24 30 / .4) 45%,transparent 70%);mix-blend-mode:screen;animation:ember 1.4s ease-in-out infinite alternate}
+.spinning .spin-blunt .ember{animation-duration:.25s;transform:scale(1.5)}
+@keyframes ember{from{opacity:.45}to{opacity:1}}
+.spin-blunt .smoke{position:absolute;left:8%;bottom:22%;width:26%;height:26%;border-radius:50%;background:radial-gradient(circle,color-mix(in oklch,var(--foreground) 35%,transparent),transparent 70%);filter:blur(4px);opacity:0;animation:smoke 3.6s ease-out infinite}
+.spin-blunt .s2{animation-delay:1.2s}.spin-blunt .s3{animation-delay:2.4s}
+.spinning .spin-blunt .smoke{animation-duration:1.6s}
+@keyframes smoke{0%{opacity:0;transform:translate(0,0) scale(.5)}25%{opacity:.8}100%{opacity:0;transform:translate(-18px,-90px) scale(2.6)}}
+.spin-blunt .spark{position:absolute;left:14%;bottom:14%;width:4px;height:4px;border-radius:50%;background:oklch(.85 .18 70);box-shadow:0 0 6px oklch(.75 .22 45);animation:spark .9s ease-out infinite}
+.spin-blunt .k2{animation-delay:.3s;--x:-22px}.spin-blunt .k3{animation-delay:.6s;--x:14px}
+@keyframes spark{from{opacity:1;transform:none}to{opacity:0;transform:translate(var(--x,-8px),-40px)}}

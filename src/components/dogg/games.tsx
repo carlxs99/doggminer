@@ -16,6 +16,7 @@ import { minesMult, MINES_BETS, MINES_MODES } from '@/lib/mines';
 import { translateServer } from '@/lib/i18n';
 import bud from '@/assets/games/bud.webp';
 import siren from '@/assets/games/siren.webp';
+import blunt from '@/assets/games/blunt.webp';
 import coin from '@/assets/dogg-coin.webp';
 
 const fmt = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 });
@@ -169,8 +170,12 @@ function SpinBlunt() {
         <circle r="97" className="rim-in" />
         <circle r="30" fill="url(#sg-rim)" />
         <circle r="26" fill="var(--background)" />
-        <image href={coin} x="-24" y="-24" width="48" height="48" />
       </svg>
+      <div className="spin-blunt" aria-hidden>
+        <img src={blunt} alt="" width={256} height={256} draggable={false} />
+        <span className="ember" /><i className="smoke s1" /><i className="smoke s2" /><i className="smoke s3" />
+        {busy && <><b className="spark k1" /><b className="spark k2" /><b className="spark k3" /></>}
+      </div>
     </div>
     <div className="mines-pick"><small>{t('games.bet')}</small><div>{SPIN_BETS.map(b => <button key={b} type="button" disabled={busy} className={bet === b ? 'on' : ''} onClick={() => { haptic(); setBet(b); }}>{b}</button>)}</div></div>
     <Button className="mines-play" disabled={busy} onClick={() => void spin()}><Dices /> {busy ? t('games.spinning') : t('games.spinPlay', { n: bet })}</Button>
@@ -202,7 +207,7 @@ export function Juegos() {
     </> : <>
       <h3 className="soon-title"><Flame /> {t('games.available')}</h3>
       <div className="soon-list">
-        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', coin, t('games.spinTitle'), 'games.spinDesc']] as const).map(([key, img, title, desc]) =>
+        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', blunt, t('games.spinTitle'), 'games.spinDesc']] as const).map(([key, img, title, desc]) =>
           <button key={key} type="button" className="soon-card game-card" disabled={locked} onClick={() => locked ? (haptic(), toast.error(t('games.verifyNeeded'))) : go(key)}>
             <span className="soon-icon"><img src={img} alt="" width={40} height={40} /></span>
             <div><strong>{title}</strong><small>{t(desc)}</small></div>
