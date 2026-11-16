@@ -875,6 +875,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      dogg_flip: {
+        Args: { p_bet: number; p_side: string; p_telegram_id: number }
+        Returns: Json
+      }
       dogg_mark_level: {
         Args: { p_id: number; p_level: number }
         Returns: number

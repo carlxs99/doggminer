@@ -6,6 +6,7 @@ import { roundOutcome, type GlobalRound } from '@/lib/game-history';
 import { useT } from './lang';
 import bud from '@/assets/games/bud.webp';
 import coin from '@/assets/dogg-coin.webp';
+import blunt from '@/assets/games/blunt.webp';
 
 export function GameHistory({ game }: { game: GlobalRound['game'] }) {
   const t = useT();
@@ -22,7 +23,7 @@ export function GameHistory({ game }: { game: GlobalRound['game'] }) {
         {data.rounds.map(round => {
           const outcome = roundOutcome(round);
           return <div className="game-history-row" key={round.id}>
-            <div className="game-history-name"><img src={round.game === 'mines' ? bud : coin} alt="" width={26} height={26} loading="lazy" /><div><strong dir="auto">{round.player_name || t('games.historyUnknownPlayer')}</strong><time dateTime={round.played_at}>{new Date(round.played_at).toLocaleString(t.locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></div></div>
+            <div className="game-history-name"><img src={round.game === 'mines' ? bud : round.game === 'flip' ? coin : blunt} alt="" width={26} height={26} loading="lazy" /><div><strong dir="auto">{round.player_name || t('games.historyUnknownPlayer')}</strong><time dateTime={round.played_at}>{new Date(round.played_at).toLocaleString(t.locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}</time></div></div>
             <span>{number(round.bet)}<small>$DOGG</small></span>
             <span className={`game-history-result ${outcome.state}`}>{number(round.payout)}<small>x{number(outcome.multiplier)} · $DOGG</small></span>
           </div>;

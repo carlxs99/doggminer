@@ -985,3 +985,29 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .spin-blunt .spark{position:absolute;left:14%;bottom:14%;width:4px;height:4px;border-radius:50%;background:oklch(.85 .18 70);box-shadow:0 0 6px oklch(.75 .22 45);animation:spark .9s ease-out infinite}
 .spin-blunt .k2{animation-delay:.3s;--x:-22px}.spin-blunt .k3{animation-delay:.6s;--x:14px}
 @keyframes spark{from{opacity:1;transform:none}to{opacity:0;transform:translate(var(--x,-8px),-40px)}}
+
+/* Flip the DOGG Coin */
+.flip-stage{position:relative;width:min(100%,220px);aspect-ratio:1;margin:10px auto 4px;perspective:700px;display:grid;place-items:center}
+.flip-glow{position:absolute;inset:12%;border-radius:50%;background:radial-gradient(circle,color-mix(in oklch,var(--gold) 45%,transparent),transparent 70%);filter:blur(10px);opacity:.6;transition:opacity .3s}
+.flip-stage.flipping .flip-glow{opacity:1;animation:spin-pulse .5s ease-in-out infinite alternate}
+.flip-stage.win .flip-glow{background:radial-gradient(circle,color-mix(in oklch,var(--primary) 60%,transparent),transparent 70%);opacity:1}
+.flip-stage.lose .flip-glow{opacity:.25}
+.flip-coin{position:relative;width:66%;aspect-ratio:1;transform-style:preserve-3d;transition:transform 1.9s cubic-bezier(.2,.75,.25,1)}
+.flip-stage.flipping .flip-coin{animation:flip-hop 1.9s cubic-bezier(.3,.6,.4,1)}
+@keyframes flip-hop{0%,100%{translate:0 0}45%{translate:0 -38%}}
+.flip-face{position:absolute;inset:0;border-radius:50%;backface-visibility:hidden;display:grid;place-items:center;overflow:hidden}
+.flip-face.heads img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 14px color-mix(in oklch,var(--gold) 55%,transparent))}
+.flip-face.tails{transform:rotateX(180deg);background:radial-gradient(circle at 35% 30%,oklch(.92 .12 95),var(--gold) 55%,oklch(.45 .1 75));border:4px solid oklch(.45 .1 75);box-shadow:inset 0 0 18px oklch(.3 .08 75),0 0 18px color-mix(in oklch,var(--gold) 50%,transparent)}
+.flip-face.tails img{width:58%;height:auto;filter:sepia(1) saturate(2) hue-rotate(60deg) drop-shadow(0 2px 2px oklch(.3 .08 75))}
+.flip-face.tails b{position:absolute;bottom:14%;font-family:var(--font-display,inherit);font-size:1.1rem;color:oklch(.25 .06 75);letter-spacing:.06em}
+.flip-shadow{position:absolute;bottom:6%;width:46%;height:7%;border-radius:50%;background:color-mix(in oklch,var(--background) 70%,black);filter:blur(4px);opacity:.7}
+.flip-stage.flipping .flip-shadow{animation:flip-shade 1.9s cubic-bezier(.3,.6,.4,1)}
+@keyframes flip-shade{45%{transform:scale(.55);opacity:.3}}
+.flip-stage .smoke{position:absolute;bottom:12%;width:40px;height:40px;border-radius:50%;background:radial-gradient(circle,color-mix(in oklch,var(--primary) 30%,transparent),transparent 70%);animation:flip-smoke 3s ease-out infinite;pointer-events:none}
+.flip-stage .smoke.s1{left:18%}.flip-stage .smoke.s2{right:18%;animation-delay:1.5s}
+@keyframes flip-smoke{0%{transform:translateY(0) scale(.6);opacity:0}30%{opacity:.8}100%{transform:translateY(-120px) scale(1.8);opacity:0}}
+.flip-stats{grid-template-columns:1fr 1fr}
+.flip-sides{display:grid !important;grid-template-columns:1fr 1fr}
+.flip-sides button{display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.flip-sides img{width:22px;height:22px;object-fit:contain}
+@media (max-height:620px){.flip-stage{width:min(100%,170px)}}

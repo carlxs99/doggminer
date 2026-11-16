@@ -6,12 +6,13 @@ import { GameHistory } from './game-history';
 import { Bomb, ChevronLeft, ChevronRight, Coins, Dices, Flame, Lock, Swords } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { ScreenHero } from './hero';
+import { ScreenHero, leafArt as leaf } from './hero';
 import { useDogg } from './state';
 import { useT } from './lang';
 import { haptic } from '@/lib/dogg';
-import { minesAction, spinAction, type MinesRound } from '@/lib/games.functions';
+import { flipAction, minesAction, spinAction, type MinesRound } from '@/lib/games.functions';
 import { SPIN_SLOTS, SPIN_BETS } from '@/lib/spin';
+import { FLIP_BETS, FLIP_MULT, flipPayout } from '@/lib/flip';
 import { minesMult, MINES_BETS, MINES_MODES } from '@/lib/mines';
 import { translateServer } from '@/lib/i18n';
 import bud from '@/assets/games/bud.webp';
@@ -182,8 +183,66 @@ function SpinBlunt() {
   </section>;
 }
 
+function FlipCoin() {
+  const queryClient = useQueryClient();
+  const { demo, player, applyBalance } = useDogg();
+  const t = useT();
+  const call = useServerFn(flipAction);
+  const [bet, setBet] = useState<number>(10);
+  const [side, setSide] = useState<'heads' | 'tails'>('heads');
+  const [busy, setBusy] = useState(false);
+  const [rot, setRot] = useState(0);
+  const [last, setLast] = useState<{ win: boolean } | null>(null);
+  const label = (s: 'heads' | 'tails') => t(s === 'heads' ? 'games.flipHeads' : 'games.flipTails');
+
+  async function flip() {
+    const initData = window.Telegram?.WebApp?.initData;
+    if (demo || !initData) { toast.info(t('games.openTg')); return; }
+    if (busy) return;
+    setBusy(true); setLast(null); haptic();
+    try {
+      const r = await call({ data: { initData, bet, side } });
+      const face = r.result === 'heads' ? 0 : 180;
+      const next = rot - (((rot % 360) + 360) % 360) + 360 * 6 + face;
+      setRot(next);
+      const ticks = setInterval(() => window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.('light'), 140);
+      await sleep(1900); clearInterval(ticks);
+      applyBalance(r.balance);
+      setLast({ win: r.payout > 0 });
+      void queryClient.invalidateQueries({ queryKey: ['global-game-history'] });
+      if (r.payout > 0) { buzz('success'); toast.success(t('games.flipWon', { s: label(r.result), n: fmt(r.payout) })); }
+      else { buzz('error'); toast.error(t('games.flipLost', { s: label(r.result), n: fmt(r.bet) })); }
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : '';
+      toast.error(translateServer(msg) ?? t('games.error'));
+    } finally { setBusy(false); }
+  }
+
+  return <section className="mines-card flip-card">
+    <header className="mines-head">
+      <div><span className="mines-tag"><Flame /> {t('games.live')}</span><h2>{t('games.flipTitle')}</h2><p>{t('games.flipDesc')}</p></div>
+      <div className="mines-bal"><small>{t('games.balance')}</small><strong>{fmt(player.balance)}</strong><span>$DOGG</span></div>
+    </header>
+    <div className={`flip-stage ${busy ? 'flipping' : ''} ${last ? (last.win ? 'win' : 'lose') : ''}`}>
+      <span className="flip-glow" aria-hidden /><i className="smoke s1" aria-hidden /><i className="smoke s2" aria-hidden />
+      <div className="flip-coin" style={{ transform: `rotateX(${rot}deg)` }} aria-label={t('games.flipTitle')}>
+        <div className="flip-face heads"><img src={coin} alt="" width={160} height={158} draggable={false} /></div>
+        <div className="flip-face tails"><img src={leaf} alt="" width={120} height={132} draggable={false} /><b>420</b></div>
+      </div>
+      <span className="flip-shadow" aria-hidden />
+    </div>
+    <div className="mines-stats flip-stats">
+      <div><small>{t('games.current')}</small><strong className="gold">x{FLIP_MULT}</strong></div>
+      <div><small>{t('games.flipWin')}</small><strong>{fmt(flipPayout(bet))}</strong></div>
+    </div>
+    <div className="mines-pick"><small>{t('games.flipSide')}</small><div className="flip-sides">{(['heads', 'tails'] as const).map(s => <button key={s} type="button" disabled={busy} className={side === s ? 'on' : ''} onClick={() => { haptic(); setSide(s); }}><img src={s === 'heads' ? coin : leaf} alt="" width={22} height={22} /> {label(s)}</button>)}</div></div>
+    <div className="mines-pick"><small>{t('games.bet')}</small><div>{FLIP_BETS.map(b => <button key={b} type="button" disabled={busy} className={bet === b ? 'on' : ''} onClick={() => { haptic(); setBet(b); }}>{b}</button>)}</div></div>
+    <Button className="mines-play" disabled={busy} onClick={() => void flip()}><Coins /> {busy ? t('games.flipping') : t('games.flipPlay', { n: bet })}</Button>
+    <p className="mines-rules">{t('games.flipRules')}</p>
+  </section>;
+}
+
 const SOON = [
-  { key: 'flip', icon: Coins, img: coin },
   { key: 'battle', icon: Swords, img: null },
 ] as const;
 
@@ -191,8 +250,8 @@ export function Juegos() {
   const t = useT();
   const { player, demo } = useDogg();
   const locked = !demo && !!player && !player.withdrawVerified;
-  const [open, setOpen] = useState<'mines' | 'spin' | null>(null);
-  const go = (g: 'mines' | 'spin' | null) => { haptic(); setOpen(g); window.scrollTo({ top: 0 }); };
+  const [open, setOpen] = useState<'mines' | 'spin' | 'flip' | null>(null);
+  const go = (g: 'mines' | 'spin' | 'flip' | null) => { haptic(); setOpen(g); window.scrollTo({ top: 0 }); };
   return <div className="games-screen">
     <ScreenHero title={t('nav.games')} green art="leaf" subtitle={t('games.subtitle')} />
     {locked && <div className="games-verify" role="alert">
@@ -201,12 +260,12 @@ export function Juegos() {
     </div>}
     {open && !locked ? <>
       <button type="button" className="games-back" onClick={() => go(null)}><ChevronLeft /> {t('games.back')}</button>
-      {open === 'mines' ? <DoggMines /> : <SpinBlunt />}
+      {open === 'mines' ? <DoggMines /> : open === 'spin' ? <SpinBlunt /> : <FlipCoin />}
       <GameHistory key={open} game={open} />
     </> : <>
       <h3 className="soon-title"><Flame /> {t('games.available')}</h3>
       <div className="soon-list">
-        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', blunt, t('games.spinTitle'), 'games.spinDesc']] as const).map(([key, img, title, desc]) =>
+        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', blunt, t('games.spinTitle'), 'games.spinDesc'], ['flip', coin, t('games.flipTitle'), 'games.flipDesc']] as const).map(([key, img, title, desc]) =>
           <button key={key} type="button" className="soon-card game-card" disabled={locked} onClick={() => locked ? (haptic(), toast.error(t('games.verifyNeeded'))) : go(key)}>
             <span className="soon-icon"><img src={img} alt="" width={40} height={40} /></span>
             <div><strong>{title}</strong><small>{t(desc)}</small></div>

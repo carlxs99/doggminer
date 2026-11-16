@@ -540,6 +540,13 @@
       "when": 1794765578807,
       "tag": "0076_wallet_change_reverify",
       "breakpoints": true
+    },
+    {
+      "idx": 77,
+      "version": "7",
+      "when": 1794835849684,
+      "tag": "0077_flip_the_coin",
+      "breakpoints": true
     }
   ]
 }

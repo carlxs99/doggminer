@@ -28,7 +28,7 @@ export type SpinResult = z.infer<typeof Spin>;
 
 /** Public completed rounds with display names only; private source tables remain inaccessible. */
 export const globalGameHistory = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ game: z.enum(['mines', 'spin']) }))
+  .inputValidator(z.object({ game: z.enum(['mines', 'spin', 'flip']) }))
   .handler(async ({ data }): Promise<{ rounds: GlobalRound[]; unavailable: boolean }> => {
     try {
       const { createClient } = await import('@supabase/supabase-js');
@@ -64,4 +64,19 @@ export const spinAction = createServerFn({ method: 'POST' })
     const r = await supabaseAdmin.rpc('dogg_spin', { p_telegram_id: id, p_bet: data.bet });
     if (r.error) throw new Error(r.error.message);
     return Spin.parse(r.data);
+  });
+
+const Flip = z.object({ balance: z.number(), result: z.enum(['heads', 'tails']), side: z.enum(['heads', 'tails']), payout: z.number(), bet: z.number() });
+export type FlipResult = z.infer<typeof Flip>;
+
+/** Flip the DOGG Coin: the coin is flipped in the database (dogg_flip, 50/50, x1.95); the client only animates it. */
+export const flipAction = createServerFn({ method: 'POST' })
+  .inputValidator(z.object({ initData: z.string().min(1).max(10000), bet: z.number().int().min(5).max(100), side: z.enum(['heads', 'tails']) }))
+  .handler(async ({ data }) => {
+    const id = (await (await import('./telegram.server')).verifyTelegramUser(data.initData)).id;
+    await requireVerified(id);
+    const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+    const r = await supabaseAdmin.rpc('dogg_flip', { p_telegram_id: id, p_bet: data.bet, p_side: data.side });
+    if (r.error) throw new Error(r.error.message);
+    return Flip.parse(r.data);
   });
