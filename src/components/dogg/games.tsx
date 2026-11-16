@@ -170,7 +170,7 @@ function SpinBlunt() {
         <circle r="30" fill="url(#sg-rim)" />
         <circle r="26" fill="var(--background)" />
       </svg>
-      <div className="spin-blunt" aria-hidden style={{ transform: `translate(-50%,-50%) rotate(${rot + 120}deg)` }}>
+      <div className="spin-blunt" aria-hidden style={{ transform: `translate(-50%,-50%) rotate(${rot + 130}deg)` }}>
         <img src={blunt} alt="" width={256} height={256} draggable={false} />
         <span className="ember" /><i className="smoke s1" /><i className="smoke s2" /><i className="smoke s3" />
         {busy && <><b className="spark k1" /><b className="spark k2" /><b className="spark k3" /></>}
