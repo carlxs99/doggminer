@@ -940,7 +940,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .spin-glow{position:absolute;inset:-8%;border-radius:50%;background:radial-gradient(circle,color-mix(in oklch,var(--primary) 35%,transparent) 0,transparent 68%);filter:blur(8px);opacity:.6;transition:opacity .4s}
 .spin-wrap.spinning .spin-glow{opacity:1;animation:spin-pulse .6s ease-in-out infinite alternate}
 @keyframes spin-pulse{to{transform:scale(1.06)}}
-.spin-wheel{position:relative;width:100%;height:100%;transition:transform 3.5s cubic-bezier(.12,.75,.12,1);filter:drop-shadow(0 6px 18px color-mix(in oklch,var(--background) 80%,transparent))}
+.spin-wheel{position:relative;width:100%;height:100%;filter:drop-shadow(0 6px 18px color-mix(in oklch,var(--background) 80%,transparent))}
 .spin-wheel .seg path{stroke:color-mix(in oklch,var(--gold) 80%,transparent);stroke-width:.9}
 .spin-wheel .seg text{font-size:10px;font-weight:900;fill:var(--foreground);font-family:var(--font-display);paint-order:stroke;stroke:color-mix(in oklch,var(--background) 70%,transparent);stroke-width:2px}
 .spin-wheel .jack text,.spin-wheel .free text{fill:var(--background);stroke:none}
@@ -972,7 +972,7 @@ button:disabled{opacity:.5;cursor:not-allowed}
 .game-card:disabled { opacity: .5; }
 
 /* Blunt hub */
-.spin-blunt{position:absolute;left:50%;top:50%;width:34%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;pointer-events:none}
+.spin-blunt{position:absolute;left:50%;top:50%;width:62%;transition:transform 3.5s cubic-bezier(.12,.75,.12,1);aspect-ratio:1;transform:translate(-50%,-50%);z-index:3;pointer-events:none}
 .spin-blunt img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 3px 6px color-mix(in oklch,var(--background) 80%,transparent));animation:blunt-bob 3s ease-in-out infinite}
 @keyframes blunt-bob{50%{transform:rotate(-4deg) scale(1.03)}}
 .spin-blunt .ember{position:absolute;left:4%;bottom:6%;width:30%;height:30%;border-radius:50%;background:radial-gradient(circle,oklch(.8 .2 50 / .9),oklch(.6 .24 30 / .4) 45%,transparent 70%);mix-blend-mode:screen;animation:ember 1.4s ease-in-out infinite alternate}

@@ -122,7 +122,7 @@ function SpinBlunt() {
       const r = await call({ data: { initData, bet } });
       let cur = rot;
       for (const [k, slot] of r.slots.entries()) {
-        const target = 360 - (slot * SEG + SEG / 2);
+        const target = slot * SEG + SEG / 2;
         cur = cur - (((cur % 360) + 360) % 360) + 360 * 6 + target;
         setRot(cur);
         const ticks = setInterval(() => window.Telegram?.WebApp?.HapticFeedback?.impactOccurred?.('light'), 160);
@@ -148,8 +148,7 @@ function SpinBlunt() {
     </header>
     <div className={`spin-wrap ${busy ? 'spinning' : ''}`}>
       <span className="spin-glow" aria-hidden />
-      <svg viewBox="-60 -60 120 120" className="spin-pointer" aria-hidden><defs><linearGradient id="sp-pt" x1="0" x2="0" y1="0" y2="1"><stop offset="0" stopColor="var(--gold)" /><stop offset="1" stopColor="color-mix(in oklch,var(--gold) 55%,var(--background))" /></linearGradient></defs><path d="M-26 -50 L26 -50 L0 40 Z" fill="url(#sp-pt)" stroke="var(--background)" strokeWidth="5" strokeLinejoin="round" /><circle cy="-30" r="9" fill="var(--primary)" /></svg>
-      <svg viewBox="-110 -110 220 220" className="spin-wheel" style={{ transform: `rotate(${rot}deg)` }} aria-label={t('games.spinTitle')}>
+      <svg viewBox="-110 -110 220 220" className="spin-wheel" aria-label={t('games.spinTitle')}>
         <defs>
           {([['dark', 'var(--card-deep)', 'var(--background)'], ['green', 'color-mix(in oklch,var(--primary) 85%,white)', 'color-mix(in oklch,var(--primary) 45%,var(--background))'], ['purple', 'oklch(.62 .22 305)', 'oklch(.3 .14 305)'], ['gold', 'color-mix(in oklch,var(--gold) 90%,white)', 'color-mix(in oklch,var(--gold) 45%,var(--background))'], ['jack', 'oklch(.95 .12 95)', 'var(--gold)'], ['free', 'oklch(.85 .2 140)', 'color-mix(in oklch,var(--primary) 70%,var(--background))'], ['ash', 'color-mix(in oklch,var(--muted-foreground) 45%,var(--background))', 'var(--background)']] as const).map(([id, c0, c1]) =>
             <radialGradient key={id} id={`sg-${id}`} cx="0" cy="0" r="100" gradientUnits="userSpaceOnUse"><stop offset=".25" stopColor={c1} /><stop offset=".75" stopColor={c0} /><stop offset="1" stopColor={c1} /></radialGradient>)}
@@ -171,7 +170,7 @@ function SpinBlunt() {
         <circle r="30" fill="url(#sg-rim)" />
         <circle r="26" fill="var(--background)" />
       </svg>
-      <div className="spin-blunt" aria-hidden>
+      <div className="spin-blunt" aria-hidden style={{ transform: `translate(-50%,-50%) rotate(${rot + 120}deg)` }}>
         <img src={blunt} alt="" width={256} height={256} draggable={false} />
         <span className="ember" /><i className="smoke s1" /><i className="smoke s2" /><i className="smoke s3" />
         {busy && <><b className="spark k1" /><b className="spark k2" /><b className="spark k3" /></>}
