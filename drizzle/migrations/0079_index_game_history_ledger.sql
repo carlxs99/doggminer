@@ -1,0 +1,1 @@
+CREATE INDEX IF NOT EXISTS dogg_ledger_game_created_idx ON public.dogg_ledger (created_at DESC) WHERE kind = 'game';
