@@ -19,6 +19,9 @@ import bud from '@/assets/games/bud.webp';
 import siren from '@/assets/games/siren.webp';
 import blunt from '@/assets/games/blunt.webp';
 import coin from '@/assets/dogg-coin.webp';
+import { SmokeBattle } from './smoke-battle';
+import { smokeChallengeId } from '@/lib/smoke';
+import battleArt from '@/assets/ui/dogg-bust.webp';
 
 const fmt = (n: number) => n.toLocaleString('de-DE', { maximumFractionDigits: 2 });
 const buzz = (kind: 'success' | 'error') => window.Telegram?.WebApp?.HapticFeedback?.notificationOccurred?.(kind);
@@ -242,16 +245,18 @@ function FlipCoin() {
   </section>;
 }
 
-const SOON = [
-  { key: 'battle', icon: Swords, img: null },
-] as const;
-
 export function Juegos() {
   const t = useT();
   const { player, demo } = useDogg();
   const locked = !demo && !!player && !player.withdrawVerified;
-  const [open, setOpen] = useState<'mines' | 'spin' | 'flip' | null>(null);
-  const go = (g: 'mines' | 'spin' | 'flip' | null) => { haptic(); setOpen(g); window.scrollTo({ top: 0 }); };
+  const [challenge, setChallenge] = useState<string | null>(null);
+  const [open, setOpen] = useState<'mines' | 'spin' | 'flip' | 'battle' | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.Telegram?.WebApp?.initData ?? '');
+    const id = smokeChallengeId(params.get('start_param') ?? window.Telegram?.WebApp?.initDataUnsafe?.start_param);
+    if (id) { setChallenge(id); setOpen('battle'); }
+  }, []);
+  const go = (g: 'mines' | 'spin' | 'flip' | 'battle' | null) => { haptic(); setOpen(g); window.scrollTo({ top: 0 }); };
   return <div className="games-screen">
     <ScreenHero title={t('nav.games')} green art="leaf" subtitle={t('games.subtitle')} />
     {locked && <div className="games-verify" role="alert">
@@ -260,12 +265,12 @@ export function Juegos() {
     </div>}
     {open && !locked ? <>
       <button type="button" className="games-back" onClick={() => go(null)}><ChevronLeft /> {t('games.back')}</button>
-      {open === 'mines' ? <DoggMines /> : open === 'spin' ? <SpinBlunt /> : <FlipCoin />}
+      {open === 'mines' ? <DoggMines /> : open === 'spin' ? <SpinBlunt /> : open === 'battle' ? <SmokeBattle challenge={challenge} /> : <FlipCoin />}
       <GameHistory key={open} game={open} />
     </> : <>
       <h3 className="soon-title"><Flame /> {t('games.available')}</h3>
       <div className="soon-list">
-        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', blunt, t('games.spinTitle'), 'games.spinDesc'], ['flip', coin, t('games.flipTitle'), 'games.flipDesc']] as const).map(([key, img, title, desc]) =>
+        {([['mines', bud, 'DOGG MINES', 'games.minesDesc'], ['spin', blunt, t('games.spinTitle'), 'games.spinDesc'], ['flip', coin, t('games.flipTitle'), 'games.flipDesc'], ['battle', battleArt, t('games.battle'), 'games.battleDesc']] as const).map(([key, img, title, desc]) =>
           <button key={key} type="button" className="soon-card game-card" disabled={locked} onClick={() => locked ? (haptic(), toast.error(t('games.verifyNeeded'))) : go(key)}>
             <span className="soon-icon"><img src={img} alt="" width={40} height={40} /></span>
             <div><strong>{title}</strong><small>{t(desc)}</small></div>
@@ -273,11 +278,6 @@ export function Juegos() {
           </button>)}
       </div>
       <h3 className="soon-title"><Lock /> {t('games.soon')}</h3>
-      <div className="soon-list">{SOON.map(({ key, icon: Icon, img }) => <div key={key} className="soon-card">
-        <span className="soon-icon">{img ? <img src={img} alt="" width={40} height={40} loading="lazy" /> : <Icon />}</span>
-        <div><strong>{t(`games.${key}` as 'games.flip')}</strong><small>{t(`games.${key}Desc` as 'games.flipDesc')}</small></div>
-        <em>{t('games.soonTag')}</em>
-      </div>)}</div>
     </>}
   </div>;
 }

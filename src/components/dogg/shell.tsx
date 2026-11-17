@@ -12,6 +12,7 @@ import { LangSwitcher, useT } from './lang';
 import { haptic, JETTON, SWAP, PRICE } from '@/lib/dogg';
 import type { Key } from '@/lib/i18n';
 import { toast } from 'sonner';
+import { smokeChallengeId } from '@/lib/smoke';
 const TonWallet = lazy(() => import('./ton-wallet'));
 const FAQ: [Key, Key][] = [['faq.q1', 'faq.a1'], ['faq.q2', 'faq.a2'], ['faq.q3', 'faq.a3'], ['faq.q4', 'faq.a4'], ['faq.q5', 'faq.a5']];
 const navigation = [
@@ -25,6 +26,10 @@ const navigation = [
 export function Shell({ children }: { children: ReactNode }) {
   const { pathname } = useLocation();
   const router = useRouter();
+  useEffect(() => {
+    const params = new URLSearchParams(window.Telegram?.WebApp?.initData ?? '');
+    if (smokeChallengeId(params.get('start_param') ?? window.Telegram?.WebApp?.initDataUnsafe?.start_param)) void router.navigate({ to: '/juegos' });
+  }, [router]);
   // Warm every screen (code + header art) right after the app opens, so switching tabs is instant.
   useEffect(() => {
     const warm = () => {

@@ -1,4 +1,5 @@
 # DOGG mini app
+- [x] Build Smoke Battle PvP timing duels, escrow, shared challenges, expiry refunds, private scores and per-game history; disposable database checks and two-player authenticated browser duel passed, 30 tests pass, mobile 320/360 and desktop render without overflow; temporary accounts removed. Native Telegram sharing remains unverified.
 - [x] Require re-verification after changing wallet: database guard revokes the previous wallet's verification (and its liquidity status) when a different wallet is linked; a wallet the same account already paid to verify returns automatically, unlinking keeps it. Disposable rollback checks and 100 tests pass, build OK. Real wallet switch inside Telegram remains unverified.
 - [x] Show each player's Telegram display name in their game's global history; 9 tests pass, both real 20-round feeds and refresh verified at 360 px without overflow or balance changes; private fields remain hidden.
 - [x] Separate global recent rounds into each game's own history; server filters before limiting to 20, six tests pass, both real feeds and lobby verified at 320 px without changing balances.

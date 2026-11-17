@@ -527,6 +527,63 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_smoke_rooms: {
+        Row: {
+          bet: number
+          created_at: string
+          ended_at: string | null
+          expires_at: string
+          guest_duration: number | null
+          guest_id: number | null
+          guest_score: number | null
+          guest_start: string | null
+          host_duration: number | null
+          host_id: number
+          host_score: number | null
+          host_start: string | null
+          id: string
+          payout: number
+          status: string
+          winner_id: number | null
+        }
+        Insert: {
+          bet: number
+          created_at?: string
+          ended_at?: string | null
+          expires_at?: string
+          guest_duration?: number | null
+          guest_id?: number | null
+          guest_score?: number | null
+          guest_start?: string | null
+          host_duration?: number | null
+          host_id: number
+          host_score?: number | null
+          host_start?: string | null
+          id?: string
+          payout?: number
+          status?: string
+          winner_id?: number | null
+        }
+        Update: {
+          bet?: number
+          created_at?: string
+          ended_at?: string | null
+          expires_at?: string
+          guest_duration?: number | null
+          guest_id?: number | null
+          guest_score?: number | null
+          guest_start?: string | null
+          host_duration?: number | null
+          host_id?: number
+          host_score?: number | null
+          host_start?: string | null
+          id?: string
+          payout?: number
+          status?: string
+          winner_id?: number | null
+        }
+        Relationships: []
+      }
       dogg_task_claims: {
         Row: {
           claimed_at: string | null
@@ -781,6 +838,17 @@ export type Database = {
         }
         Relationships: []
       }
+      dogg_smoke_public_history: {
+        Row: {
+          bet: number | null
+          game: string | null
+          id: string | null
+          payout: number | null
+          played_at: string | null
+          player_name: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       dogg_ad: {
@@ -959,6 +1027,20 @@ export type Database = {
           p_telegram_id: number
         }
         Returns: Json
+      }
+      dogg_smoke: {
+        Args: {
+          p_action: string
+          p_bet?: number
+          p_room?: string
+          p_telegram_id: number
+        }
+        Returns: Json
+      }
+      dogg_smoke_expire: { Args: never; Returns: number }
+      dogg_smoke_score: {
+        Args: { p_duration: number; p_elapsed: number }
+        Returns: number
       }
       dogg_spin: {
         Args: { p_bet: number; p_telegram_id: number }

@@ -5,3 +5,5 @@
 - DOGG Mines: the board is generated and kept in dogg_mines_games (dogg_mines DB function, row-locked, ledger kind 'game' excluded from PnL) and only revealed after the round ends; src/lib/mines.ts mirrors dogg_mines_mult so the shown multipliers match payouts.
 - Spin the Blunt: the slot is drawn by dogg_spin in the DB (weighted, ~4.5% house edge, FREE re-spins inside the same call, ledger kind 'game'); src/lib/spin.ts mirrors slot order and weights so the wheel lands where the server paid.
 - Flip the DOGG Coin: dogg_flip in the DB draws heads/tails 50/50 and pays x1.95 (ledger kind 'game', labels hist.flipBet/flipWin feed the public history view); src/lib/flip.ts mirrors the multiplier.
+
+- Smoke Battle uses server-timed turns in dogg_smoke with atomic escrow, hidden scores until settlement and scheduled expiry refunds; timing never accepts client scores, but does not prove human input.

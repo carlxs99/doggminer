@@ -9,6 +9,8 @@ export const Route = createFileRoute('/api/public/jobs/payouts')({
         const authFailure = await authenticateCronRequest(request);
         if (authFailure) return authFailure;
         const { supabaseAdmin } = await import('@/integrations/supabase/client.server');
+        const smokeExpiry = await supabaseAdmin.rpc('dogg_smoke_expire');
+        if (smokeExpiry.error) console.error('smoke expiry', smokeExpiry.error.message);
         const { processPayouts } = await import('@/lib/payout.server');
         // Keeps the bot chat (/start welcome) pointed at the published app.
         const { ensureWebhook } = await import('@/lib/notify.server');

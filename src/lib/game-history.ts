@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const publicRoundSchema = z.object({ id: z.string(), game: z.enum(['mines', 'spin', 'flip']), bet: z.coerce.number(), payout: z.coerce.number(), played_at: z.string(), player_name: z.string().nullable() });
+export const publicRoundSchema = z.object({ id: z.string(), game: z.enum(['mines', 'spin', 'flip', 'battle']), bet: z.coerce.number(), payout: z.coerce.number(), played_at: z.string(), player_name: z.string().nullable() });
 export type GlobalRound = z.infer<typeof publicRoundSchema>;
 
 export function roundOutcome(round: Pick<GlobalRound, 'bet' | 'payout'>) {

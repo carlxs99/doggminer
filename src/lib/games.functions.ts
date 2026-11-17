@@ -28,7 +28,7 @@ export type SpinResult = z.infer<typeof Spin>;
 
 /** Public completed rounds with display names only; private source tables remain inaccessible. */
 export const globalGameHistory = createServerFn({ method: 'GET' })
-  .inputValidator(z.object({ game: z.enum(['mines', 'spin', 'flip']) }))
+  .inputValidator(z.object({ game: z.enum(['mines', 'spin', 'flip', 'battle']) }))
   .handler(async ({ data }): Promise<{ rounds: GlobalRound[]; unavailable: boolean }> => {
     try {
       const { createClient } = await import('@supabase/supabase-js');
@@ -44,7 +44,7 @@ export const globalGameHistory = createServerFn({ method: 'GET' })
           return fetch(input, { ...init, headers });
         } },
       });
-      const result = await db.from('dogg_global_game_history').select('id,game,bet,payout,played_at,player_name').eq('game', data.game).order('played_at', { ascending: false }).order('id', { ascending: false }).limit(20);
+      const result = await db.from(data.game === 'battle' ? 'dogg_smoke_public_history' : 'dogg_global_game_history').select('id,game,bet,payout,played_at,player_name').eq('game', data.game).order('played_at', { ascending: false }).order('id', { ascending: false }).limit(20);
       if (result.error) throw new Error(result.error.message);
       const rounds = z.array(publicRoundSchema).parse(result.data);
       return { rounds, unavailable: false };
